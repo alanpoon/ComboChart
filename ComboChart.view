@@ -509,7 +509,7 @@
           }],
           "operable":{
             "values":[{
-              "id":"columnInducedGroupby.L1",
+              "id":"column.L1",
               "name":"Tonnage",
               "op":"sum"
             }]
@@ -532,7 +532,7 @@
       "formatCategoryCast":"",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
-      "legendKey":"formatLegend"
+      "legendKey":"ColumnName"
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js"],
@@ -965,7 +965,7 @@ console.log("data1",JSON.stringify(data1));
   
   data2=interpolateMonthFixed(data1,view);
   
-  //console.log("data1",JSON.stringify(data1));
+  console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   //console.log("data3:",JSON.stringify(data3));
   var data7=formatCategoryCast(data3,view);
@@ -1054,13 +1054,17 @@ console.log("data1",JSON.stringify(data1));
   if (view.typeinfo.categoryIsMonthFixed=="Yes") {
   var categoryName; var valueNames=[];
   var monthFormat=d3.time.format("%b");
+  var yearFormat=d3.time.format("%Y");
+  var dayFormat=d3.time.format("%e");
+  
   var fixedCategory=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   for (var propertyName in data[0]) {
   if(propertyName.contains("#{xaxis}") ==true) categoryName=propertyName;
   else  valueNames.push(propertyName);
   }
   //auto detect
-  var sampleCategory=data[0].categoryName;
+  var sampleCategory=data[0][categoryName];
+  console.log("sampleCate: ",sampleCategory);
   var autoDetectArray=['parsableDate','month'];
   var detected;
   var detected2='month';
@@ -1075,15 +1079,19 @@ console.log("data1",JSON.stringify(data1));
    if (typeof detected =='undefined') detected ='normal';
   //--
   if (detected=='parsableDate') {
+  
   var existingCat=_.uniq(_.pluck(data,categoryName));
   var existingCatTemp=[];
   _.each(existingCat,function(d) {
+  console.log("Actuuj: ",d);
   var date= new Date(d);
-  existingCatTemp.push(monthFormat(d));});
+  existingCatTemp.push(monthFormat(date));});
   existingCat=existingCatTemp;}
   else var existingCat=_.uniq(_.pluck(data,categoryName));
   var newCat=_.difference(fixedCategory,existingCat);
+  console.log("newCat:",JSON.stringify(newCat));
   var newObj={};
+
   _.each(newCat,function(d,i) {
   	newObj.categoryName=d;
     _.each(valueNames,function(m,n) {
@@ -1092,7 +1100,7 @@ console.log("data1",JSON.stringify(data1));
   });
   
    
-  if(jQuery.isEmptyObject(newObj)===false) {data.push(newObj);}
+  if(jQuery.isEmptyObject(newObj)===false&& detected!=='parsableDate') {data.push(newObj);}
  
   } return data;
   }
@@ -1443,6 +1451,22 @@ Set_GroupFn1 = function(data, groupCount, subModel) {
         });
     });
     outNest = nest.entries(data);
+  if (groupCount===0){
+  yAxisD = _.first(_.pluck(data, "yAxis"));
+  var lastD = _.first(_.pluck(data, "legendKey"));
+  var sorted_k = sortByArrayFn(data, uniqCategory);
+  var valueD = [];
+  smp = _.groupBy(sorted_k, function(d) {
+                return d["category"];
+            });
+            _.each(smp, function(l, unit) {
+                var value;
+                value = sum(_.pluck(l, "value"));
+                valueD.push(value);
+            });
+  var Num = parseInt(numDivFn(_.first(_.pluck(data, "yAxis"))));
+  output=[{type:subModel,yAxis:yAxisD,data:valueD,name:lastD,yAxis:Num-1}];
+  }
     return output;
 };
 
