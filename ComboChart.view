@@ -530,7 +530,7 @@
       "categoryIsMonth":"Yes",
       "categoryIsMonthFixed":"Yes",
       "formatCategoryCast":"",
-      "formatOrderingCast":"",
+      "formatOrderingCast":"formatOrdering=function(dataZero) {return -dataZero.value;};",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName"
     }
@@ -945,7 +945,7 @@ data();
 var f=view.typeinfo.data.fields;
 
  if (view.data.jsonClass === "DataEmbedded"){ 
-  rawdata=[["2014-04-20",100],["2012-08-20",60],["2014-12-20",92],["2014-02-20",48],
+  rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
   ["2014-01-20",32],["2014-07-20",46]];
   //rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   } else rawdata=${data};
@@ -1780,8 +1780,7 @@ safeRead = function() {
                 var date = new Date(d.category);
    				var month = monthFormat(date);
                   var year = yearFormat(date);
-   
-                
+                   
                 autoObj['category'] = month;
                 autoObj['ordering'] = (new Date(month + ' 15,' + year)).getTime() / 1000;
                 autoObj['actual'] = d.category;
@@ -1847,25 +1846,31 @@ return modelData;
    if (typeof detected =='undefined') detected ='normal';
  var formatCategory,formatOrdering; 
   
-  if (view.typeinfo.formatCategoryCast !=="" && view.typeinfo.formatOrderingCast!=="") {
+var objPushCount=0;
   var autoArr=[];
-  eval(view.typeinfo.formatCategoryCast);//formatCategory=function(d){return..}
-  eval(view.typeinfo.formatOrderingCast);
-  _.each(modelData,function(m,n) {
-  var autoObj=m;  
-  var d=m.category;
-    autoArr['ordering']=formatOrdering(d); autoArr['category']=formatCategory(d);
+_.each(modelData,function(m,n) {
+  var autoObj=m;
+	if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(m));
+  if (view.typeinfo.formatOrderingCast!=="") {
+   eval(view.typeinfo.formatOrderingCast);
+    autoObj['ordering']=formatOrdering(m); 
+  }
+  if (view.typeinfo.formatCategoryCast!=="") {
+  eval(view.typeinfo.formatCategoryCast);
+  autoObj['category']=formatCategory(m);
+  }
+  autoArr.push(autoObj);
+  objPushCount++;
   });
- 
-   } 
   
-  else {
+  if(view.typeinfo.formatOrderingCast=="" && view.typeinfo.formatCategoryCast=="") {
   console.log("detected",detected);
   
   if(detected=='parsableDate') {
   console.log("detected2",detected2);
   var autoArr=autoSortCategory[detected][detected2](modelData);}
-  else var autoArr=autoSortCategory[detected](modelData);}
+  else var autoArr=autoSortCategory[detected](modelData);
+  	}
   return autoArr;
   };
   sortCategory= function(orderedData){
