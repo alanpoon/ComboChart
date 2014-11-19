@@ -509,7 +509,7 @@
           }],
           "operable":{
             "values":[{
-              "id":"column.L1",
+              "id":"columnInducedGroupby.L1",
               "name":"Tonnage",
               "op":"sum"
             }]
@@ -968,13 +968,13 @@ console.log("data1",JSON.stringify(data1));
   console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   //console.log("data3:",JSON.stringify(data3));
-  var data7=formatCategoryCast(data3,view);
-  var data8=sortCategory(data7);
+  var data4=formatCategoryCast(data3,view);
+  var data5=sortCategory(data4);
   //console.log("data7",JSON.stringify(data7));
-  //console.log("data8",JSON.stringify(data8));
-  data4 = sortByMonthFn(data3, view);
+ 
+  //data4 = sortByMonthFn(data3, view);
   //console.log("data3", JSON.stringify(data3));
-  smpColName = _.groupBy(data4, function(d) {
+  smpColName = _.groupBy(data5, function(d) {
     return d["columnName"];
   });		
   //console.log("initialSmpColName",JSON.stringify(smpColName));
@@ -1331,7 +1331,7 @@ model_DataConvertClass = {
   d[groupByPropName]= (d.value>=90) ? 'Fast':'Slow';
   
   });
-  //console.log("t i know new",JSON.stringify(t));
+  console.log("t i know new",JSON.stringify(t));
   colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel));
   //console.log("ColToSeries I know",JSON.stringify(colToSeriesArr));
   return colToSeriesArr;
@@ -1758,7 +1758,7 @@ safeRead = function() {
   //accepts "yyyy-mm-dd","Jul 20,2014"
   var date=new Date(d);
   return date instanceof Date && !isNaN(date.valueOf());
-    },
+       },
   "month":function(d) { var date=new Date(d+" 2,2014");
   console.log("date",date);
   return date instanceof Date && !isNaN(date.valueOf());}
