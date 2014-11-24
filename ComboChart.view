@@ -509,7 +509,7 @@
           }],
           "operable":{
             "values":[{
-              "id":"columnInducedGroupby.L1",
+              "id":"columnStack.L1",
               "name":"Tonnage",
               "op":"sum"
             }]
@@ -530,7 +530,7 @@
       "categoryIsMonth":"Yes",
       "categoryIsMonthFixed":"Yes",
       "formatCategoryCast":"",
-      "formatOrderingCast":"formatOrdering=function(dataZero) {return -dataZero.value;};",
+      "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName"
     }
@@ -1068,12 +1068,10 @@ console.log("data1",JSON.stringify(data1));
   var autoDetectArray=['parsableDate','month'];
   var detected;
   var detected2='month';
-  _.each(autoDetectArray,function(d,i) {
-  if (autoDetectCategory[d](sampleCategory)) detected=d; 
-   });
-   for (var i=0;i< autoDetectArray.lenth;i++){
+  _
+   for (var i=0;i< autoDetectArray.length;i++){
   var j=autoDetectArray[i];
-  if (autoDetectCategory[j](sampleCategory)) {detected=d; 
+  if (autoDetectCategory[j](sampleCategory)) {detected=j; 
    break;}
   }
    if (typeof detected =='undefined') detected ='normal';
@@ -1298,7 +1296,7 @@ model_DataConvertClass = {
   }
   }, columnStack:{
   0:function(t,unit,index) {
-  
+  console.log("t:",JSON.stringify(t));
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
       gCount = Get_groupCountFn(t);
@@ -1316,6 +1314,7 @@ model_DataConvertClass = {
 						'&lt;br&gt;';
                 }
             };
+  console.log("colToSeriesArr",JSON.stringify(colToSeriesArr));
   return colToSeriesArr;
   }
   }, columnInducedGroupby:{
@@ -1328,7 +1327,7 @@ model_DataConvertClass = {
   var groupByPropName='groupby'+(gCount+1);
   //console.log("t i know",JSON.stringify(t));
   _.each(t,function(d,i) {
-  d[groupByPropName]= (d.value>=90) ? 'Fast':'Slow';
+  d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
   
   });
   console.log("t i know new",JSON.stringify(t));
