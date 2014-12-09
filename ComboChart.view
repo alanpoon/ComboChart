@@ -528,9 +528,9 @@
       "yAxisArray":"Title1,Title2",
       "colorSeriesArray":"#7cb5ec,#434348,#90ed7d,#f7a35c,#ffc0cb,#f15c80,#e4d354,#8085e8,#8d4653,#91e8e1,#d89b00,#9fb27e,#c6c6cd,#284040,#5ead06",
       "interpolateXAxis":"no",
-      "xTicksKey":"yyyy-mm",
+      "xTicksKey":"string",
       "formatXTicksCast":"",
-      "orderingKey":"string",
+      "orderingKey":"date",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName"
@@ -765,14 +765,14 @@
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
-        "id":"typeinfo-XTicksKey-label",
+        "id":"typeinfo-xTicksKey-label",
         "type":"label",
         "text":"XTicks Key"
       },{
         "jsonClass":"Select",
-        "id":"typeinfo-XTicksKey",
+        "id":"typeinfo-xTicksKey",
         "type":"select",
-        "value":"${typeinfo.XTicksKey}",
+        "value":"${typeinfo.xTicksKey}",
         "options":[{
           "jsonClass":"Option",
           "text":"month string",
@@ -824,11 +824,15 @@
         },{
           "jsonClass":"Option",
           "text":"year-month",
-          "value":"year-Month"
+          "value":"year-month"
         },{
           "jsonClass":"Option",
           "text":"alphabetical",
           "value":"alphabetical"
+        },{
+          "jsonClass":"Option",
+          "text":"date",
+          "value":"date"
         },{
           "jsonClass":"Option",
           "text":"format ordering cast",
@@ -953,6 +957,10 @@ elx.bundle.type.ComboChart = {
  var k=view.typeinfo.data.fields.keys;
   //console.log("kjo",JSON.stringify(k));
    var keys=[];
+  var xTicksKey=view.typeinfo.xTicksKey;
+  var formatXTicksCast=view.typeinfo.formatXTicksCast;
+  var orderingKey=view.typeinfo.orderingKey;
+  var formatOrderingKey=view.typeinfo.formatOrderingCast;
   var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
     k.forEach(function(d,i) {
@@ -994,7 +1002,7 @@ var f=view.typeinfo.data.fields;
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   var safeRead; var interpolateMonthFixed;
-  var autoDetectCategory,autoSortCategory,formatXTicksCast,formatColumnNameCast;
+  var autoDetectCategory,autoSortCategory,formatXTicksAndOrdering,formatColumnNameCast;
 
  debugFn();
   
@@ -1008,7 +1016,7 @@ console.log("data1",JSON.stringify(data1));
   console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   //console.log("data3:",JSON.stringify(data3));
-  var data4=formatXTicksCast(data3,view);
+  var data4=formatXTicksAndOrdering(data3,view);
   var data5=sortCategory(data4);
   //console.log("data7",JSON.stringify(data7));
  
@@ -1865,7 +1873,7 @@ return modelData;
 
 };
   
-  formatXTicksCast= function(modelData,view) {
+  formatXTicksAndOrdering= function(modelData,view) {
   //Data preProcess
   var formatScale;
   var testArray=["2012-11-25","Jan","Peter","Jan-2014"];
@@ -1887,29 +1895,40 @@ return modelData;
   
 var objPushCount=0;
   var autoArr=[];
-  if (view.typeinfo.formatOrderingCast!==""){
-  eval(view.typeinfo.formatOrderingCast);
-  
+
+  switch(orderingKey){
+  case 'formatOrderingCast': eval(formatOrderingCast);break;
+  case 'alphabetical' :break;
+  case 'monthString' :formatOrdering=function (d) { 
+  var arr=d.category;
+  console.log("arr",arr);var date=new Date(arr+' 15, 2014');return date.getTime()/1000}; break;
+  case 'year-month' :formatOrdering=function(d){var arr=(d.category).split('-');
+  var date=new Date(arr[1]+' 15,'+arr[0]);return date.getTime()/1000}; break;
+  case 'date': formatOrdering=function(d) {
+  return (new Date(d.category)).getTime()/1000;
   }
-   if (view.typeinfo.formatXTicksCast!==""){
-  eval(view.typeinfo.formatXTicksCast);
-  
   }
+  
+  if(xTicksKey.contains("%")){
+  formatXTicks=d3.time.format(formatXTicksCast);
+  } else if (xTicksKey=='formatXTicksCast') {eval(formatXTicksCast);} else formatXTicks=function(val) {return val;};
+
 _.each(modelData,function(m,n) {
   var autoObj=m;
 	if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(m));
   
-    if (view.typeinfo.formatOrderingCast!==""){
+    if (typeof formatOrdering!=='undefined'){
+  console.log("typeof formatOrdering!=='undefined'  ",formatOrdering(m));
   autoObj['ordering']=formatOrdering(m); 
     } 
   
-  if (view.typeinfo.formatXTicksCast!=="") {
-    autoObj['category']=formatXTicks(m);
+  if (typeof formatXTicks!=='undefined') {
+    autoObj['category']=formatXTicks(m.category);
   }
   autoArr.push(autoObj);
   objPushCount++;
   });
-  
+  /* decide whether to leave it here
   if(view.typeinfo.formatOrderingCast=="" && view.typeinfo.formatXTicksCast=="") {
   console.log("detected",detected);
   
@@ -1918,6 +1937,7 @@ _.each(modelData,function(m,n) {
   var autoArr=autoSortCategory[detected][detected2](modelData);}
   else var autoArr=autoSortCategory[detected](modelData);
   	}
+  */
   return autoArr;
   };
   sortCategory= function(orderedData){
