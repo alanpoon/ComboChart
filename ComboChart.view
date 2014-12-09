@@ -526,10 +526,11 @@
       "title":"Average Monthly R_column and R_splime in Tokyo",
       "subtitle":"Source: WorldClimate.com",
       "yAxisArray":"Title1,Title2",
-      "colorSeriesArray":"#7cb5ec,#434348,#90ed7d,#f7a35c,#8085e9,#f15c80,#e4d354,#8085e8,#8d4653,#91e8e1",
-      "categoryIsMonth":"Yes",
-      "categoryIsMonthFixed":"Yes",
-      "formatCategoryCast":"",
+      "colorSeriesArray":"#7cb5ec,#434348,#90ed7d,#f7a35c,#ffc0cb,#f15c80,#e4d354,#8085e8,#8d4653,#91e8e1,#d89b00,#9fb27e,#c6c6cd,#284040,#5ead06",
+      "interpolateXAxis":"no",
+      "xTicksKey":"yyyy-mm",
+      "formatXTicksCast":"",
+      "orderingKey":"string",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName"
@@ -742,59 +743,97 @@
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
-        "id":"typeinfo-categoryIsMonth-label",
+        "id":"typeinfo-interpolateXAxis-label",
         "type":"label",
-        "text":"Is Category month?"
+        "text":"interpolate Xaxis"
       },{
         "jsonClass":"Select",
-        "id":"typeinfo-categoryIsMonth",
+        "id":"typeinfo-interpolateXAxis",
         "type":"select",
-        "value":"${typeinfo.categoryIsMonth}",
+        "value":"${typeinfo.interpolateXAxis}",
         "options":[{
           "jsonClass":"Option",
-          "text":"Yes",
-          "value":"Yes"
+          "text":"no",
+          "value":"no"
         },{
           "jsonClass":"Option",
-          "text":"No",
-          "value":"No"
+          "text":"yes",
+          "value":"yes"
         }]
       }]
     },{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
-        "id":"typeinfo-categoryIsMonthFixed-label",
+        "id":"typeinfo-XTicksKey-label",
         "type":"label",
-        "text":"Category is Month Fixed"
+        "text":"XTicks Key"
       },{
         "jsonClass":"Select",
-        "id":"typeinfo-categoryIsMonthFixed",
+        "id":"typeinfo-XTicksKey",
         "type":"select",
-        "value":"${typeinfo.categoryIsMonthFixed}",
+        "value":"${typeinfo.XTicksKey}",
         "options":[{
           "jsonClass":"Option",
-          "text":"Yes",
-          "value":"Yes"
+          "text":"month string",
+          "value":"%b"
         },{
           "jsonClass":"Option",
-          "text":"No",
-          "value":"No"
+          "text":"dd-mm-yyyy",
+          "value":"%d-%m-%Y"
+        },{
+          "jsonClass":"Option",
+          "text":"string",
+          "value":"string"
+        },{
+          "jsonClass":"Option",
+          "text":"format XTicks Cast",
+          "value":"formatXTicksCast"
         }]
       }]
     },{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
-        "id":"typeinfo-formatCategoryCast-label",
+        "id":"typeinfo-formatXTicksCast-label",
         "type":"label",
-        "text":"Format Category"
+        "text":"Format XTicks"
       },{
         "jsonClass":"Field",
-        "id":"typeinfo-formatCategoryCast",
+        "id":"typeinfo-formatXTicksCast",
         "type":"field",
-        "value":"${typeinfo.formatCategoryCast}",
+        "value":"${typeinfo.formatXTicksCast}",
         "readonly":false
+      }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-orderingKey-label",
+        "type":"label",
+        "text":"Ordering Key"
+      },{
+        "jsonClass":"Select",
+        "id":"typeinfo-orderingKey",
+        "type":"select",
+        "value":"${typeinfo.orderingKey}",
+        "options":[{
+          "jsonClass":"Option",
+          "text":"month string",
+          "value":"monthString"
+        },{
+          "jsonClass":"Option",
+          "text":"year-month",
+          "value":"year-Month"
+        },{
+          "jsonClass":"Option",
+          "text":"alphabetical",
+          "value":"alphabetical"
+        },{
+          "jsonClass":"Option",
+          "text":"format ordering cast",
+          "value":"formatOrderingCast"
+        }]
       }]
     },{
       "jsonClass":"Row",
@@ -866,6 +905,7 @@
 elx.bundle.type.ComboChart = {
 
   	init : function(view) {
+      console.log("initateView",view);
       	  var dataKey = elx.MultiKeyColumnSection.getKeyData(view,view.typeinfo.data.fields.keys);
            var tableKey=  new elx.MultiKeyColumnSection("typeinfo-property-keys","typeinfo-property", view, dataKey);
       $("#typeinfo-property-keys").data("table",tableKey);
@@ -954,7 +994,7 @@ var f=view.typeinfo.data.fields;
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   var safeRead; var interpolateMonthFixed;
-  var autoDetectCategory,autoSortCategory,formatCategoryCast,formatColumnNameCast;
+  var autoDetectCategory,autoSortCategory,formatXTicksCast,formatColumnNameCast;
 
  debugFn();
   
@@ -968,7 +1008,7 @@ console.log("data1",JSON.stringify(data1));
   console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   //console.log("data3:",JSON.stringify(data3));
-  var data4=formatCategoryCast(data3,view);
+  var data4=formatXTicksCast(data3,view);
   var data5=sortCategory(data4);
   //console.log("data7",JSON.stringify(data7));
  
@@ -1051,7 +1091,7 @@ console.log("data1",JSON.stringify(data1));
  function debugFn(){
     
    interpolateMonthFixed=function(data,view){
-  if (view.typeinfo.categoryIsMonthFixed=="Yes") {
+  if (view.typeinfo.interpolateXAxis=="Yes") {
   var categoryName; var valueNames=[];
   var monthFormat=d3.time.format("%b");
   var yearFormat=d3.time.format("%Y");
@@ -1068,7 +1108,7 @@ console.log("data1",JSON.stringify(data1));
   var autoDetectArray=['parsableDate','month'];
   var detected;
   var detected2='month';
-  _
+  
    for (var i=0;i< autoDetectArray.length;i++){
   var j=autoDetectArray[i];
   if (autoDetectCategory[j](sampleCategory)) {detected=j; 
@@ -1825,7 +1865,7 @@ return modelData;
 
 };
   
-  formatCategoryCast= function(modelData,view) {
+  formatXTicksCast= function(modelData,view) {
   //Data preProcess
   var formatScale;
   var testArray=["2012-11-25","Jan","Peter","Jan-2014"];
@@ -1843,26 +1883,34 @@ return modelData;
    break;}
   }
    if (typeof detected =='undefined') detected ='normal';
- var formatCategory,formatOrdering; 
+ var formatXTicks,formatOrdering; 
   
 var objPushCount=0;
   var autoArr=[];
+  if (view.typeinfo.formatOrderingCast!==""){
+  eval(view.typeinfo.formatOrderingCast);
+  
+  }
+   if (view.typeinfo.formatXTicksCast!==""){
+  eval(view.typeinfo.formatXTicksCast);
+  
+  }
 _.each(modelData,function(m,n) {
   var autoObj=m;
 	if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(m));
-  if (view.typeinfo.formatOrderingCast!=="") {
-   eval(view.typeinfo.formatOrderingCast);
-    autoObj['ordering']=formatOrdering(m); 
-  }
-  if (view.typeinfo.formatCategoryCast!=="") {
-  eval(view.typeinfo.formatCategoryCast);
-  autoObj['category']=formatCategory(m);
+  
+    if (view.typeinfo.formatOrderingCast!==""){
+  autoObj['ordering']=formatOrdering(m); 
+    } 
+  
+  if (view.typeinfo.formatXTicksCast!=="") {
+    autoObj['category']=formatXTicks(m);
   }
   autoArr.push(autoObj);
   objPushCount++;
   });
   
-  if(view.typeinfo.formatOrderingCast=="" && view.typeinfo.formatCategoryCast=="") {
+  if(view.typeinfo.formatOrderingCast=="" && view.typeinfo.formatXTicksCast=="") {
   console.log("detected",detected);
   
   if(detected=='parsableDate') {
