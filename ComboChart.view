@@ -827,6 +827,10 @@
           "value":"year-month"
         },{
           "jsonClass":"Option",
+          "text":"month-year",
+          "value":"month-year"
+        },{
+          "jsonClass":"Option",
           "text":"alphabetical",
           "value":"alphabetical"
         },{
@@ -1002,7 +1006,7 @@ var f=view.typeinfo.data.fields;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   var safeRead; var interpolateMonthFixed;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
-
+  var reArrangeToSeries;
  debugFn();
   
   //console.log("rawdata",JSON.stringify(rawdata));
@@ -1043,21 +1047,27 @@ console.log("data1",JSON.stringify(data1));
   set_yAxisFn(data4,toYaxisArray,yAxisArr);
    
   //console.log("smpColName",JSON.stringify(smpColName));
-  //console.log("toCategoryArray",JSON.stringify(toCategoryArray));
+  console.log("toCategoryArray",JSON.stringify(toCategoryArray));
   var toSeriesArray=[];var output={};model_APIClass={};
-
+  var containsModelType; //Requires rearranging toSeries because of linked series
+  
   chartGen(smpColName,model_APIClass,output);
   for (var propertyName in output) {
+  console.log('propertyName',propertyName);
   if (Array.isArray(output[propertyName])==true) {
-  _.each(output[propertyName],function(d,i){
+    _.each(output[propertyName],function(d,i){
   	toSeriesArray.push(d);
   });
   	  }
   	else toSeriesArray.push(output[propertyName]);
   }
-
+  console.log('smpColNameObj',safeRead(smpColName,'model'));
+  toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
+  
+  
   //console.log("output",JSON.stringify(output));
-  //console.log("toSeriesArray",JSON.stringify(toSeriesArray));
+  console.log("toSeriesArray",JSON.stringify(toSeriesArray));
+  console.log("stacking:",safeRead(model_APIClass,'plotOptions','column','stacking'));
   //console.log("toYaxisArray",JSON.stringify(toYaxisArray));
   var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
   //console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
@@ -1111,8 +1121,7 @@ console.log("data1",JSON.stringify(data1));
   }
   //auto detect
   var sampleCategory=data[0][categoryName];
-  console.log("sampleCate: ",sampleCategory);
-  var autoDetectArray=['parsableDate','month'];
+   var autoDetectArray=['parsableDate','month'];
   var detected;
   var detected2='month';
   
@@ -1128,14 +1137,12 @@ console.log("data1",JSON.stringify(data1));
   var existingCat=_.uniq(_.pluck(data,categoryName));
   var existingCatTemp=[];
   _.each(existingCat,function(d) {
-  console.log("Actuuj: ",d);
-  var date= new Date(d);
+    var date= new Date(d);
   existingCatTemp.push(monthFormat(date));});
   existingCat=existingCatTemp;}
   else var existingCat=_.uniq(_.pluck(data,categoryName));
   var newCat=_.difference(fixedCategory,existingCat);
-  console.log("newCat:",JSON.stringify(newCat));
-  var newObj={};
+    var newObj={};
 
   _.each(newCat,function(d,i) {
   	newObj.categoryName=d;
@@ -1317,17 +1324,18 @@ model_DataConvertClass = {
   },
   columnStackGroup:{
   0: function(t,unit,index,index2) {
-  //console.log("columnStakc,t",JSON.stringify(t));
-  //console.log("index2",index2);
-  var ShowInLegend_bool=false;
+    var ShowInLegend_bool=false;
   if(index==0) ShowInLegend_bool=true;
    var valueData=_.pluck(t,'value');
       var columnNameData=_.first(_.pluck(t,'legendKey'));
    colToSeriesArr={type:'column', name:columnNameData,
   data:valueData, stack:unit,
   color: Highcharts.getOptions().colors[index2],
-  showInLegend:ShowInLegend_bool
-  };
+  colorIndex:index2,id:index
+    };
+  if (index>0) {
+  colToSeriesArr['linkedTo']=':previous';
+  }
   model_APIClass['plotOptions']={};
   model_APIClass.plotOptions['column']={};
   model_APIClass.plotOptions.column['stacking']='normal';
@@ -1339,7 +1347,9 @@ model_DataConvertClass = {
 						'&lt;br&gt;'+this.series.userOptions.stack+'&lt;/br&gt;';
                 }
             };
-  return colToSeriesArr;
+  
+   return colToSeriesArr;
+  
   }
   }, columnStack:{
   0:function(t,unit,index) {
@@ -1348,9 +1358,8 @@ model_DataConvertClass = {
       subModel = "column";
       gCount = Get_groupCountFn(t);
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
-       
- //console.log("jess1kl1",model_APIClass);
-  model_APIClass['plotOptions']={};
+   
+   model_APIClass['plotOptions']={};
   model_APIClass.plotOptions['column']={};
   model_APIClass.plotOptions.column['stacking']='normal';
   model_APIClass['tooltip']={
@@ -1372,15 +1381,12 @@ model_DataConvertClass = {
       subModel = "column";
   gCount = Get_groupCountFn(t);
   var groupByPropName='groupby'+(gCount+1);
-  //console.log("t i know",JSON.stringify(t));
-  _.each(t,function(d,i) {
+    _.each(t,function(d,i) {
   d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
   
   });
-  console.log("t i know new",JSON.stringify(t));
-  colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel));
-  //console.log("ColToSeries I know",JSON.stringify(colToSeriesArr));
-  return colToSeriesArr;
+    colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel));
+    return colToSeriesArr;
   	}
   }
   		
@@ -1394,14 +1400,15 @@ model_DataConvertClass = {
 chartGen = function(smpColName, model_APIClass, output) {
     var index;
     index = 0;
+  var modelType;
     _.each(smpColName, function(t, unit) {
-        var columnName, modelType, propertyName, splitModel, yAxisNum;
+        var columnName, propertyName, splitModel, yAxisNum;
         modelType = _.first(_.pluck(t, "model"));
         columnName = unit;
-        propertyName = modelType + "_" + columnName;
+        propertyName = modelType+"_"+columnName;
 
         if (typeof modelType != 'undefined') {
-            //console.log("typeof", typeof modelType);
+            console.log("typeof", typeof modelType);
             yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
             splitModel = model_TypeSplitClass[modelType];
             //console.log("splitModel", splitModel);
@@ -1410,7 +1417,7 @@ chartGen = function(smpColName, model_APIClass, output) {
 
                     zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
 				
-  				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output);
+  				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
                 }
             });
             index++;
@@ -1418,8 +1425,8 @@ chartGen = function(smpColName, model_APIClass, output) {
             smpColName = t;
             //console.log("newSmpColName", JSON.stringify(t));
             var index2 = 0;
-            _.each(smpColName, function(t, unitSec) {
-                var columnName, modelType, propertyName, splitModel, yAxisNum;
+  			    _.each(smpColName, function(t, unitSec) {
+                var columnName, propertyName, splitModel, yAxisNum;
                 modelType = _.first(_.pluck(t, "model"));
                 columnName = _.first(_.pluck(t, "columnName"));
                 propertyName = modelType + "_" + columnName;
@@ -1432,14 +1439,17 @@ chartGen = function(smpColName, model_APIClass, output) {
                         zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
                         //console.log("output", output);
                         zeroOrOne_OperableClass[n].Draw(t, unit, index, output, index2);
+ 				
                     }
 
                 });
                 index2++;
             });
+  				 
             index++;
         }
     });
+  if (modelType==='columnStackGroup') {containsModelType='columnStackGroup';}
 };
 
 Set_GroupFn1 = function(data, groupCount, subModel) {
@@ -1542,10 +1552,8 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
    console.info("Enter formatLegend");
    if (legendKey==="formatLegend" && formatLegendCast!="") {
   console.info("proceed");
-  console.log('formatLegendCast',formatLegendCast);
-  eval(formatLegendCast);} 
-   console.log("tyty",view.typeinfo.data.fields.operable.values[0].id);
-  if (view.typeinfo.data.fields.operable.values[0].id==="columnInducedGroupby.L1" 
+    eval(formatLegendCast);} 
+     if (view.typeinfo.data.fields.operable.values[0].id==="columnInducedGroupby.L1" 
   && formatLegendCast==="")
   {
   
@@ -1583,8 +1591,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
             }
         }
   		var dataZero=[];
-  console.log('dataZero',dataZero);
-        columnNameArray.forEach(function(modelKey,i) {
+          columnNameArray.forEach(function(modelKey,i) {
             var allGroupby, cName, lastGroupby_op, model_keyObj, model_keyObjArr, model_yAxisObj, objPush;
             for (propertyName in d) {
                 if (propertyName.contains(modelKey) === true) {
@@ -1612,8 +1619,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         propertyName = "groupby" + (i + 1);
                         objPush[propertyName] = d;
                     });
-  					if(i===0) {console.log("objPush for Legend",JSON.stringify(objPush));}
-                    if (legendKey === "lastGroupby_op") {
+  					if (legendKey === "lastGroupby_op") {
                         lastGroupby_op = lastGroupby + "_" + cName;
                         objPush["legendKey"] = lastGroupby_op;
                         ReadArray.push(objPush);
@@ -1625,15 +1631,13 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         objPush["legendKey"] = cName;
                         ReadArray.push(objPush);
                       } else if (legendKey=="formatLegend"){
-                      console.log("model_keyObj",model_keyObj);
-                      objPush["legendKey"] = formatLegend[model_keyObj](objPush);
+                        objPush["legendKey"] = formatLegend[model_keyObj](objPush);
   						ReadArray.push(objPush);
                       }
   
   						else if (legendKey == "ColumnName") {
                         var regExp = /\(([^)]+)\)/;
                         var matches = regExp.exec(cName);
-                        //console.log("cName:", matches[1]);
                         objPush["legendKey"] = matches[1];
                         ReadArray.push(objPush);
                     }
@@ -1662,6 +1666,7 @@ zeroOrOne_OperableClass = {
             var propertyName;
             //console.log("Initi: ", modelType);
             propertyName = modelType + "_" + columnName + "_0:" + unit;
+          
             output[propertyName] = {};
         },
         Draw: function(d, unit, index, initialized, index2) {
@@ -1669,6 +1674,7 @@ zeroOrOne_OperableClass = {
             modelType = _.first(_.pluck(d, "model"));
             columnName = _.first(_.pluck(d, "columnName"));
             propertyName = modelType + "_" + columnName + "_0:" + unit;
+   
             initialized[propertyName] = model_DataConvertClass[modelType][0](d, unit, index, index2);
         }
     },
@@ -1698,7 +1704,7 @@ zeroOrOne_OperableClass = {
             };
             //console.log("one,output", JSON.stringify(output));
         },
-        Draw: function(d, unit, index, initialized) {
+        Draw: function(d, unit, index, initialized,index2) {
             //console.log("dara", JSON.stringify(d));
 
             var smpCat;
@@ -1710,7 +1716,9 @@ zeroOrOne_OperableClass = {
                 var columnName, modelType, propertyName;
                 modelType = _.first(_.pluck(t, "model"));
                 columnName = _.first(_.pluck(t, "columnName"));
+  				
                 propertyName = modelType + "_" + columnName + "_1";
+  
                 initialized[propertyName].data.push(model_DataConvertClass[modelType][1](t, unit, index));
             });
 
@@ -1840,9 +1848,11 @@ var objPushCount=0;
   case 'alphabetical' :break;
   case 'monthString' :formatOrdering=function (d) { 
   var arr=d.category;
-  console.log("arr",arr);var date=new Date(arr+' 15, 2014');return date.getTime()/1000}; break;
+  var date=new Date(arr+' 15, 2014');return date.getTime()/1000}; break;
   case 'year-month' :formatOrdering=function(d){var arr=(d.category).split('-');
   var date=new Date(arr[1]+' 15,'+arr[0]);return date.getTime()/1000}; break;
+  case 'month-year' :formatOrdering=function(d) {var arr=(d.category).split('-');
+  var date=new Date(arr[0]+' 15,'+arr[1]);return date.getTime()/1000}; break;
   case 'date': formatOrdering=function(d) {
   return (new Date(d.category)).getTime()/1000;
   }
@@ -1884,7 +1894,18 @@ _.each(modelData,function(m,n) {
   
   
   };
-
+  reArrangeToSeries = function(toSeriesArray, containsModelType) {
+  console.log('containsModelType',containsModelType);
+      if (containsModelType === 'columnStackGroup') { //rearrange 'output'
+          var tempData = toSeriesArray;
+          var sortedOutput = _.sortBy(tempData, function(d) {
+              return d.colorIndex;
+          });
+          console.log("sorrtedOutput", JSON.stringify(sortedOutput));
+          toSeriesArray = sortedOutput;
+  
+      } return toSeriesArray;
+  };
 }
 
 </div>
