@@ -530,7 +530,7 @@
       "interpolateXAxis":"no",
       "xTicksKey":"string",
       "formatXTicksCast":"",
-      "orderingKey":"date",
+      "orderingKey":"monthString",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName"
@@ -950,9 +950,7 @@ elx.bundle.type.ComboChart = {
   //for the single mouseover
   //console.log("${Data}",JSON.stringify(${data}));
   cfgoptions=view.typeinfo;
-  //console.log("joh",typeof john);
- 
-  
+    
   var div =$("#${id}");
  var k=view.typeinfo.data.fields.keys;
   //console.log("kjo",JSON.stringify(k));
@@ -993,16 +991,17 @@ data();
 var f=view.typeinfo.data.fields;
 
  if (view.data.jsonClass === "DataEmbedded"){ 
-  rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
+  /*rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
   ["2014-01-20",32],["2014-07-20",46]];
-  //rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
+  */
+  rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   } else rawdata=${data};
   
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, hexToModel1, smpColName, sum, 
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   var safeRead; var interpolateMonthFixed;
-  var autoDetectCategory,autoSortCategory,formatXTicksAndOrdering,formatColumnNameCast;
+  var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
 
  debugFn();
   
@@ -1812,66 +1811,6 @@ safeRead = function() {
   };
   
   
-  autoSortCategory = {
-    // add additional column (ordering) to determine the order of the category,
-    //if there are similar category
-    "parsableDate": {
-        "month": function(modelData) {
-  
-            var monthFormat = d3.time.format("%b");
-            var yearFormat = d3.time.format("%Y");
-            var autoArr = [];
-            _.each(modelData, function(d) {
-  
-                var autoObj = d;
-                var date = new Date(d.category);
-   				var month = monthFormat(date);
-                  var year = yearFormat(date);
-                   
-                autoObj['category'] = month;
-                autoObj['ordering'] = (new Date(month + ' 15,' + year)).getTime() / 1000;
-                autoObj['actual'] = d.category;
-                autoArr.push(autoObj);
-            });
-            return autoArr;
-        },
-        "day": function(modelData) {
-            var dayFormat = d3.time.format("%e");
-            var monthFormat = d3.time.format("%b");
-            var yearFormat = d3.time.format("%Y");
-            var autoArr = [];
-            _.each(modelData, function(d) {
-                var autoObj = d;
-                var day = dayFormat(d.category);
-                var year = yearFormat(d.category);
-                var month = monthFormat(d.category);
-                autoObj['category'] = day;
-                autoObj['ordering'] = (new Date(month + ' ' + day + ', ' + year)).getTime() / 1000;
-                autoObj['actual'] = d.category;
-                autoArr.push(autoObj);
-            });
-            return autoArr;
-
-        },
-        cast: {}
-
-    },
-    "month": function(modelData) {
-        var autoArr = [];
-        var priority_order = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        _.each(modelData, function(d) {
-            var autoObj = d;
-            autoObj['ordering'] = priority_order.indexOf(d.category);
-            autoObj['actual'] = d.category;
-            autoArr.push(autoObj);
-        });
-        return autoArr;
-
-  },"normal":function(modelData){
-return modelData;
-  }
-
-};
   
   formatXTicksAndOrdering= function(modelData,view) {
   //Data preProcess
@@ -1918,8 +1857,8 @@ _.each(modelData,function(m,n) {
 	if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(m));
   
     if (typeof formatOrdering!=='undefined'){
-  console.log("typeof formatOrdering!=='undefined'  ",formatOrdering(m));
-  autoObj['ordering']=formatOrdering(m); 
+  console.log("ordering:",formatOrdering(m));
+   autoObj['ordering']=formatOrdering(m); 
     } 
   
   if (typeof formatXTicks!=='undefined') {
@@ -1928,16 +1867,7 @@ _.each(modelData,function(m,n) {
   autoArr.push(autoObj);
   objPushCount++;
   });
-  /* decide whether to leave it here
-  if(view.typeinfo.formatOrderingCast=="" && view.typeinfo.formatXTicksCast=="") {
-  console.log("detected",detected);
-  
-  if(detected=='parsableDate') {
-  console.log("detected2",detected2);
-  var autoArr=autoSortCategory[detected][detected2](modelData);}
-  else var autoArr=autoSortCategory[detected](modelData);
-  	}
-  */
+
   return autoArr;
   };
   sortCategory= function(orderedData){
