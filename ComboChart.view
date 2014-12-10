@@ -533,7 +533,9 @@
       "orderingKey":"monthString",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
-      "legendKey":"ColumnName"
+      "legendKey":"ColumnName",
+      "toolTipKey":"default",
+      "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}"
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js"],
@@ -905,6 +907,42 @@
         "value":"${typeinfo.formatLegendCast}",
         "readonly":false
       }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-toolTipKey-label",
+        "type":"label",
+        "text":"Tool Tip Key"
+      },{
+        "jsonClass":"Select",
+        "id":"typeinfo-toolTipKey",
+        "type":"select",
+        "value":"${typeinfo.toolTipKey}",
+        "options":[{
+          "jsonClass":"Option",
+          "text":"default",
+          "value":"default"
+        },{
+          "jsonClass":"Option",
+          "text":"Format toolTip",
+          "value":"formatToolTip"
+        }]
+      }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-formatToolTipCast-label",
+        "type":"label",
+        "text":"Format Tooltip"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-formatToolTipCast",
+        "type":"field",
+        "value":"${typeinfo.formatToolTipCast}",
+        "readonly":false
+      }]
     }]
   }]
 }
@@ -965,6 +1003,8 @@ elx.bundle.type.ComboChart = {
   var formatOrderingKey=view.typeinfo.formatOrderingCast;
   var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
+  var toolTipKey=view.typeinfo.toolTipKey;
+  var formatToolTipCast=view.typeinfo.formatToolTipCast;
     k.forEach(function(d,i) {
     keys.push(d.name);})
   //console.log("keysAr",JSON.stringify(keys));
@@ -1006,7 +1046,7 @@ var f=view.typeinfo.data.fields;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   var safeRead; var interpolateMonthFixed;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
-  var reArrangeToSeries;
+  var reArrangeToSeries,toolTipInserter;
  debugFn();
   
   //console.log("rawdata",JSON.stringify(rawdata));
@@ -1016,7 +1056,7 @@ console.log("data1",JSON.stringify(data1));
   
   data2=interpolateMonthFixed(data1,view);
   
-  console.log("data2",JSON.stringify(data2));
+  //console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   //console.log("data3:",JSON.stringify(data3));
   var data4=formatXTicksAndOrdering(data3,view);
@@ -1193,7 +1233,8 @@ model_DataConvertClass = {
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1207,8 +1248,9 @@ model_DataConvertClass = {
     0: function(t,unit, index) {
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1222,8 +1264,9 @@ model_DataConvertClass = {
     0: function(t,unit, index) {
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {},
@@ -1231,11 +1274,13 @@ model_DataConvertClass = {
       var name_pie, totalValue_pie, valueData;
       valueData = _.pluck(t, "value");
       name_pie = _.first(_.pluck(t, "columnName"));
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       totalValue_pie = sum(valueData);
       return {
         name: name_pie,
         y: totalValue_pie,
-        color: Highcharts.getOptions().colors[index]
+        color: Highcharts.getOptions().colors[index],
+		modelType:modelType
       };
     }
   },
@@ -1261,8 +1306,9 @@ model_DataConvertClass = {
     0: function(t,unit,index) {
       var colToSeriesArr, gCount, subModel;
       subModel = "spline";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1276,8 +1322,9 @@ model_DataConvertClass = {
     0: function(t,unit,index) {
       var colToSeriesArr, gCount, subModel;
       subModel = "spline";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1309,8 +1356,9 @@ model_DataConvertClass = {
     0: function(t,unit, index) {
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     }
   },
@@ -1318,8 +1366,9 @@ model_DataConvertClass = {
     0: function(t,unit,index) {
       var colToSeriesArr, gCount, subModel;
       subModel = "spline";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
       return colToSeriesArr;
     }
   },
@@ -1328,22 +1377,25 @@ model_DataConvertClass = {
     var ShowInLegend_bool=false;
   if(index==0) ShowInLegend_bool=true;
    var valueData=_.pluck(t,'value');
+  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       var columnNameData=_.first(_.pluck(t,'legendKey'));
    colToSeriesArr={type:'column', name:columnNameData,
   data:valueData, stack:unit,
   color: Highcharts.getOptions().colors[index2],
-  colorIndex:index2,id:index
+  colorIndex:index2,id:index,modelType:modelType
     };
+  colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
   if (index>0) {
   colToSeriesArr['linkedTo']=':previous';
   }
   model_APIClass['plotOptions']={};
   model_APIClass.plotOptions['column']={};
   model_APIClass.plotOptions.column['stacking']='normal';
-  model_APIClass['tooltip']={
+  if (toolTipKey=='default') {
+   model_APIClass['tooltip']={
                       formatter: function() {
   if(typeof this.point.stackTotal ==='undefined') {
-  console.log("this.point",this.point);
+  console.log("this.point",this);
    return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;';
                         
@@ -1355,6 +1407,7 @@ model_DataConvertClass = {
   }}
             };
   
+  }
    return colToSeriesArr;
   
   }
@@ -1363,8 +1416,9 @@ model_DataConvertClass = {
   console.log("t:",JSON.stringify(t));
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
    
    model_APIClass['plotOptions']={};
   model_APIClass.plotOptions['column']={};
@@ -1386,13 +1440,14 @@ model_DataConvertClass = {
   //stockType is fast when value is more than 90 and it will be red.
    var colToSeriesArr, gCount, subModel;
       subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
   gCount = Get_groupCountFn(t);
   var groupByPropName='groupby'+(gCount+1);
     _.each(t,function(d,i) {
   d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
   
   });
-    colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel));
+    colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType));
     return colToSeriesArr;
   	}
   },
@@ -1402,8 +1457,7 @@ model_DataConvertClass = {
    var valueData=_.pluck(t,'value');
   
       var columnNameData=_.first(_.pluck(t,'legendKey'));
-  console.log("smpGroubbbSize",smpGroupbySize);
-    console.log("valll:",-smpGroupbySize/2*0.1);
+  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));;
   var scale =d3.scale.linear().domain([1,smpGroupbySize])
   			.range([-smpGroupbySize/2*0.12,smpGroupbySize/2*0.12]);
   console.log("scaleIndex",scale(index));
@@ -1411,9 +1465,10 @@ model_DataConvertClass = {
   data:valueData, 
   color: Highcharts.getOptions().colors[index+5],
   lineWidth:0,
-  colorIndex:index2,pointPlacement:scale(index+1)
+  colorIndex:index2,pointPlacement:scale(index+1),
+  modelType:modelType
     };
-   
+   colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
    return colToSeriesArr;
   
   }
@@ -1484,7 +1539,7 @@ chartGen = function(smpColName, model_APIClass, output) {
   
 };
 
-Set_GroupFn1 = function(data, groupCount, subModel) {
+Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
     var groupCountArr, groupProp, nest, outNest, output, uniqCategory;
     groupCountArr = d3.range(0, groupCount);
     groupProp = [];
@@ -1532,8 +1587,10 @@ Set_GroupFn1 = function(data, groupCount, subModel) {
                 yAxis: yAxisD,
                 data: valueD,
                 name: lastD,
-                yAxis: Num - 1
+                yAxis: Num - 1,
+				modelType:modelType
             };
+  finalObj=toolTipInserter(finalObj,modelType);
             output.push(finalObj);
             return finalObj;
         });
@@ -1937,6 +1994,20 @@ _.each(modelData,function(m,n) {
      var lineData = _.where(toSeriesArray,{'type':'line'});
             toSeriesArray = _.union(sortedOutput,lineData);
         } return toSeriesArray;
+  };
+  toolTipInserter = function(finalObj,modelType){
+  if (toolTipKey==='formatToolTip') {
+  var formatToolTip;
+  eval(formatToolTipCast);
+  for (var propertyName in formatToolTip) {
+  if (propertyName==modelType) {
+  var newObj=finalObj;
+  newObj['tooltip']=formatToolTip[propertyName];
+  finalObj=newObj;
+  }
+  }
+  }
+  return finalObj;
   };
 }
 
