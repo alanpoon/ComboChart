@@ -1041,6 +1041,7 @@ console.log("data1",JSON.stringify(data1));
   
   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
   });
+  var smpGroupbySize=_.size(smpGroupby1);
   }
 	var toYaxisArray=[];
   var yAxisArr=(view.typeinfo.yAxisArray).split(",");
@@ -1053,8 +1054,7 @@ console.log("data1",JSON.stringify(data1));
   
   chartGen(smpColName,model_APIClass,output);
   for (var propertyName in output) {
-  console.log('propertyName',propertyName);
-  if (Array.isArray(output[propertyName])==true) {
+    if (Array.isArray(output[propertyName])==true) {
     _.each(output[propertyName],function(d,i){
   	toSeriesArray.push(d);
   });
@@ -1180,7 +1180,8 @@ console.log("data1",JSON.stringify(data1));
     spline:['spline'],
   columnStackGroup:['column'],
   columnStack:['column'],
-  columnInducedGroupby:['column']
+  columnInducedGroupby:['column'],
+  dotGroupby:['spline']
     };
   model_APIClass={
   
@@ -1341,11 +1342,17 @@ model_DataConvertClass = {
   model_APIClass.plotOptions.column['stacking']='normal';
   model_APIClass['tooltip']={
                       formatter: function() {
+  if(typeof this.point.stackTotal ==='undefined') {
+  console.log("this.point",this.point);
+   return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
+                        this.series.name +': '+ this.y +'&lt;br/&gt;';
+                        
+  } else{
                     return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;'+
                           '&lt;br&gt;'+'Total: '+ this.point.stackTotal+'&lt;/br&gt;'+
 						'&lt;br&gt;'+this.series.userOptions.stack+'&lt;/br&gt;';
-                }
+  }}
             };
   
    return colToSeriesArr;
@@ -1388,6 +1395,29 @@ model_DataConvertClass = {
     colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel));
     return colToSeriesArr;
   	}
+  },
+  dotGroupby:{
+   0: function(t,unit,index,index2) {
+    
+   var valueData=_.pluck(t,'value');
+  
+      var columnNameData=_.first(_.pluck(t,'legendKey'));
+  console.log("smpGroubbbSize",smpGroupbySize);
+    console.log("valll:",-smpGroupbySize/2*0.1);
+  var scale =d3.scale.linear().domain([1,smpGroupbySize])
+  			.range([-smpGroupbySize/2*0.12,smpGroupbySize/2*0.12]);
+  console.log("scaleIndex",scale(index));
+   colToSeriesArr={type:'line', name:columnNameData,
+  data:valueData, 
+  color: Highcharts.getOptions().colors[index+5],
+  lineWidth:0,
+  colorIndex:index2,pointPlacement:scale(index+1)
+    };
+   
+   return colToSeriesArr;
+  
+  }
+  
   }
   		
 };
@@ -1406,6 +1436,7 @@ chartGen = function(smpColName, model_APIClass, output) {
         modelType = _.first(_.pluck(t, "model"));
         columnName = unit;
         propertyName = modelType+"_"+columnName;
+  console.log("mmodelType",modelType);
 
         if (typeof modelType != 'undefined') {
             console.log("typeof", typeof modelType);
@@ -1423,11 +1454,12 @@ chartGen = function(smpColName, model_APIClass, output) {
             index++;
         } else {
             smpColName = t;
-            //console.log("newSmpColName", JSON.stringify(t));
+            console.log("newSmpColName", JSON.stringify(t));
             var index2 = 0;
   			    _.each(smpColName, function(t, unitSec) {
                 var columnName, propertyName, splitModel, yAxisNum;
                 modelType = _.first(_.pluck(t, "model"));
+  if (modelType==='columnStackGroup') {containsModelType='columnStackGroup';}
                 columnName = _.first(_.pluck(t, "columnName"));
                 propertyName = modelType + "_" + columnName;
                 yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
@@ -1449,7 +1481,7 @@ chartGen = function(smpColName, model_APIClass, output) {
             index++;
         }
     });
-  if (modelType==='columnStackGroup') {containsModelType='columnStackGroup';}
+  
 };
 
 Set_GroupFn1 = function(data, groupCount, subModel) {
@@ -1897,14 +1929,14 @@ _.each(modelData,function(m,n) {
   reArrangeToSeries = function(toSeriesArray, containsModelType) {
   console.log('containsModelType',containsModelType);
       if (containsModelType === 'columnStackGroup') { //rearrange 'output'
-          var tempData = toSeriesArray;
-          var sortedOutput = _.sortBy(tempData, function(d) {
+  var columnData = _.where(toSeriesArray,{'type':'column'});
+ 
+          var sortedOutput = _.sortBy(columnData, function(d) {
               return d.colorIndex;
           });
-          console.log("sorrtedOutput", JSON.stringify(sortedOutput));
-          toSeriesArray = sortedOutput;
-  
-      } return toSeriesArray;
+     var lineData = _.where(toSeriesArray,{'type':'line'});
+            toSeriesArray = _.union(sortedOutput,lineData);
+        } return toSeriesArray;
   };
 }
 
