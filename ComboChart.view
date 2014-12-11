@@ -1058,8 +1058,9 @@ console.log("data1",JSON.stringify(data1));
   
   //console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
-  //console.log("data3:",JSON.stringify(data3));
+  
   var data4=formatXTicksAndOrdering(data3,view);
+  //console.log("data4",JSON.stringify(data4));
   var data5=sortCategory(data4);
   //console.log("data7",JSON.stringify(data7));
  
@@ -1108,7 +1109,7 @@ console.log("data1",JSON.stringify(data1));
   //console.log("output",JSON.stringify(output));
   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
   console.log("stacking:",safeRead(model_APIClass,'plotOptions','column','stacking'));
-  //console.log("toYaxisArray",JSON.stringify(toYaxisArray));
+  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
   var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
   //console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
   
@@ -1117,7 +1118,7 @@ console.log("data1",JSON.stringify(data1));
     });
       $("#${id}").highcharts({
       chart: {
-  // zoomType: "xy"
+   zoomType: "xy"
   },
       title: {
         text: cfgoptions.title
@@ -1379,10 +1380,11 @@ model_DataConvertClass = {
    var valueData=_.pluck(t,'value');
   var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       var columnNameData=_.first(_.pluck(t,'legendKey'));
+   var yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
    colToSeriesArr={type:'column', name:columnNameData,
   data:valueData, stack:unit,
   color: Highcharts.getOptions().colors[index2],
-  colorIndex:index2,id:index,modelType:modelType
+  colorIndex:index2,id:index,modelType:modelType,yAxis:yAxisNum
     };
   colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
   if (index>0) {
@@ -1441,6 +1443,7 @@ model_DataConvertClass = {
    var colToSeriesArr, gCount, subModel;
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+ 
   gCount = Get_groupCountFn(t);
   var groupByPropName='groupby'+(gCount+1);
     _.each(t,function(d,i) {
@@ -1458,7 +1461,7 @@ model_DataConvertClass = {
   
       var columnNameData=_.first(_.pluck(t,'legendKey'));
   var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));;
- 
+ var yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
   var placementCalibr;
   if(smpGroupbySize< 4) {
   placementCalibr =0.12;
@@ -1474,7 +1477,7 @@ model_DataConvertClass = {
   color: complementaryColor(Highcharts.getOptions().colors[index]),
   lineWidth:0,
   colorIndex:index2,pointPlacement:scale(index+1),
-  modelType:modelType
+  modelType:modelType, yAxis:yAxisNum
     };
    colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
    return colToSeriesArr;
@@ -2016,7 +2019,7 @@ _.each(modelData,function(m,n) {
   }
   return finalObj;
   };
-  //Adding HueShift via Jacob (see comments)
+ 
 complementaryColor=function(hexColor) { 
   var hsl=d3.rgb(hexColor).hsl();
   var compHsl=d3.hsl((hsl.h+180)%360,hsl.l,hsl.s);
