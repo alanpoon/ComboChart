@@ -1046,7 +1046,7 @@ var f=view.typeinfo.data.fields;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   var safeRead; var interpolateMonthFixed;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
-  var reArrangeToSeries,toolTipInserter;
+  var reArrangeToSeries,toolTipInserter,complementaryColor;
  debugFn();
   
   //console.log("rawdata",JSON.stringify(rawdata));
@@ -1117,7 +1117,7 @@ console.log("data1",JSON.stringify(data1));
     });
       $("#${id}").highcharts({
       chart: {
-        zoomType: "xy"
+  // zoomType: "xy"
   },
       title: {
         text: cfgoptions.title
@@ -1458,12 +1458,20 @@ model_DataConvertClass = {
   
       var columnNameData=_.first(_.pluck(t,'legendKey'));
   var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));;
+ 
+  var placementCalibr;
+  if(smpGroupbySize< 4) {
+  placementCalibr =0.12;
+  }
+  if ( 4< smpGroupbySize) {
+  placementCalibr =0.07;
+  }
   var scale =d3.scale.linear().domain([1,smpGroupbySize])
-  			.range([-smpGroupbySize/2*0.12,smpGroupbySize/2*0.12]);
-  console.log("scaleIndex",scale(index));
+  			.range([-smpGroupbySize/2*placementCalibr,smpGroupbySize/2*placementCalibr]);
+  console.log("Index:",(index+1)," .scaleIndex",scale(index+1));
    colToSeriesArr={type:'line', name:columnNameData,
   data:valueData, 
-  color: Highcharts.getOptions().colors[index+5],
+  color: complementaryColor(Highcharts.getOptions().colors[index]),
   lineWidth:0,
   colorIndex:index2,pointPlacement:scale(index+1),
   modelType:modelType
@@ -1639,7 +1647,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
   var formatLegend; //formatLegend should be a class containing the Legend format for each model 
   if (formatLegendCast==="" && legendKey==="formatLegend")
    console.info("Enter formatLegend");
-   if (legendKey==="formatLegend" && formatLegendCast!="") {
+   if (legendKey==="formatLegend" ) {
   console.info("proceed");
     eval(formatLegendCast);} 
      if (view.typeinfo.data.fields.operable.values[0].id==="columnInducedGroupby.L1" 
@@ -1720,7 +1728,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         objPush["legendKey"] = cName;
                         ReadArray.push(objPush);
                       } else if (legendKey=="formatLegend"){
-                        objPush["legendKey"] = formatLegend[model_keyObj](objPush);
+                          objPush["legendKey"] = formatLegend[model_keyObj](objPush);
   						ReadArray.push(objPush);
                       }
   
@@ -1819,7 +1827,6 @@ zeroOrOne_OperableClass = {
             propertyName = "pie";
             if (_.has(output, propertyName) == false) {
                 output[propertyName] = {
-
                     type: "pie",
                     name: "pie",
                     data: [],
@@ -2008,6 +2015,12 @@ _.each(modelData,function(m,n) {
   }
   }
   return finalObj;
+  };
+  //Adding HueShift via Jacob (see comments)
+complementaryColor=function(hexColor) { 
+  var hsl=d3.rgb(hexColor).hsl();
+  var compHsl=d3.hsl((hsl.h+180)%360,hsl.l,hsl.s);
+  return compHsl.toString();
   };
 }
 
