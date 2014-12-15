@@ -530,7 +530,7 @@
       "interpolateXAxis":"no",
       "xTicksKey":"string",
       "formatXTicksCast":"",
-      "orderingKey":"default",
+      "orderingKey":"monthString",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
@@ -1057,7 +1057,7 @@ var f=view.typeinfo.data.fields;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
  debugFn();
   
-  //console.log("rawdata",JSON.stringify(rawdata));
+  console.log("rawdata",JSON.stringify(rawdata));
   var data1, data2, data3, smpColName;
   data1 = arrToHex(rawdata, f, view);
   // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
@@ -1112,8 +1112,7 @@ console.log("data1",JSON.stringify(data1));
   	else toSeriesArray.push(output[propertyName]);
   }
   console.log('smpColNameObj',safeRead(smpColName,'model'));
-  console.log("beforeArrange",JSON.stringify(toSeriesArray));
-  toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
+    toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
   
   
   //console.log("output",JSON.stringify(output));
@@ -1380,6 +1379,7 @@ model_DataConvertClass = {
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+	 
       return colToSeriesArr;
     }
   },
@@ -1461,7 +1461,7 @@ model_DataConvertClass = {
   
   });
     colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType));
-  console.log("before colToSeriesArr",JSON.stringify(colToSeriesArr));
+  
     return colToSeriesArr;
   	}
   },
@@ -1519,8 +1519,7 @@ chartGen = function(smpColName, model_APIClass, output) {
             console.log("typeof", typeof modelType);
             yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
             splitModel = model_TypeSplitClass[modelType];
-            //console.log("splitModel", splitModel);
-            _.each(splitModel, function(subModel, n) {
+                _.each(splitModel, function(subModel, n) {
                 if (subModel !== null) {
 
                     zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
@@ -1569,7 +1568,7 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
     groupCountArr.forEach(function(d, i) {
         groupProp.push("groupby" + (d + 1));
     });
-    //console.log("groupProp", JSON.stringify(groupProp));
+    console.log("groupProp", JSON.stringify(groupProp));
     uniqCategory = _.uniq(_.pluck(data, "category"));
     nest = d3.nest();
     output = [];
@@ -1613,9 +1612,10 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
                 yAxis: Num - 1,
 				modelType:modelType
             };
+			
   finalObj=toolTipInserter(finalObj,modelType);
             output.push(finalObj);
-            return finalObj;
+  return finalObj; 
         });
     });
     outNest = nest.entries(data);
@@ -1633,7 +1633,9 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
                 valueD.push(value);
             });
   var Num = parseInt(numDivFn(_.first(_.pluck(data, "yAxis"))));
-  output=[{type:subModel,yAxis:yAxisD,data:valueD,name:lastD,yAxis:Num-1}];
+  var finalObj={type:subModel,yAxis:yAxisD,data:valueD,name:lastD,yAxis:Num-1};
+   finalObj=toolTipInserter(finalObj,modelType);
+  output=[finalObj];
   }
     return output;
 };
@@ -1978,17 +1980,12 @@ var objPushCount=0;
   formatXTicks=d3.time.format(formatXTicksCast);
   } else if (xTicksKey=='formatXTicksCast') {eval(formatXTicksCast);} else formatXTicks=function(val) {return val;};
 
-  console.log("before ModelData:",JSON.stringify(modelData));
-
-  var colNameNest = d3.nest().key(function(d) {return d.columnName;})
+    var colNameNest = d3.nest().key(function(d) {return d.columnName;})
   .rollup(function(d) {
-  console.log("before rollup",d);
   
   _.each(d,function(record,objPushCount) {
- console.log("before record",record);
-  var autoObj=record;
-  console.log("before objPushCount",objPushCount);
-  if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(record));
+   var autoObj=record;
+    if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(record));
   
     if (typeof formatOrdering!=='undefined'){
   console.log("ordering:",formatOrdering(record));
@@ -2011,7 +2008,7 @@ var objPushCount=0;
   //orderedData contains 'ordering' as a property
   //sortedData is sorted according to the ordering
   if( typeof orderedData[0].ordering!=='undefined') {
-  var sortedData=[];
+    var sortedData=[];
   var sortNest = d3.nest().key(function(d) {return d.columnName;}).rollup(function(d) {
   var orderedByColName=d.sort(function(a,b) {
   return a.ordering-b.ordering;
@@ -2021,6 +2018,7 @@ var objPushCount=0;
   });
   return;
   }).entries(orderedData);
+  return sortedData;
 } else return orderedData;
   };
   
