@@ -530,7 +530,7 @@
       "interpolateXAxis":"no",
       "xTicksKey":"string",
       "formatXTicksCast":"",
-      "orderingKey":"monthString",
+      "orderingKey":"default",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
@@ -841,6 +841,14 @@
           "value":"date"
         },{
           "jsonClass":"Option",
+          "text":"value Descending",
+          "value":"valueDescending"
+        },{
+          "jsonClass":"Option",
+          "text":"value Ascending",
+          "value":"valueAscending"
+        },{
+          "jsonClass":"Option",
           "text":"format ordering cast",
           "value":"formatOrderingCast"
         }]
@@ -1000,8 +1008,8 @@ elx.bundle.type.ComboChart = {
   var xTicksKey=view.typeinfo.xTicksKey;
   var formatXTicksCast=view.typeinfo.formatXTicksCast;
   var orderingKey=view.typeinfo.orderingKey;
-  var formatOrderingKey=view.typeinfo.formatOrderingCast;
-  var legendKey=view.typeinfo.legendKey;
+  var formatOrderingCast=view.typeinfo.formatOrderingCast;
+    var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
@@ -1052,6 +1060,7 @@ var f=view.typeinfo.data.fields;
   //console.log("rawdata",JSON.stringify(rawdata));
   var data1, data2, data3, smpColName;
   data1 = arrToHex(rawdata, f, view);
+  // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
 console.log("data1",JSON.stringify(data1));
   
   data2=interpolateMonthFixed(data1,view);
@@ -1060,7 +1069,7 @@ console.log("data1",JSON.stringify(data1));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   
   var data4=formatXTicksAndOrdering(data3,view);
-  //console.log("data4",JSON.stringify(data4));
+  console.log("data4",JSON.stringify(data4));
   var data5=sortCategory(data4);
   //console.log("data7",JSON.stringify(data7));
  
@@ -1069,7 +1078,7 @@ console.log("data1",JSON.stringify(data1));
   smpColName = _.groupBy(data5, function(d) {
     return d["columnName"];
   });		
-  //console.log("initialSmpColName",JSON.stringify(smpColName));
+  console.log("initialSmpColName",JSON.stringify(smpColName));
    var toCategoryArray=Get_CategoryFn(smpColName);
   smpGroupby1=_.groupBy(data4,function(d) {
   	return d["groupby1"];
@@ -1103,6 +1112,7 @@ console.log("data1",JSON.stringify(data1));
   	else toSeriesArray.push(output[propertyName]);
   }
   console.log('smpColNameObj',safeRead(smpColName,'model'));
+  console.log("beforeArrange",JSON.stringify(toSeriesArray));
   toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
   
   
@@ -1451,6 +1461,7 @@ model_DataConvertClass = {
   
   });
     colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType));
+  console.log("before colToSeriesArr",JSON.stringify(colToSeriesArr));
     return colToSeriesArr;
   	}
   },
@@ -1526,6 +1537,7 @@ chartGen = function(smpColName, model_APIClass, output) {
                 var columnName, propertyName, splitModel, yAxisNum;
                 modelType = _.first(_.pluck(t, "model"));
   if (modelType==='columnStackGroup') {containsModelType='columnStackGroup';}
+  if (modelType==='columnInducedGroupby') {containsModelType='columnInducedGroupby';}
                 columnName = _.first(_.pluck(t, "columnName"));
                 propertyName = modelType + "_" + columnName;
                 yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
@@ -1953,37 +1965,63 @@ var objPushCount=0;
   case 'month-year' :formatOrdering=function(d) {var arr=(d.category).split('-');
   var date=new Date(arr[0]+' 15,'+arr[1]);return date.getTime()/1000}; break;
   case 'date': formatOrdering=function(d) {
-  return (new Date(d.category)).getTime()/1000;
-  }
+    return (new Date(d.category)).getTime()/1000;
+    };break;
+  case 'valueAscending':formatOrdering=function(d) {
+    return d.value;  }; break;
+  case 'valueDescending':formatOrdering=function(d) {
+  return -d.value;}; break;
+  case 'default':break;
   }
   
   if(xTicksKey.contains("%")){
   formatXTicks=d3.time.format(formatXTicksCast);
   } else if (xTicksKey=='formatXTicksCast') {eval(formatXTicksCast);} else formatXTicks=function(val) {return val;};
 
-_.each(modelData,function(m,n) {
-  var autoObj=m;
-	if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(m));
+  console.log("before ModelData:",JSON.stringify(modelData));
+
+  var colNameNest = d3.nest().key(function(d) {return d.columnName;})
+  .rollup(function(d) {
+  console.log("before rollup",d);
+  
+  _.each(d,function(record,objPushCount) {
+ console.log("before record",record);
+  var autoObj=record;
+  console.log("before objPushCount",objPushCount);
+  if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(record));
   
     if (typeof formatOrdering!=='undefined'){
-  console.log("ordering:",formatOrdering(m));
-   autoObj['ordering']=formatOrdering(m); 
+  console.log("ordering:",formatOrdering(record));
+   autoObj['ordering']=formatOrdering(record); 
     } 
   
   if (typeof formatXTicks!=='undefined') {
-    autoObj['category']=formatXTicks(m.category);
+    autoObj['category']=formatXTicks(record.category);
   }
   autoArr.push(autoObj);
-  objPushCount++;
+  
   });
-
+  return ;
+  })
+  .entries(modelData);	
+  
   return autoArr;
   };
   sortCategory= function(orderedData){
+  //orderedData contains 'ordering' as a property
+  //sortedData is sorted according to the ordering
   if( typeof orderedData[0].ordering!=='undefined') {
-  orderedData.sort(function(a,b) {
+  var sortedData=[];
+  var sortNest = d3.nest().key(function(d) {return d.columnName;}).rollup(function(d) {
+  var orderedByColName=d.sort(function(a,b) {
   return a.ordering-b.ordering;
-  }); return orderedData;} else return orderedData;
+  }); 
+  _.each(orderedByColName,function(d){
+  sortedData.push(d);
+  });
+  return;
+  }).entries(orderedData);
+} else return orderedData;
   };
   
   formatInterpolateCast=function(hexData,view){
@@ -2003,7 +2041,15 @@ _.each(modelData,function(m,n) {
           });
      var lineData = _.where(toSeriesArray,{'type':'line'});
             toSeriesArray = _.union(sortedOutput,lineData);
-        } return toSeriesArray;
+        }
+  
+  if (containsModelType ==='columnInducedGroup') {
+  var sortedOutput = _.sortBy(toSeriesArray,function(d) {
+  return d.yAxis;
+  });
+  toSeriesArray=sortedOutput;
+  }
+  return toSeriesArray;
   };
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
