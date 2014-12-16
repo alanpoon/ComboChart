@@ -1745,6 +1745,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         objPush["legendKey"] = cName;
                         ReadArray.push(objPush);
                       } else if (legendKey=="formatLegend"){
+					  if (i==0) console.log("objPush for Legend",JSON.stringify(objPush));
                           objPush["legendKey"] = formatLegend[model_keyObj](objPush);
   						ReadArray.push(objPush);
                       }
