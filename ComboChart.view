@@ -1458,9 +1458,9 @@ model_DataConvertClass = {
   var groupByPropName='groupby'+(gCount+1);
     _.each(t,function(d,i) {
   d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
-  
+  d['legendKey']=(d.value/90>0.666) ? 'Fast':'Slow'; // this overwrite format Legend for this API
   });
-    colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType));
   
     return colToSeriesArr;
   	}
@@ -1580,7 +1580,7 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
             columnD = _.first(_.pluck(k, "columnName"));
             groupby1D = _.first(_.pluck(k, "groupby1"));
             lastD = _.first(_.pluck(k, "legendKey"));
-            Num = parseInt(numDivFn(_.first(_.pluck(k, "yAxis"))));
+			Num = parseInt(numDivFn(_.first(_.pluck(k, "yAxis"))));
             yAxisD = _.first(_.pluck(k, "yAxis"));
             localCategory = _.pluck(k, "category");
             catDiff = _.difference(uniqCategory, localCategory);
@@ -1749,8 +1749,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                           objPush["legendKey"] = formatLegend[model_keyObj](objPush);
   						ReadArray.push(objPush);
                       }
-  
-  						else if (legendKey == "ColumnName") {
+    						else if (legendKey == "ColumnName") {
                         var regExp = /\(([^)]+)\)/;
                         var matches = regExp.exec(cName);
                         objPush["legendKey"] = matches[1];
