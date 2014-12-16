@@ -518,11 +518,6 @@
       },
       "width":500,
       "height":510,
-      "centre":450,
-      "marginB":0,
-      "marginT":50,
-      "marginL":170,
-      "marginR":200,
       "title":"Average Monthly R_column and R_splime in Tokyo",
       "subtitle":"Source: WorldClimate.com",
       "yAxisArray":"Title1,Title2",
@@ -671,7 +666,11 @@
         "value":"${typeinfo.yAxisArray}",
         "readonly":false
       }]
-    },{
+    }]
+  },
+    {"jsonClass":"Group",
+       "label":"Color",
+       "rows":[{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
@@ -685,63 +684,10 @@
         "value":"${typeinfo.colorSeriesArray}",
         "readonly":false
       }]
-    },{
-      "jsonClass":"Row",
-      "cols":[{
-        "jsonClass":"Label",
-        "id":"typeinfo-marginL-label",
-        "type":"label",
-        "text":"Left margin"
-      },{
-        "jsonClass":"Field",
-        "id":"typeinfo-marginL",
-        "type":"field",
-        "value":"${typeinfo.marginL}",
-        "readonly":false
-      }]
-    },{
-      "jsonClass":"Row",
-      "cols":[{
-        "jsonClass":"Label",
-        "id":"typeinfo-marginR-label",
-        "type":"label",
-        "text":"Right margin"
-      },{
-        "jsonClass":"Field",
-        "id":"typeinfo-marginR",
-        "type":"field",
-        "value":"${typeinfo.marginR}",
-        "readonly":false
-      }]
-    },{
-      "jsonClass":"Row",
-      "cols":[{
-        "jsonClass":"Label",
-        "id":"typeinfo-marginT-label",
-        "type":"label",
-        "text":"Top margin"
-      },{
-        "jsonClass":"Field",
-        "id":"typeinfo-marginT",
-        "type":"field",
-        "value":"${typeinfo.marginT}",
-        "readonly":false
-      }]
-    },{
-      "jsonClass":"Row",
-      "cols":[{
-        "jsonClass":"Label",
-        "id":"typeinfo-marginB-label",
-        "type":"label",
-        "text":"Bottom margin"
-      },{
-        "jsonClass":"Field",
-        "id":"typeinfo-marginB",
-        "type":"field",
-        "value":"${typeinfo.marginB}",
-        "readonly":false
-      }]
-    },{
+       }]}
+      ,{"jsonClass":"Group",
+         "label":"x Axis",
+      "rows":[{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
@@ -867,7 +813,9 @@
         "value":"${typeinfo.formatOrderingCast}",
         "readonly":false
       }]
-    },{
+    }]}
+      ,{"jsonClass":"Group","label":"Legend",
+      "rows":[{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
@@ -915,7 +863,10 @@
         "value":"${typeinfo.formatLegendCast}",
         "readonly":false
       }]
-    },{
+    }]}
+      ,{"jsonClass":"Group",
+        "label":"ToolTip",
+        "rows":[{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
@@ -959,8 +910,7 @@
 elx.bundle.type.ComboChart = {
 
   	init : function(view) {
-      console.log("initateView",view);
-      	  var dataKey = elx.MultiKeyColumnSection.getKeyData(view,view.typeinfo.data.fields.keys);
+         	  var dataKey = elx.MultiKeyColumnSection.getKeyData(view,view.typeinfo.data.fields.keys);
            var tableKey=  new elx.MultiKeyColumnSection("typeinfo-property-keys","typeinfo-property", view, dataKey);
       $("#typeinfo-property-keys").data("table",tableKey);
             var dataOps =  elx.utils.getElxChartOperablesData(view, view.typeinfo.data.fields.operable.values);
@@ -985,7 +935,7 @@ elx.bundle.type.ComboChart = {
         view.typeinfo.data.fields.keys = elx.MultiKeyColumnSection.buildKeyData(dataKey);
  
 		elx.host.utils.saveProperties(view.typeinfo);
-      console.log("Aiyo,view.typeinfo.data.fields.operable.values:",JSON.stringify(view.typeinfo.data.fields.operable.values));
+      
 }
 }
 ========
