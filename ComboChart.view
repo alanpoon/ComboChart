@@ -1055,6 +1055,7 @@ var f=view.typeinfo.data.fields;
   var safeRead; var interpolateMonthFixed;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
+  var set_yAxisFnBySeries;
  debugFn();
   
   console.log("rawdata",JSON.stringify(rawdata));
@@ -1080,11 +1081,11 @@ console.log("data1",JSON.stringify(data1));
   });		
   console.log("initialSmpColName",JSON.stringify(smpColName));
    var toCategoryArray=Get_CategoryFn(smpColName);
-  smpGroupby1=_.groupBy(data4,function(d) {
+  smpGroupby1=_.groupBy(data5,function(d) {
   	return d["groupby1"];
   });
-  if ((_.where(data3,{model:'columnStackGroup'})).length>0) {
-  smpGroupby1=_.groupBy(data4,function(d) {
+  if ((_.where(data5,{model:'columnStackGroup'})).length>0) {
+  smpGroupby1=_.groupBy(data5,function(d) {
   	return d["groupby1"];
   });smpColName={};
   _.each(smpGroupby1,function(t,unit) {
@@ -1093,9 +1094,8 @@ console.log("data1",JSON.stringify(data1));
   });
   var smpGroupbySize=_.size(smpGroupby1);
   }
-	var toYaxisArray=[];
-  var yAxisArr=(view.typeinfo.yAxisArray).split(",");
-  set_yAxisFn(data4,toYaxisArray,yAxisArr);
+
+ 
    
   //console.log("smpColName",JSON.stringify(smpColName));
   console.log("toCategoryArray",JSON.stringify(toCategoryArray));
@@ -1113,7 +1113,12 @@ console.log("data1",JSON.stringify(data1));
   }
   console.log('smpColNameObj',safeRead(smpColName,'model'));
     toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
-  
+	
+	
+	//Set YAxis
+		var toYaxisArray=[];
+  var yAxisArr=(view.typeinfo.yAxisArray).split(",");
+  set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArr);
   
   //console.log("output",JSON.stringify(output));
   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
@@ -1244,7 +1249,7 @@ model_DataConvertClass = {
       subModel = "column";
       gCount = Get_groupCountFn(t);
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1260,7 +1265,7 @@ model_DataConvertClass = {
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1276,7 +1281,7 @@ model_DataConvertClass = {
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {},
@@ -1318,7 +1323,7 @@ model_DataConvertClass = {
       subModel = "spline";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1334,7 +1339,7 @@ model_DataConvertClass = {
       subModel = "spline";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
       return colToSeriesArr;
     },
     1: function(t,unit, index) {
@@ -1368,7 +1373,7 @@ model_DataConvertClass = {
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
       return colToSeriesArr;
     }
   },
@@ -1378,7 +1383,7 @@ model_DataConvertClass = {
       subModel = "spline";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
 	 
       return colToSeriesArr;
     }
@@ -1430,7 +1435,7 @@ model_DataConvertClass = {
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
    
    model_APIClass['plotOptions']={};
   model_APIClass.plotOptions['column']={};
@@ -1460,7 +1465,7 @@ model_DataConvertClass = {
   d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
   d['legendKey']=(d.value/90>0.666) ? 'Fast':'Slow'; // this overwrite format Legend for this API
   });
-      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType));
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType,index));
   
     return colToSeriesArr;
   	}
@@ -1521,10 +1526,8 @@ chartGen = function(smpColName, model_APIClass, output) {
             splitModel = model_TypeSplitClass[modelType];
                 _.each(splitModel, function(subModel, n) {
                 if (subModel !== null) {
-
                     zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
-				
-  				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
+				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
                 }
             });
             index++;
@@ -1561,7 +1564,7 @@ chartGen = function(smpColName, model_APIClass, output) {
   
 };
 
-Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
+Set_GroupFn1 = function(data, groupCount, subModel,modelType,index2) {
     var groupCountArr, groupProp, nest, outNest, output, uniqCategory;
     groupCountArr = d3.range(0, groupCount);
     groupProp = [];
@@ -1592,6 +1595,7 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
                     value: 0,
                     legendKey: lastD,
                     category: a
+					
                 });
             });
             sorted_k = sortByArrayFn(k, uniqCategory);
@@ -1606,12 +1610,13 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
             });
             finalObj = {
                 type: subModel,
-                yAxis: yAxisD,
+             //   yAxis: yAxisD,
                 data: valueD,
                 name: lastD,
                 yAxis: Num - 1,
-				modelType:modelType
-            };
+				yAxisFull:_.first(_.pluck(data, "yAxis")),
+				modelType:modelType,
+				            };
 			
   finalObj=toolTipInserter(finalObj,modelType);
             output.push(finalObj);
@@ -1633,7 +1638,7 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType) {
                 valueD.push(value);
             });
   var Num = parseInt(numDivFn(_.first(_.pluck(data, "yAxis"))));
-  var finalObj={type:subModel,yAxis:yAxisD,data:valueD,name:lastD,yAxis:Num-1};
+  var finalObj={type:subModel,data:valueD,name:lastD,yAxis:Num-1,yAxisFull:_.first(_.pluck(data, "yAxis"))};
    finalObj=toolTipInserter(finalObj,modelType);
   output=[finalObj];
   }
@@ -1705,7 +1710,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
             }
         }
   		var dataZero=[];
-          columnNameArray.forEach(function(modelKey,i) {
+          columnNameArray.forEach(function(modelKey,n) {
             var allGroupby, cName, lastGroupby_op, model_keyObj, model_keyObjArr, model_yAxisObj, objPush;
             for (propertyName in d) {
                 if (propertyName.contains(modelKey) === true) {
@@ -1728,7 +1733,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         value: d[propertyName],
                         category: Category
                     };
-                    GroupNameArr.forEach(function(d, i) {
+                    GroupNameArr.forEach(function(d, m) {
   					
                         propertyName = "groupby" + (i + 1);
                         objPush[propertyName] = d;
@@ -2069,6 +2074,38 @@ complementaryColor=function(hexColor) {
   var compHsl=d3.hsl((hsl.h+180)%360,hsl.l,hsl.s);
   return compHsl.toString();
   };
+ 
+set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray) {
+var yAxisColorMatch={};
+	_.each(toSeriesArray,function(d,i) {
+		var yAxisPropertyName=d.yAxisFull;
+		if (typeof d.colorIndex =='number'){ 
+		//make sure if color is defined in the toSeriesArray, colorIndex is also declared
+	yAxisColorMatch[yAxisPropertyName]={'colorIndex':d.colorIndex};
+		} else 		
+		yAxisColorMatch[yAxisPropertyName]={'colorIndex':i};
+	});
+for (var propertyName in yAxisColorMatch) {
+	var L_R=axisDivFn(propertyName);
+	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
+		if(L_R.contains("R")==true) {
+		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		title:{text:titleArray[numInYaxis-1],style:{
+		color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		opposite: true
+		};
+		}
+		else if (L_R.contains("L")==true){
+		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		title:{text:titleArray[numInYaxis-1],style:{
+		color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		opposite: false
+		};
+		}
+		
+		toYaxisArray.push(toYaxisObj);
+}	
+};
 }
 
 </div>
