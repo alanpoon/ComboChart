@@ -1068,11 +1068,9 @@ console.log("data1",JSON.stringify(data1));
   
   //console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
-  
-  var data4=formatXTicksAndOrdering(data3,view);
+   var data4=formatXTicksAndOrdering(data3,view);
   console.log("data4",JSON.stringify(data4));
   var data5=sortCategory(data4);
- console.log("before data5",JSON.stringify(data5));
   smpColName = _.groupBy(data5, function(d) {
     return d["columnName"];
   });		
@@ -1082,13 +1080,11 @@ console.log("data1",JSON.stringify(data1));
   	return d["groupby1"];
   });
   if ((_.where(data3,{model:'columnStackGroup'})).length>0) {
-  console.log("before model is columnStackGroup");
-  smpGroupby1=_.groupBy(data5,function(d) {
+    smpGroupby1=_.groupBy(data5,function(d) {
   	return d["groupby1"];
   });smpColName={};
   _.each(smpGroupby1,function(t,unit) {
-  console.log("before gg unit",unit);
-  smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
+   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
   });
   var smpGroupbySize=_.size(smpGroupby1);
   }
@@ -1109,10 +1105,8 @@ console.log("data1",JSON.stringify(data1));
   	  }
   	else toSeriesArray.push(output[propertyName]);
   }
-  console.log("before.. toSeriesArray",JSON.stringify(toSeriesArray));
       toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
-	console.log("before . toSeriesArray",JSON.stringify(toSeriesArray));
-	
+		
 	//Set YAxis
 		var toYaxisArray=[];
   var yAxisArray=(view.typeinfo.yAxisArray).split(",");
@@ -1400,7 +1394,6 @@ model_DataConvertClass = {
   colorIndex:index2,id:index,modelType:modelType,yAxis:yAxisNum,
   yAxisFull:_.first(_.pluck(t, "yAxis"))
     };
-	console.log("before unit",unit);
   colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
   if (index>0) {
   colToSeriesArr['linkedTo']=':previous';
@@ -1513,8 +1506,7 @@ chartGen = function(smpColName, model_APIClass, output) {
     var index;
     index = 0;
   var modelType;
-  console.log("before II smpColName",JSON.stringify(smpColName));
-    _.each(smpColName, function(t, unit) {
+      _.each(smpColName, function(t, unit) {
         var columnName, propertyName, splitModel, yAxisNum;
         modelType = _.first(_.pluck(t, "model"));
         columnName = unit;
@@ -1738,7 +1730,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                     };
                     GroupNameArr.forEach(function(d, m) {
   					
-                        propertyName = "groupby" + (i + 1);
+                        propertyName = "groupby" + (m + 1);
                         objPush[propertyName] = d;
                     });
   					if (legendKey === "lastGroupby_op") {
@@ -2082,9 +2074,7 @@ set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray) {
 var yAxisColorMatch={};
 	_.each(toSeriesArray,function(d,i) {
 		var yAxisPropertyName=d.yAxisFull;
-		console.log("before yAxisPropertyName",yAxisPropertyName);
-		console.log("before typeof d.colorIndex",d.colorIndex, "tttypeof :",typeof d.colorIndex);
-		if (typeof d.colorIndex =='number'){ 
+			if (typeof d.colorIndex =='number'){ 
 		//make sure if color is defined in the toSeriesArray, colorIndex is also declared
 	
 	yAxisColorMatch[yAxisPropertyName]={'colorIndex':d.colorIndex};
@@ -2093,8 +2083,7 @@ var yAxisColorMatch={};
 	});
 for (var propertyName in yAxisColorMatch) {
 	var L_R=axisDivFn(propertyName);
-  console.log("before numInYaxis",propertyName);
-	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
+  	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
 		if(L_R.contains("R")==true) {
 		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
 		title:{text:titleArray[numInYaxis-1],style:{
