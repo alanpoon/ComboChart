@@ -1072,10 +1072,7 @@ console.log("data1",JSON.stringify(data1));
   var data4=formatXTicksAndOrdering(data3,view);
   console.log("data4",JSON.stringify(data4));
   var data5=sortCategory(data4);
-  //console.log("data7",JSON.stringify(data7));
- 
-  //data4 = sortByMonthFn(data3, view);
-  //console.log("data3", JSON.stringify(data3));
+ console.log("before data5",JSON.stringify(data5));
   smpColName = _.groupBy(data5, function(d) {
     return d["columnName"];
   });		
@@ -1084,12 +1081,13 @@ console.log("data1",JSON.stringify(data1));
   smpGroupby1=_.groupBy(data5,function(d) {
   	return d["groupby1"];
   });
-  if ((_.where(data5,{model:'columnStackGroup'})).length>0) {
+  if ((_.where(data3,{model:'columnStackGroup'})).length>0) {
+  console.log("before model is columnStackGroup");
   smpGroupby1=_.groupBy(data5,function(d) {
   	return d["groupby1"];
   });smpColName={};
   _.each(smpGroupby1,function(t,unit) {
-  
+  console.log("before gg unit",unit);
   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
   });
   var smpGroupbySize=_.size(smpGroupby1);
@@ -1111,14 +1109,14 @@ console.log("data1",JSON.stringify(data1));
   	  }
   	else toSeriesArray.push(output[propertyName]);
   }
-  console.log('smpColNameObj',safeRead(smpColName,'model'));
-    toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
-	
+  console.log("before.. toSeriesArray",JSON.stringify(toSeriesArray));
+      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
+	console.log("before . toSeriesArray",JSON.stringify(toSeriesArray));
 	
 	//Set YAxis
 		var toYaxisArray=[];
-  var yAxisArr=(view.typeinfo.yAxisArray).split(",");
-  set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArr);
+  var yAxisArray=(view.typeinfo.yAxisArray).split(",");
+  set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray);
   
   //console.log("output",JSON.stringify(output));
   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
@@ -1399,8 +1397,10 @@ model_DataConvertClass = {
    colToSeriesArr={type:'column', name:columnNameData,
   data:valueData, stack:unit,
   color: Highcharts.getOptions().colors[index2],
-  colorIndex:index2,id:index,modelType:modelType,yAxis:yAxisNum
+  colorIndex:index2,id:index,modelType:modelType,yAxis:yAxisNum,
+  yAxisFull:_.first(_.pluck(t, "yAxis"))
     };
+	console.log("before unit",unit);
   colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
   if (index>0) {
   colToSeriesArr['linkedTo']=':previous';
@@ -1493,7 +1493,7 @@ model_DataConvertClass = {
   color: complementaryColor(Highcharts.getOptions().colors[index]),
   lineWidth:0,
   colorIndex:index2,pointPlacement:scale(index+1),
-  modelType:modelType, yAxis:yAxisNum
+  modelType:modelType, yAxis:yAxisNum,yAxisFull:_.first(_.pluck(t, 'yAxis'))
     };
    colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
    return colToSeriesArr;
@@ -1513,6 +1513,7 @@ chartGen = function(smpColName, model_APIClass, output) {
     var index;
     index = 0;
   var modelType;
+  console.log("before II smpColName",JSON.stringify(smpColName));
     _.each(smpColName, function(t, unit) {
         var columnName, propertyName, splitModel, yAxisNum;
         modelType = _.first(_.pluck(t, "model"));
@@ -1526,8 +1527,10 @@ chartGen = function(smpColName, model_APIClass, output) {
             splitModel = model_TypeSplitClass[modelType];
                 _.each(splitModel, function(subModel, n) {
                 if (subModel !== null) {
+
                     zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
-				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
+				
+  				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
                 }
             });
             index++;
@@ -2079,14 +2082,18 @@ set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray) {
 var yAxisColorMatch={};
 	_.each(toSeriesArray,function(d,i) {
 		var yAxisPropertyName=d.yAxisFull;
+		console.log("before yAxisPropertyName",yAxisPropertyName);
+		console.log("before typeof d.colorIndex",d.colorIndex, "tttypeof :",typeof d.colorIndex);
 		if (typeof d.colorIndex =='number'){ 
 		//make sure if color is defined in the toSeriesArray, colorIndex is also declared
+	
 	yAxisColorMatch[yAxisPropertyName]={'colorIndex':d.colorIndex};
 		} else 		
 		yAxisColorMatch[yAxisPropertyName]={'colorIndex':i};
 	});
 for (var propertyName in yAxisColorMatch) {
 	var L_R=axisDivFn(propertyName);
+  console.log("before numInYaxis",propertyName);
 	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
 		if(L_R.contains("R")==true) {
 		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
