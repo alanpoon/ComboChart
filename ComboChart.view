@@ -533,7 +533,7 @@
       "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}"
     }
   },
-  "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js"],
+  "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js"],
   "edit-section":[{
     "id":"view",
     "name":"View"
