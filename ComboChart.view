@@ -1764,7 +1764,7 @@ zeroOrOne_OperableClass = {
                 stack: safeRead(model_APIClass, modelType, 'stack'),
                 xAxis: safeRead(model_APIClass, modelType, 'xAxis'),
                 yAxis: yAxisNum,
-                zIndex: safeRead(model_APIClass, modelType, 'zIndex')
+				zIndex: safeRead(model_APIClass, modelType, 'zIndex')
             };
             //console.log("one,output", JSON.stringify(output));
         },
@@ -1784,6 +1784,7 @@ zeroOrOne_OperableClass = {
                 propertyName = modelType + "_" + columnName + "_1";
   
                 initialized[propertyName].data.push(model_DataConvertClass[modelType][1](t, unit, index));
+				initialized[propertyName]['yAxisFull']=_.first(_.pluck(t,"yAxis"));
             });
 
         }
