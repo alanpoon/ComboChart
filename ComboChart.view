@@ -522,14 +522,16 @@
       "subtitle":"Source: WorldClimate.com",
       "yAxisArray":"Title1,Title2",
       "colorSeriesArray":"#7cb5ec,#434348,#90ed7d,#f7a35c,#ffc0cb,#f15c80,#e4d354,#8085e8,#8d4653,#91e8e1,#d89b00,#9fb27e,#c6c6cd,#284040,#5ead06",
-      "interpolateXAxis":"no",
+      "interpolateXAxisKey":"default",
+      "seriesInsertKey":"default",
+      "formatSeriesInsertCast":"",
       "xTicksKey":"string",
       "formatXTicksCast":"",
       "orderingKey":"monthString",
       "formatOrderingCast":"",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
-      "toolTipKey":"default",
+           "toolTipKey":"default",
       "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}"
     }
   },
@@ -691,23 +693,59 @@
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
-        "id":"typeinfo-interpolateXAxis-label",
+        "id":"typeinfo-interpolateXAxisKey-label",
         "type":"label",
         "text":"interpolate Xaxis"
       },{
         "jsonClass":"Select",
-        "id":"typeinfo-interpolateXAxis",
+        "id":"typeinfo-interpolateXAxisKey",
         "type":"select",
-        "value":"${typeinfo.interpolateXAxis}",
+        "value":"${typeinfo.interpolateXAxisKey}",
         "options":[{
           "jsonClass":"Option",
-          "text":"no",
-          "value":"no"
+          "text":"default",
+          "value":"default"
         },{
           "jsonClass":"Option",
-          "text":"yes",
-          "value":"yes"
+          "text":"all month",
+          "value":"allMonth"
         }]
+      }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-seriesInsertKey-label",
+        "type":"label",
+        "text":"Insert Series Key"
+      },{
+        "jsonClass":"Select",
+        "id":"typeinfo-seriesInsertKey",
+        "type":"select",
+        "value":"${typeinfo.seriesInsertKey}",
+        "options":[{
+          "jsonClass":"Option",
+          "text":"default",
+          "value":"default"
+        },{
+          "jsonClass":"Option",
+          "text":"Format Series Insert Key",
+          "value":"formatSeriesInsertCast"
+        }]
+      }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-formatSeriesInsertCast-label",
+        "type":"label",
+        "text":"Format Series"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-formatSeriesInsertCast",
+        "type":"field",
+        "value":"${typeinfo.formatSeriesInsertCast}",
+        "readonly":false
       }]
     },{
       "jsonClass":"Row",
@@ -961,6 +999,8 @@ elx.bundle.type.ComboChart = {
   var formatOrderingCast=view.typeinfo.formatOrderingCast;
     var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
+  var seriesInsertKey=view.typeinfo.seriesInsertKey;
+  var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
     k.forEach(function(d,i) {
@@ -1105,7 +1145,7 @@ console.log("data1",JSON.stringify(data1));
  function debugFn(){
     
    interpolateMonthFixed=function(data,view){
-  if (view.typeinfo.interpolateXAxis=="Yes") {
+  if (view.typeinfo.interpolateXAxisKey=="allMonth") {
   var categoryName; var valueNames=[];
   var monthFormat=d3.time.format("%b");
   var yearFormat=d3.time.format("%Y");
@@ -1980,7 +2020,7 @@ var objPushCount=0;
   
   
   };
-  reArrangeToSeries = function(toSeriesArray, containsModelType) {
+  reArrangeToSeries = function(toSeriesArray, containsModelType,seriesInsertKey) {
   console.log('containsModelType',containsModelType);
       if (containsModelType === 'columnStackGroup') { //rearrange 'output'
   var columnData = _.where(toSeriesArray,{'type':'column'});
@@ -1996,7 +2036,28 @@ var objPushCount=0;
   var sortedOutput = _.sortBy(toSeriesArray,function(d) {
   return d.yAxis;
   });
+  
+  
   toSeriesArray=sortedOutput;
+  }
+  switch(seriesInsertKey) {
+  case 'formatSeriesInsertCast': 
+  //check all the name of the Series are in the formatSeriesInsertCast
+  var formatSeriesInsert=formatSeriesInsertCast.split(",");
+  var existingSeries=[];
+  var sampleObj;
+  _.each(toSeriesArray,function(d,i) {
+  existingSeries.push(d.name);
+	for (var m=0;m < _.size(formatSeriesInsert);m++) {
+	if (d.name==m) { sampleObj=d; break;
+	}
+	}
+  });
+  var insertSeries=_.difference(formatSeriesInsert,existingSeries);
+  _.each(insertSeries,function(m){
+  sampleObj['name']=m; sampleObj['data']=[];
+	toSeriesArray.push(sampleObj);
+	});
   }
   return toSeriesArray;
   };
