@@ -1095,7 +1095,7 @@ console.log("data1",JSON.stringify(data1));
   	  }
   	else toSeriesArray.push(output[propertyName]);
   }
-      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
+      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType,seriesInsertKey);
 		
 	//Set YAxis
 		var toYaxisArray=[];
@@ -2024,8 +2024,7 @@ var objPushCount=0;
   console.log('containsModelType',containsModelType);
       if (containsModelType === 'columnStackGroup') { //rearrange 'output'
   var columnData = _.where(toSeriesArray,{'type':'column'});
- 
-          var sortedOutput = _.sortBy(columnData, function(d) {
+           var sortedOutput = _.sortBy(columnData, function(d) {
               return d.colorIndex;
           });
      var lineData = _.where(toSeriesArray,{'type':'line'});
@@ -2044,21 +2043,32 @@ var objPushCount=0;
   case 'formatSeriesInsertCast': 
   //check all the name of the Series are in the formatSeriesInsertCast
   var formatSeriesInsert=formatSeriesInsertCast.split(",");
+  console.log("before formatSeriesInsert",JSON.stringify(formatSeriesInsert));
+  console.log("before early toSeriesArray",JSON.stringify(toSeriesArray));
   var existingSeries=[];
-  var sampleObj;
+  var sampleObj={};
   _.each(toSeriesArray,function(d,i) {
   existingSeries.push(d.name);
 	for (var m=0;m < _.size(formatSeriesInsert);m++) {
-	if (d.name==m) { sampleObj=d; break;
+	if (d.name==formatSeriesInsert[m]) { sampleObj=_.clone(d); break;
 	}
 	}
   });
+  var newToSeriesArray=toSeriesArray;
+  var blankArray=[];
   var insertSeries=_.difference(formatSeriesInsert,existingSeries);
-  _.each(insertSeries,function(m){
-  sampleObj['name']=m; sampleObj['data']=[];
+  console.log("before insertSeries",insertSeries);
+    _.each(insertSeries,function(m,i){
+
+   sampleObj['name']=m;  sampleObj['data']=[];
 	toSeriesArray.push(sampleObj);
-	});
-  }
+		}); 
+  toSeriesArray.sort(function(a,b) {
+  return formatSeriesInsert.indexOf(a.name)-formatSeriesInsert.indexOf(b.name);
+  })
+	
+    console.log("koi toSeriesArray",JSON.stringify(toSeriesArray));
+	  }
   return toSeriesArray;
   };
   toolTipInserter = function(finalObj,modelType){
