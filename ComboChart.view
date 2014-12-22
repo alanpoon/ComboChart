@@ -924,6 +924,10 @@
           "jsonClass":"Option",
           "text":"Format toolTip",
           "value":"formatToolTip"
+        },{
+          "jsonClass":"Option",
+          "text":"columnStackGroup",
+          "value":"columnStackGroup"
         }]
       }]
     },{
@@ -1042,6 +1046,7 @@ var f=view.typeinfo.data.fields;
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, hexToModel1, smpColName, sum, 
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
+  var specialValueToolTip; //contains this.point options for tooltip for model_APIClass
   var safeRead; var interpolateMonthFixed;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
@@ -1395,8 +1400,7 @@ model_DataConvertClass = {
    model_APIClass['tooltip']={
                       formatter: function() {
   if(typeof this.point.stackTotal ==='undefined') {
-  console.log("this.point",this);
-   return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
+    return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;';
                         
   } else{
@@ -2043,9 +2047,7 @@ var objPushCount=0;
   case 'formatSeriesInsertCast': 
   //check all the name of the Series are in the formatSeriesInsertCast
   var formatSeriesInsert=formatSeriesInsertCast.split(",");
-  console.log("before formatSeriesInsert",JSON.stringify(formatSeriesInsert));
-  console.log("before early toSeriesArray",JSON.stringify(toSeriesArray));
-  var existingSeries=[];
+    var existingSeries=[];
   var sampleObj={};
   _.each(toSeriesArray,function(d,i) {
   existingSeries.push(d.name);
@@ -2057,8 +2059,7 @@ var objPushCount=0;
   var newToSeriesArray=toSeriesArray;
   var blankArray=[];
   var insertSeries=_.difference(formatSeriesInsert,existingSeries);
-  console.log("before insertSeries",insertSeries);
-    _.each(insertSeries,function(m,i){
+     _.each(insertSeries,function(m,i){
 
    sampleObj['name']=m;  sampleObj['data']=[];
 	toSeriesArray.push(sampleObj);
@@ -2067,12 +2068,13 @@ var objPushCount=0;
   return formatSeriesInsert.indexOf(a.name)-formatSeriesInsert.indexOf(b.name);
   })
 	
-    console.log("koi toSeriesArray",JSON.stringify(toSeriesArray));
-	  }
+   	  }
   return toSeriesArray;
   };
   toolTipInserter = function(finalObj,modelType){
-  if (toolTipKey==='formatToolTip') {
+  
+  switch(toolTipKey) {
+  case 'formatToolTip':
   var formatToolTip;
   eval(formatToolTipCast);
   for (var propertyName in formatToolTip) {
@@ -2081,7 +2083,34 @@ var objPushCount=0;
   newObj['tooltip']=formatToolTip[propertyName];
   finalObj=newObj;
   }
+  } break;
+  case 'columnStackGroup':
+  var formatToolTip;
+  eval(formatToolTipCast);
+  for (var propertyName in formatToolTip) {
+  if (propertyName==modelType) {
+  console.log("before into propertyName");
+  var yPrefix=(typeof formatToolTip[propertyName]['yPrefix']!='undefined') ? formatToolTip[propertyName]['yPrefix']:"";
+  var ySuffix=(typeof formatToolTip[propertyName]['ySuffix']!='undefined') ? formatToolTip[propertyName]['ySuffix']:"";
+  var xPrefix=(typeof formatToolTip[propertyName]['xPrefix']!='undefined') ? formatToolTip[propertyName]['xPrefix']:"";
+  var xSuffix=(typeof formatToolTip[propertyName]['xSuffix']!='undefined')? formatToolTip[propertyName]['xSuffix']:"";
+  var xDecimal=(typeof formatToolTip[propertyName]['xDecimal']!='undefined')? formatToolTip[propertyName]['xDecimal']:2;
+   var yDecimal=(typeof formatToolTip[propertyName]['yDecimal']!='undefined')? formatToolTip[propertyName]['yDecimal']:2;
+   console.log("before typeof typeof",typeof formatToolTip[propertyName]['specialValue']);
+  specialValueToolTip=(typeof formatToolTip[propertyName]['specialValue']!='undefined')? formatToolTip[propertyName]['specialValue']:'null';
+  
   }
+  }
+  
+  model_APIClass.tooltip= {formatter : function(){  
+   var specialValue=( specialValueToolTip!=='null')? this.series.userOptions[specialValueToolTip]:"";
+  var x=(typeof this.x ==='number')? d3.round(this.x,xDecimal):this.x;
+  var y=(typeof this.y ==='number')? d3.round(this.y,yDecimal):this.y;
+  return '&lt;b&gt;'+ xPrefix+x +xSuffix+'&lt;/b&gt;&lt;br/&gt;'+
+                        this.series.name +': '+yPrefix+ y +ySuffix+'&lt;br/&gt;'+
+                          '&lt;br&gt;'+'Total: '+yPrefix+ this.point.stackTotal+ySuffix+'&lt;/br&gt;'+
+						'&lt;br&gt;'+specialValue+'&lt;/br&gt;';}};
+						break;
   }
   return finalObj;
   };
