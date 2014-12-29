@@ -1515,8 +1515,7 @@ model_DataConvertClass = {
                       formatter: function() {
                       return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;'+
-                          '&lt;br&gt;'+'Total: '+ this.point.stackTotal+'&lt;/br&gt;'+
-						'&lt;br&gt;';
+                          '&lt;br&gt;';
                 }
             };
   model_APIClass['yAxis']={};
@@ -1823,8 +1822,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         category: Category
                     };
                     GroupNameArr.forEach(function(d, m) {
-  					
-                        propertyName = "groupby" + (m + 1);
+  					    propertyName = "groupby" + (m + 1);
                         objPush[propertyName] = d;
                     });
   					if (legendKey === "lastGroupby_op") {
@@ -1891,9 +1889,15 @@ zeroOrOne_OperableClass = {
 
             var propertyName;
             propertyName = modelType + "_" + columnName + "_1";
+			// determine legendName
+			if (typeof model_APIClass[modelType]=='undefined') {
+			if (_.str.include(modelType,'EscortAvg') ) var legendName='Average'; 
+			else if (_.str.include(modelType,'EscortSum')) var legendName='Sum';
+			} else var legendName= columnName;
+			
             output[propertyName] = {
                 type: subModel,
-                name: columnName,
+                name: legendName,
                 data: [],
 
                 marker: {
@@ -1901,7 +1905,7 @@ zeroOrOne_OperableClass = {
                     lineColor: Highcharts.getOptions().colors[yAxisNum],
                     fillColor: 'white'
                 },
-                dataURL: safeRead(model_APIClass, modelType, 'dataUR'),
+                dataURL: safeRead(model_APIClass, modelType, 'dataURL'),
                 id: safeRead(model_APIClass, modelType, 'id'),
                 index: safeRead(model_APIClass, modelType, 'index'),
                 legendIndex: safeRead(model_APIClass, modelType, 'legendIndex'),
@@ -2178,7 +2182,7 @@ var yAxisColorMatch={};
 	});
   //check for StackLabels in model_APIClass
   console.log("check model_APIClass",model_APIClass);
-  if (_.isObject(model_APIClass['yAxis']['stackLabels'])) {
+  if (typeof safeRead(model_APIClass,'yAxis','stackLabels') !=='undefined') {
   var stackLabelsAxis=model_APIClass['yAxis']['stackLabels']; 
   } else stackLabelsAxis=null;
 for (var propertyName in yAxisColorMatch) {
