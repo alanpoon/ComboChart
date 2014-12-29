@@ -532,7 +532,11 @@
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
            "toolTipKey":"default",
-      "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}"
+      "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}",
+      "inducedKey":"default",
+      "formatInducedCast":"",
+      "valueOperationKey":"default",
+      "formatValueOperationCast":"operation.prototype.value=function(){ return this.A-this.B;}",
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js"],
@@ -945,6 +949,88 @@
         "readonly":false
       }]
     }]
+  },{"jsonClass":"Group",
+        "label":"Column Induced Groupby",
+        "rows":[{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-inducedKey-label",
+        "type":"label",
+        "text":"Induced Key"
+      },{
+        "jsonClass":"Select",
+        "id":"typeinfo-inducedKey",
+        "type":"select",
+        "value":"${typeinfo.inducedKey}",
+        "options":[{
+          "jsonClass":"Option",
+          "text":"default",
+          "value":"default"
+        },{
+          "jsonClass":"Option",
+          "text":"/90>0.66",
+          "value":"/90>0.66"
+        },{
+          "jsonClass":"Option",
+          "text":"format Induced Groupby",
+          "value":"formatInducedGroupby"
+        }]
+      }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-formatInducedCast-label",
+        "type":"label",
+        "text":"Format Induced Groupby"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-formatInducedCast",
+        "type":"field",
+        "value":"${typeinfo.formatInducedCast}",
+        "readonly":false
+      }]
+    }]
+  },{"jsonClass":"Group",
+     "label":"Value Operation ?id:A/",
+        "rows":[{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-valueOperationKey-label",
+        "type":"label",
+        "text":"Value Operation Key"
+      },{
+        "jsonClass":"Select",
+        "id":"typeinfo-valueOperationKey",
+        "type":"select",
+        "value":"${typeinfo.valueOperationKey}",
+        "options":[{
+          "jsonClass":"Option",
+          "text":"default",
+          "value":"default"
+        },{
+          "jsonClass":"Option",
+          "text":"formatValueOperation",
+          "value":"formatValueOperation"
+        }]
+      }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-formatValueOperationCast-label",
+        "type":"label",
+        "text":"Format Value Operation"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-formatValueOperationCast",
+        "type":"field",
+        "value":"${typeinfo.formatValueOperationCast}",
+        "readonly":false
+      }]
+    }]
   }]
 }
 ========
@@ -1003,8 +1089,6 @@ elx.bundle.type.ComboChart = {
   var formatOrderingCast=view.typeinfo.formatOrderingCast;
     var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
-  var seriesInsertKey=view.typeinfo.seriesInsertKey;
-  var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
     k.forEach(function(d,i) {
@@ -1046,7 +1130,6 @@ var f=view.typeinfo.data.fields;
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, hexToModel1, smpColName, sum, 
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
-  var specialValueToolTip; //contains this.point options for tooltip for model_APIClass
   var safeRead; var interpolateMonthFixed;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
@@ -1100,17 +1183,17 @@ console.log("data1",JSON.stringify(data1));
   	  }
   	else toSeriesArray.push(output[propertyName]);
   }
-      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType,seriesInsertKey);
+      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
 		
 	//Set YAxis
 		var toYaxisArray=[];
   var yAxisArray=(view.typeinfo.yAxisArray).split(",");
-  set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray);
+   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass);
   
   //console.log("output",JSON.stringify(output));
   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
   console.log("stacking:",safeRead(model_APIClass,'plotOptions','column','stacking'));
-  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
+  console.log("toYaxisArray",toYaxisArray);
   var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
   //console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
   
@@ -1150,7 +1233,7 @@ console.log("data1",JSON.stringify(data1));
  function debugFn(){
     
    interpolateMonthFixed=function(data,view){
-  if (view.typeinfo.interpolateXAxisKey=="allMonth") {
+  if (view.typeinfo.interpolateXAxis=="Yes") {
   var categoryName; var valueNames=[];
   var monthFormat=d3.time.format("%b");
   var yearFormat=d3.time.format("%Y");
@@ -1400,7 +1483,8 @@ model_DataConvertClass = {
    model_APIClass['tooltip']={
                       formatter: function() {
   if(typeof this.point.stackTotal ==='undefined') {
-    return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
+  console.log("this.point",this);
+   return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;';
                         
   } else{
@@ -1429,12 +1513,28 @@ model_DataConvertClass = {
   model_APIClass.plotOptions.column['stacking']='normal';
   model_APIClass['tooltip']={
                       formatter: function() {
-                    return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
+                      return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;'+
                           '&lt;br&gt;'+'Total: '+ this.point.stackTotal+'&lt;/br&gt;'+
 						'&lt;br&gt;';
                 }
             };
+  model_APIClass['yAxis']={};
+  model_APIClass.yAxis={stackLabels:{
+   style: {
+                    color: 'black'
+                },
+                enabled: true,
+  formatter: function(){
+    var sum = 0;
+    var series = this.axis.series;
+
+    for (var i in series){
+      sum+=series[i].yData[this.x];
+    }
+    if (sum < 0 && this.isNegative || sum >= 0 && !this.isNegative)
+      return sum;
+  }}};
   console.log("colToSeriesArr",JSON.stringify(colToSeriesArr));
   return colToSeriesArr;
   }
@@ -2024,11 +2124,12 @@ var objPushCount=0;
   
   
   };
-  reArrangeToSeries = function(toSeriesArray, containsModelType,seriesInsertKey) {
+  reArrangeToSeries = function(toSeriesArray, containsModelType) {
   console.log('containsModelType',containsModelType);
       if (containsModelType === 'columnStackGroup') { //rearrange 'output'
   var columnData = _.where(toSeriesArray,{'type':'column'});
-           var sortedOutput = _.sortBy(columnData, function(d) {
+ 
+          var sortedOutput = _.sortBy(columnData, function(d) {
               return d.colorIndex;
           });
      var lineData = _.where(toSeriesArray,{'type':'line'});
@@ -2039,42 +2140,12 @@ var objPushCount=0;
   var sortedOutput = _.sortBy(toSeriesArray,function(d) {
   return d.yAxis;
   });
-  
-  
   toSeriesArray=sortedOutput;
   }
-  switch(seriesInsertKey) {
-  case 'formatSeriesInsertCast': 
-  //check all the name of the Series are in the formatSeriesInsertCast
-  var formatSeriesInsert=formatSeriesInsertCast.split(",");
-    var existingSeries=[];
-  var sampleObj={};
-  _.each(toSeriesArray,function(d,i) {
-  existingSeries.push(d.name);
-	for (var m=0;m < _.size(formatSeriesInsert);m++) {
-	if (d.name==formatSeriesInsert[m]) { sampleObj=_.clone(d); break;
-	}
-	}
-  });
-  var newToSeriesArray=toSeriesArray;
-  var blankArray=[];
-  var insertSeries=_.difference(formatSeriesInsert,existingSeries);
-     _.each(insertSeries,function(m,i){
-
-   sampleObj['name']=m;  sampleObj['data']=[];
-	toSeriesArray.push(sampleObj);
-		}); 
-  toSeriesArray.sort(function(a,b) {
-  return formatSeriesInsert.indexOf(a.name)-formatSeriesInsert.indexOf(b.name);
-  })
-	
-   	  }
   return toSeriesArray;
   };
   toolTipInserter = function(finalObj,modelType){
-  
-  switch(toolTipKey) {
-  case 'formatToolTip':
+  if (toolTipKey==='formatToolTip') {
   var formatToolTip;
   eval(formatToolTipCast);
   for (var propertyName in formatToolTip) {
@@ -2083,34 +2154,7 @@ var objPushCount=0;
   newObj['tooltip']=formatToolTip[propertyName];
   finalObj=newObj;
   }
-  } break;
-  case 'columnStackGroup':
-  var formatToolTip;
-  eval(formatToolTipCast);
-  for (var propertyName in formatToolTip) {
-  if (propertyName==modelType) {
-  console.log("before into propertyName");
-  var yPrefix=(typeof formatToolTip[propertyName]['yPrefix']!='undefined') ? formatToolTip[propertyName]['yPrefix']:"";
-  var ySuffix=(typeof formatToolTip[propertyName]['ySuffix']!='undefined') ? formatToolTip[propertyName]['ySuffix']:"";
-  var xPrefix=(typeof formatToolTip[propertyName]['xPrefix']!='undefined') ? formatToolTip[propertyName]['xPrefix']:"";
-  var xSuffix=(typeof formatToolTip[propertyName]['xSuffix']!='undefined')? formatToolTip[propertyName]['xSuffix']:"";
-  var xDecimal=(typeof formatToolTip[propertyName]['xDecimal']!='undefined')? formatToolTip[propertyName]['xDecimal']:2;
-   var yDecimal=(typeof formatToolTip[propertyName]['yDecimal']!='undefined')? formatToolTip[propertyName]['yDecimal']:2;
-   console.log("before typeof typeof",typeof formatToolTip[propertyName]['specialValue']);
-  specialValueToolTip=(typeof formatToolTip[propertyName]['specialValue']!='undefined')? formatToolTip[propertyName]['specialValue']:'null';
-  
   }
-  }
-  
-  model_APIClass.tooltip= {formatter : function(){  
-   var specialValue=( specialValueToolTip!=='null')? this.series.userOptions[specialValueToolTip]:"";
-  var x=(typeof this.x ==='number')? d3.round(this.x,xDecimal):this.x;
-  var y=(typeof this.y ==='number')? d3.round(this.y,yDecimal):this.y;
-  return '&lt;b&gt;'+ xPrefix+x +xSuffix+'&lt;/b&gt;&lt;br/&gt;'+
-                        this.series.name +': '+yPrefix+ y +ySuffix+'&lt;br/&gt;'+
-                          '&lt;br&gt;'+'Total: '+yPrefix+ this.point.stackTotal+ySuffix+'&lt;/br&gt;'+
-						'&lt;br&gt;'+specialValue+'&lt;/br&gt;';}};
-						break;
   }
   return finalObj;
   };
@@ -2121,7 +2165,7 @@ complementaryColor=function(hexColor) {
   return compHsl.toString();
   };
  
-set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray) {
+set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray,model_APIClass) {
 var yAxisColorMatch={};
 	_.each(toSeriesArray,function(d,i) {
 		var yAxisPropertyName=d.yAxisFull;
@@ -2132,6 +2176,11 @@ var yAxisColorMatch={};
 		} else 		
 		yAxisColorMatch[yAxisPropertyName]={'colorIndex':i};
 	});
+  //check for StackLabels in model_APIClass
+  console.log("check model_APIClass",model_APIClass);
+  if (_.isObject(model_APIClass['yAxis']['stackLabels'])) {
+  var stackLabelsAxis=model_APIClass['yAxis']['stackLabels']; 
+  } else stackLabelsAxis=null;
 for (var propertyName in yAxisColorMatch) {
 	var L_R=axisDivFn(propertyName);
   	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
@@ -2139,14 +2188,14 @@ for (var propertyName in yAxisColorMatch) {
 		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
 		title:{text:titleArray[numInYaxis-1],style:{
 		color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
-		opposite: true
+  opposite: true, stackLabels: stackLabelsAxis
 		};
 		}
 		else if (L_R.contains("L")==true){
 		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
 		title:{text:titleArray[numInYaxis-1],style:{
 		color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
-		opposite: false
+		opposite: false, stackLabels: stackLabelsAxis
 		};
 		}
 		
