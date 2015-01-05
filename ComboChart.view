@@ -1091,6 +1091,9 @@ elx.bundle.type.ComboChart = {
   var formatLegendCast=view.typeinfo.formatLegendCast;
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
+  var formatValueOperationCast=view.typeinfo.formatValueOperationCast;
+  var valueOperationKey =view.typeinfo.valueOperationKey;
+  
     k.forEach(function(d,i) {
     keys.push(d.name);})
   //console.log("keysAr",JSON.stringify(keys));
@@ -1134,6 +1137,7 @@ var f=view.typeinfo.data.fields;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
   var set_yAxisFnBySeries;
+  var valueOperating,operation,operationProcesser;
  debugFn();
   
   console.log("rawdata",JSON.stringify(rawdata));
@@ -1146,19 +1150,21 @@ console.log("data1",JSON.stringify(data1));
   
   //console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
-   var data4=formatXTicksAndOrdering(data3,view);
+  var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
   console.log("data4",JSON.stringify(data4));
-  var data5=sortCategory(data4);
-  smpColName = _.groupBy(data5, function(d) {
+   var data5=formatXTicksAndOrdering(data4,view);
+  console.log("data5",JSON.stringify(data5));
+  var data6=sortCategory(data5);
+  smpColName = _.groupBy(data6, function(d) {
     return d["columnName"];
   });		
   console.log("initialSmpColName",JSON.stringify(smpColName));
    var toCategoryArray=Get_CategoryFn(smpColName);
-  smpGroupby1=_.groupBy(data5,function(d) {
+  smpGroupby1=_.groupBy(data6,function(d) {
   	return d["groupby1"];
   });
   if ((_.where(data3,{model:'columnStackGroup'})).length>0) {
-    smpGroupby1=_.groupBy(data5,function(d) {
+    smpGroupby1=_.groupBy(data6,function(d) {
   	return d["groupby1"];
   });smpColName={};
   _.each(smpGroupby1,function(t,unit) {
@@ -1188,14 +1194,18 @@ console.log("data1",JSON.stringify(data1));
 	//Set YAxis
 		var toYaxisArray=[];
   var yAxisArray=(view.typeinfo.yAxisArray).split(",");
-   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass);
+  var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
+   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
   
   //console.log("output",JSON.stringify(output));
   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
-  console.log("stacking:",safeRead(model_APIClass,'plotOptions','column','stacking'));
-  console.log("toYaxisArray",toYaxisArray);
-  var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
-  //console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
+  console.log("before model_APIClass",model_APIClass);
+  console.log("stacking:",(typeof safeRead(model_APIClass,'plotOptions','column','stacking')=="undefined")? null: safeRead(model_APIClass,'plotOptions','column','stacking'));
+    console.log("stacking2:",(typeof safeRead(model_APIClass,'plotOptions','column','stacking')=="undefined")? null: 2);
+console.log("before :tooltip",(typeof safeRead(model_APIClass,'tooltip')=="undefined"));
+  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
+  
+  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
   
       Highcharts.setOptions({
         colors: colorSeriesArray
@@ -1207,7 +1217,7 @@ console.log("data1",JSON.stringify(data1));
       title: {
         text: cfgoptions.title
       },
-  tooltip: (safeRead(model_APIClass,'tooltip') == null) ? {} :safeRead(model_APIClass,'tooltip')
+  tooltip: (typeof safeRead(model_APIClass,'toolTip')=="undefined")? {}: safeRead(model_APIClass,'toolTip')
         
       ,
       subtitle: {
@@ -1224,7 +1234,7 @@ console.log("data1",JSON.stringify(data1));
         column: {
           pointPadding: 0.2,
           borderWidth: 0,
-  		stacking:safeRead(model_APIClass,'plotOptions','column','stacking')
+  		stacking:(typeof safeRead(model_APIClass,'plotOptions','column','stacking')=="undefined")? null: safeRead(model_APIClass,'plotOptions','column','stacking')
         }
       },
       series: toSeriesArray
@@ -1444,7 +1454,7 @@ model_DataConvertClass = {
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
-      return colToSeriesArr;
+	  return colToSeriesArr;
     }
   },
   spline: {
@@ -1537,7 +1547,7 @@ console.log("yAxis Series Formatter",series);
   return sum;}
   
   }}};
-  console.log("colToSeriesArr",JSON.stringify(colToSeriesArr));
+  
   return colToSeriesArr;
   }
   }, columnInducedGroupby:{
@@ -2173,8 +2183,10 @@ complementaryColor=function(hexColor) {
   return compHsl.toString();
   };
  
-set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray,model_APIClass) {
+set_yAxisFnBySeries=function(toSeriesArray,toYaxisArray,titleArray,model_APIClass,colorSeriesArray) {
+var colorSize=_.size(colorSeriesArray);
 var yAxisColorMatch={};
+
 	_.each(toSeriesArray,function(d,i) {
 		var yAxisPropertyName=d.yAxisFull;
 			if (typeof d.colorIndex =='number'){ 
@@ -2185,24 +2197,27 @@ var yAxisColorMatch={};
 		yAxisColorMatch[yAxisPropertyName]={'colorIndex':i};
 	});
   //check for StackLabels in model_APIClass
-  console.log("check model_APIClass",model_APIClass);
+  
   if (typeof safeRead(model_APIClass,'yAxis','stackLabels') !=='undefined') {
   var stackLabelsAxis=model_APIClass['yAxis']['stackLabels']; 
   } else stackLabelsAxis=null;
 for (var propertyName in yAxisColorMatch) {
+console.log("before yAxisColorMatch's propertyName",propertyName,"<>",yAxisColorMatch[propertyName],">:<",Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]);
+console.log("before yAxis color 33",Highcharts.getOptions().colors[33]);
+console.log("before yAxis color 2",Highcharts.getOptions().colors[2]);
 	var L_R=axisDivFn(propertyName);
   	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
 		if(L_R.contains("R")==true) {
-		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
 		title:{text:titleArray[numInYaxis-1],style:{
-		color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
   opposite: true, stackLabels: stackLabelsAxis
 		};
 		}
 		else if (L_R.contains("L")==true){
-		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
 		title:{text:titleArray[numInYaxis-1],style:{
-		color: Highcharts.getOptions().colors[yAxisColorMatch[propertyName].colorIndex]}},
+		color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
 		opposite: false, stackLabels: stackLabelsAxis
 		};
 		}
@@ -2210,6 +2225,76 @@ for (var propertyName in yAxisColorMatch) {
 		toYaxisArray.push(toYaxisObj);
 }	
 };
+//--Used in valueOperating
+operation=function(ABvalue){
+	for (var k=0; k< _.size(Object.keys(ABvalue)); k++)
+	{ var key=Object.keys(ABvalue)[k];
+		this[key]=ABvalue[key]; //declare this.A and this.B as a value
+	}
+};
+operationProcesser=function(vObj){ 
+	//vObj={A:[...],B:[...]};
+	//for each record, process operation.prototype.value once
+	
+	//convert key:?id:A/ into just 'A'
+	for(var propertyName in vObj) {
+	var shortForm=propertyName.substring(propertyName.lastIndexOf("?id:")+4,propertyName.lastIndexOf("/"));
+	vObj[shortForm]=vObj[propertyName];
+	delete vObj[propertyName];
+	}
+	var ABargument=Object.keys(vObj);
+
+	//new propertyValue 'processedValue' for vObj
+	vObj['processedValue']=[];
+	
+	var firstABargument=ABargument[0]; //causes the sampleObj to take Object property from ?id:A/
+	
+	for (var i=0;i < _.size(vObj[firstABargument]);i++) {
+		var ABvalue={};
+		_.each(ABargument,function(m){
+		ABvalue[m]=vObj[m][i].value;
+		});
+		var method=new operation(ABvalue);
+		var sampleObj=_.clone(vObj[firstABargument][i]);
+		var beforeId=(sampleObj.model).split("?id")[0];
+		var afterId=(sampleObj.model).split("/")[1];
+		sampleObj['value']=method.value();
+		sampleObj['model']=beforeId+afterId;
+		vObj['processedValue'].push(sampleObj);
+	}
+		//console.log("sampleObj",JSON.stringify(sampleObj));
+	return vObj['processedValue'];
+
+};
+
+valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
+	if (valueOperationKey==='formatValueOperation')
+	eval(formatValueOperationCast);
+	var uniqModel=_.uniq(_.pluck(modelData,'model'));
+	console.log("uniqModel",JSON.stringify(uniqModel));
+	var valueOpArr=[]; //property names that contains ?id:/ eg. ?id:A/
+	var shortOpArr=[]; //eg. A
+		_.each(uniqModel,function(m,n) {
+		if (_.str.include(m,'?id')) {valueOpArr.push(m);
+		//if (m.contains("?id")==true) {valueOpArr.push(m);
+		var shortForm=m.substring(m.lastIndexOf("?id:")+4,m.lastIndexOf("/"));
+		console.log("check shortForm",shortForm);
+		shortOpArr.push(shortForm);
+		}
+		});
+		var vObj={};
+		var filterSize,inducedArr;
+		_.each(valueOpArr,function(m,n){
+		var filteredOp=_.where(modelData,{model:m});
+		filterSize=_.size(filteredOp);
+		vObj[m]=filteredOp;
+		});
+		console.log("before vObj",JSON.stringify(vObj));
+	var newVObj=operationProcesser(vObj);
+	console.log("newVObj",JSON.stringify(newVObj));	
+	return (valueOperationKey==='formatValueOperation')? newVObj:modelData;
+};
+//--end valueOperating
 }
 
 </div>
