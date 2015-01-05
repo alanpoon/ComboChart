@@ -1551,13 +1551,9 @@ console.log("yAxis Series Formatter",series);
   gCount = Get_groupCountFn(t);
   var groupByPropName='groupby'+(gCount+1);
     _.each(t,function(d,i) {
-	
-  d[groupByPropName]= (d.value>70) ? 'Target':'Historical';
-  d['legendKey']=(d.value>70) ? 'Target':'Historical'; // this overwrite format Legend for this API
-  /*
-   d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
+  d[groupByPropName]= (d.value/90>0.666) ? 'Fast':'Slow';
   d['legendKey']=(d.value/90>0.666) ? 'Fast':'Slow'; // this overwrite format Legend for this API
-  */
+  
   });
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount+1, subModel,modelType,index));
   
