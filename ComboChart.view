@@ -532,6 +532,7 @@
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
            "toolTipKey":"default",
+      "legendEscortLines":"Gross Profit",
       "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}",
       "inducedKey":"default",
       "formatInducedCast":"",
@@ -906,6 +907,20 @@
         "value":"${typeinfo.formatLegendCast}",
         "readonly":false
       }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-legendEscortLines-label",
+        "type":"label",
+        "text":"Legends for Escort Lines"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-legendEscortLines",
+        "type":"field",
+        "value":"${typeinfo.legendEscortLines}",
+        "readonly":false
+      }]
     }]}
       ,{"jsonClass":"Group",
         "label":"ToolTip",
@@ -1104,6 +1119,7 @@ elx.bundle.type.ComboChart = {
   var formatOrderingCast=view.typeinfo.formatOrderingCast;
     var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
+  var legendEscortLines=(view.typeinfo.legendEscortLines).split(",");
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
   var formatValueOperationCast=view.typeinfo.formatValueOperationCast;
@@ -1915,13 +1931,12 @@ zeroOrOne_OperableClass = {
     },
   1: { //for Average lines
         Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-
+			console.log("before index",index);
             var propertyName;
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
 			if (typeof model_APIClass[modelType]=='undefined') {
-			if (_.str.include(modelType,'EscortAvg') ) var legendName='Average'; 
-			else if (_.str.include(modelType,'EscortSum')) var legendName='Sum';
+			var legendName=legendEscortLines[index];
 			} else var legendName= columnName;
 			
             output[propertyName] = {
