@@ -536,7 +536,8 @@
       "inducedKey":"default",
       "formatInducedCast":"",
       "valueOperationKey":"default",
-      "formatValueOperationCast":"operation.prototype.value=function(){ return this.A-this.B;}",
+      "formatValueOperationCast":"operation.prototype.value=function(){ return [this.A-this.B];}",
+      "formatValueOperationArg":"A"
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js"],
@@ -1030,6 +1031,20 @@
         "value":"${typeinfo.formatValueOperationCast}",
         "readonly":false
       }]
+    },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-formatValueOperationArg-label",
+        "type":"label",
+        "text":"First Argument in the array"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-formatValueOperationArg",
+        "type":"field",
+        "value":"${typeinfo.formatValueOperationArg}",
+        "readonly":false
+      }]
     }]
   }]
 }
@@ -1093,6 +1108,7 @@ elx.bundle.type.ComboChart = {
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
   var formatValueOperationCast=view.typeinfo.formatValueOperationCast;
   var valueOperationKey =view.typeinfo.valueOperationKey;
+  var valueOpArr=(view.typeinfo.formatValueOperationArg).split(",");
   
     k.forEach(function(d,i) {
     keys.push(d.name);})
@@ -1200,7 +1216,8 @@ console.log("data1",JSON.stringify(data1));
   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
   console.log("toYaxisArray",JSON.stringify(toYaxisArray));
   console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
-  
+  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
+  console.log("modelAPIJSON",JSON.stringify(model_APIClass));
       Highcharts.setOptions({
         colors: colorSeriesArray
     });
@@ -1228,7 +1245,7 @@ console.log("data1",JSON.stringify(data1));
         column: {
           pointPadding: 0.2,
           borderWidth: 0,
-  		stacking:(typeof safeRead(model_APIClass,'plotOptions','column','stacking')=="undefined")? null: safeRead(model_APIClass,'plotOptions','column','stacking')
+  		stacking: safeRead(model_APIClass,'plotOptions','column','stacking')
         }
       },
       series: toSeriesArray
@@ -1481,6 +1498,13 @@ model_DataConvertClass = {
   colToSeriesArr['linkedTo']=':previous';
   }
   model_APIClass['plotOptions']={};
+  model_APIClass['yAxis']={};
+model_APIClass.yAxis['stackLabels']= {
+                style: {
+                    color: 'black'
+                },
+                enabled: false
+            };
   model_APIClass.plotOptions['column']={};
   model_APIClass.plotOptions.column['stacking']='normal';
   if (toolTipKey=='default') {
@@ -1589,6 +1613,7 @@ console.log("yAxis Series Formatter",series);
   colorIndex:index2,pointPlacement:scale(index+1),
   modelType:modelType, yAxis:yAxisNum,yAxisFull:_.first(_.pluck(t, 'yAxis'))
     };
+
    colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
    return colToSeriesArr;
   
@@ -2233,19 +2258,23 @@ operationProcesser=function(vObj){
 	
 	var firstABargument=ABargument[0]; //causes the sampleObj to take Object property from ?id:A/
 	
-	for (var i=0;i < _.size(vObj[firstABargument]);i++) {
+for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 		var ABvalue={};
 		_.each(ABargument,function(m){
 		ABvalue[m]=vObj[m][i].value;
 		});
+		
 		var method=new operation(ABvalue);
-		var sampleObj=_.clone(vObj[firstABargument][i]);
+		_.each(valueOpArr,function(arg,n){
+		
+		var sampleObj=_.clone(vObj[arg][i]);
 		var beforeId=(sampleObj.model).split("?id")[0];
 		var afterId=(sampleObj.model).split("/")[1];
-		sampleObj['value']=(isNaN(method.value())) ? 0:method.value();
-		if (typeof (sampleObj['value'])!='number') console.log("terrible sampleObj",sampleObj['value']," ,sampleObj:",sampleObj); 
+		sampleObj['value']=method.value()[n];
 		sampleObj['model']=beforeId+afterId;
 		vObj['processedValue'].push(sampleObj);
+		});
+	
 	}
 		//console.log("sampleObj",JSON.stringify(sampleObj));
 	return vObj['processedValue'];
@@ -2261,10 +2290,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 		_.each(uniqModel,function(m,n) {
 		if (_.str.include(m,'?id')) {valueOpArr.push(m);
 		//if (m.contains("?id")==true) {valueOpArr.push(m);
-		var shortForm=m.substring(m.lastIndexOf("?id:")+4,m.lastIndexOf("/"));
-		console.log("check shortForm",shortForm);
-		shortOpArr.push(shortForm);
-		}
+			}
 		});
 		var vObj={};
 		var filterSize,inducedArr;
