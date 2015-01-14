@@ -529,6 +529,8 @@
       "formatXTicksCast":"",
       "orderingKey":"monthString",
       "formatOrderingCast":"",
+      "interpolateGroupbyKey":"interpolateGroupbyKey",
+      "fixedGroupbyClassCast":"fixedGroupbyClass={'groupby1':['asd']}",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
            "toolTipKey":"default",
@@ -857,6 +859,45 @@
         "value":"${typeinfo.formatOrderingCast}",
         "readonly":false
       }]
+    }]},
+    {"jsonClass":"Group",
+       "label":"Groupby",
+       "rows":[{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-interpolateGroupbyKey-label",
+        "type":"label",
+        "text":"Interpolate Groupby key"
+      },{
+        "jsonClass":"Select",
+        "id":"typeinfo-interpolateGroupbyKey",
+        "type":"select",
+        "value":"${typeinfo.interpolateGroupbyKey}",
+        "options":[{
+          "jsonClass":"Option",
+          "text":"default",
+          "value":"default"
+        },{
+          "jsonClass":"Option",
+          "text":"Construct classes for Interpolation",
+          "value":"interpolateGroupbyKey"
+        }]
+      }]
+       },{
+      "jsonClass":"Row",
+      "cols":[{
+        "jsonClass":"Label",
+        "id":"typeinfo-fixedGroupbyClassCast-label",
+        "type":"label",
+        "text":"Format FixedGroupbyClass"
+      },{
+        "jsonClass":"Field",
+        "id":"typeinfo-fixedGroupbyClassCast",
+        "type":"field",
+        "value":"${typeinfo.fixedGroupbyClassCast}",
+        "readonly":false
+      }]
     }]}
       ,{"jsonClass":"Group","label":"Legend",
       "rows":[{
@@ -1119,6 +1160,8 @@ elx.bundle.type.ComboChart = {
   var formatOrderingCast=view.typeinfo.formatOrderingCast;
     var legendKey=view.typeinfo.legendKey;
   var formatLegendCast=view.typeinfo.formatLegendCast;
+  var seriesInsertKey=view.typeinfo.seriesInsertKey;
+var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var legendEscortLines=(view.typeinfo.legendEscortLines).split(",");
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
@@ -1165,7 +1208,9 @@ var f=view.typeinfo.data.fields;
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, hexToModel1, smpColName, sum, 
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
-  var safeRead; var interpolateMonthFixed;
+  
+  var safeRead; var getWordsBetweenCurlies; var sortByFixedGroupbyClass;
+  var interpolateMonthFixed,interpolateGroupby,fixedGroupbyClass;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
   var set_yAxisFnBySeries;
@@ -1179,7 +1224,7 @@ var f=view.typeinfo.data.fields;
 console.log("data1",JSON.stringify(data1));
   
   data2=interpolateMonthFixed(data1,view);
-  
+  data2=interpolateGroupby(data2,view);
   //console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
@@ -1220,7 +1265,7 @@ console.log("data1",JSON.stringify(data1));
   	  }
   	else toSeriesArray.push(output[propertyName]);
   }
-      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType);
+      toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType,seriesInsertKey);
 		
 	//Set YAxis
 		var toYaxisArray=[];
@@ -1317,7 +1362,70 @@ console.log("data1",JSON.stringify(data1));
   if(jQuery.isEmptyObject(newObj)===false&& detected!=='parsableDate') {data.push(newObj);}
  
   } return data;
-  }
+  };
+  interpolateGroupby=function(data,view){
+  if (view.typeinfo.interpolateGroupbyKey=="interpolateGroupbyKey") {
+  console.log("interpolateGroupbyKey is true");
+    eval(view.typeinfo.fixedGroupbyClassCast); //fixedGroupbyClass contains a class with many arrays for interpolation
+	
+	
+	//get sample Objects from data
+	
+	//find the actual columnName that contains all the groupbys
+	var columnNameGroupby={};
+	var valueColumnNameArr=[];
+	for (var propertyInData in data[0]) {
+	if (_.str.include(propertyInData,'groupby')) {
+	
+		var propertyName=getWordsBetweenCurlies(propertyInData);
+		columnNameGroupby[propertyName]=propertyInData;
+		} else if (_.str.include(propertyInData,'#[')) valueColumnNameArr.push(propertyInData);
+		}
+		
+	//for all the properties in fixedGroupbyClass, interpolate them into 'data',
+	for (var property in fixedGroupbyClass){
+	// e.g property is 'groupby1'
+	var columnName= columnNameGroupby[property];
+	 var existingGroupbyArr=_.uniq(_.pluck(data,columnName));
+	 var fixedGroupbyArr=fixedGroupbyClass[property];
+	 var differenceArr=_.difference(fixedGroupbyArr,existingGroupbyArr);
+	 var sampleObj=_.clone(data[0]);
+	_.each(differenceArr,function(m,n){
+	sampleObj[columnName]=m; 
+	_.each(valueColumnNameArr,function(u,i){ //interpolate with 0
+	sampleObj[u]=0;
+	});
+	});
+	 data.push(sampleObj);
+	}
+	
+	
+	data=sortByFixedGroupbyClass(data,fixedGroupbyClass,columnNameGroupby,'groupby1');
+  } return data;
+  };
+  	//sort the new data by the fixedGroupbyClass
+		 sortByFixedGroupbyClass=function(data,fixedGroupbyClass,columnNameGroupby,basedOn){
+		var sortedData=[];
+			d3.nest().key(function(d,i) { var columnName=columnNameGroupby[basedOn]; return d[columnName];})
+		.rollup(function(d,i){   
+			var orderedByColName=d.sort(function(a,b) {
+			  return fixedGroupbyClass[basedOn].indexOf(a)-fixedGroupbyClass[basedOn].indexOf(b);
+			  }); 
+			  _.each(orderedByColName,function(d){
+			  sortedData.push(d);
+			  });
+			  return; }).entries(data);
+		return sortedData;};
+		
+		
+	getWordsBetweenCurlies=function(str) {
+		  var results = [], re = /{([^}]+)}/g, text;
+
+		  while(text = re.exec(str)) {
+			results.push(text[1]);
+		  }
+		  return results;
+		};
   Get_CategoryFn=function(smpColName) {
   _.each(smpColName,function(t,unit){
      if(unit==_.first(Object.keys(smpColName))) {
@@ -2169,7 +2277,7 @@ var objPushCount=0;
   
   
   };
-  reArrangeToSeries = function(toSeriesArray, containsModelType) {
+ /* reArrangeToSeries = function(toSeriesArray, containsModelType) {
   console.log('containsModelType',containsModelType);
       if (containsModelType === 'columnStackGroup') { //rearrange 'output'
   var columnData = _.where(toSeriesArray,{'type':'column'});
@@ -2188,7 +2296,53 @@ var objPushCount=0;
   toSeriesArray=sortedOutput;
   }
   return toSeriesArray;
-  };
+  };*/
+  reArrangeToSeries = function(toSeriesArray, containsModelType,seriesInsertKey) {
+console.log('containsModelType',containsModelType);
+if (containsModelType === 'columnStackGroup') { //rearrange 'output'
+var columnData = _.where(toSeriesArray,{'type':'column'});
+var sortedOutput = _.sortBy(columnData, function(d) {
+return d.colorIndex;
+});
+var lineData = _.where(toSeriesArray,{'type':'line'});
+toSeriesArray = _.union(sortedOutput,lineData);
+}
+if (containsModelType ==='columnInducedGroup') {
+var sortedOutput = _.sortBy(toSeriesArray,function(d) {
+return d.yAxis;
+});
+toSeriesArray=sortedOutput;
+}
+switch(seriesInsertKey) {
+case 'formatSeriesInsertCast':
+//check all the name of the Series are in the formatSeriesInsertCast
+var formatSeriesInsert=formatSeriesInsertCast.split(",");
+console.log("before formatSeriesInsert",JSON.stringify(formatSeriesInsert));
+console.log("before early toSeriesArray",JSON.stringify(toSeriesArray));
+var existingSeries=[];
+var sampleObj={};
+_.each(toSeriesArray,function(d,i) {
+existingSeries.push(d.name);
+for (var m=0;m < _.size(formatSeriesInsert);m++) {
+if (d.name==formatSeriesInsert[m]) { sampleObj=_.clone(d); break;
+}
+}
+});
+var newToSeriesArray=toSeriesArray;
+var blankArray=[];
+var insertSeries=_.difference(formatSeriesInsert,existingSeries);
+console.log("before insertSeries",insertSeries);
+_.each(insertSeries,function(m,i){
+sampleObj['name']=m; sampleObj['data']=[];
+toSeriesArray.push(sampleObj);
+});
+toSeriesArray.sort(function(a,b) {
+return formatSeriesInsert.indexOf(a.name)-formatSeriesInsert.indexOf(b.name);
+})
+console.log("koi toSeriesArray",JSON.stringify(toSeriesArray));
+}
+return toSeriesArray;
+};
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
   var formatToolTip;
