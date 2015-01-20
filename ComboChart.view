@@ -1197,14 +1197,6 @@ function data(){
 data();
    */  
 var f=view.typeinfo.data.fields;
-
- if (view.data.jsonClass === "DataEmbedded"){ 
-  /*rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
-  ["2014-01-20",32],["2014-07-20",46]];
-  */
-  rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
-  } else rawdata=${data};
-  
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, hexToModel1, smpColName, sum, 
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
@@ -1217,6 +1209,15 @@ var f=view.typeinfo.data.fields;
   var valueOperating,operation,operationProcesser;
  debugFn();
   
+ if (view.data.jsonClass === "DataEmbedded"){ 
+  /*rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
+  ["2014-01-20",32],["2014-07-20",46]];
+  */
+  rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
+  var extendedArr=rawdata;
+  } else { rawdata=${data}; var extendedArr=extendArr(rawdata,f,view);}
+  
+console.log("extendedArr",JSON.stringify(extendedArr));
   console.log("rawdata",JSON.stringify(rawdata));
   var data1, data2, data3, smpColName;
   data1 = arrToHex(rawdata, f, view);
@@ -1313,7 +1314,47 @@ console.log("data1",JSON.stringify(data1));
     });
   // //console.log("jess",model_APIClass);
  function debugFn(){
-    
+    extendArr=function(data,f,view){
+	//used when you want to use the same columns in operables
+//obtain uniq columnNames
+var colNameMap={};
+var uniqColName=[];
+var fieldsArr=getArr(f,'name',view);
+console.log("fieldsArr",fieldsArr);
+var n=0;  //n is the index of unextended Arr
+for(var i=0;i< _.size(fieldsArr);i++){
+var colAsProperty =fieldsArr[i];
+
+//Obtaining colNameMap
+if (_.size(uniqColName)==0) {
+uniqColName.push(colAsProperty);
+colNameMap[colAsProperty]=i;
+n=n+1;
+} else {
+	var colAsPropertyArr=[colAsProperty];
+	var intersectArr=_.intersection(colAsPropertyArr,uniqColName);
+	if (_.size(intersectArr)==0){
+		uniqColName.push(colAsProperty);
+		colNameMap[colAsProperty]=i;
+		n=n+1;
+		}
+	}
+}
+
+//using colNameMap to extendArr
+var extendedArr=[];
+_.each(data ,function(k,l){
+//eg of k:[asd,34,34]
+var localArr=[];
+	_.each(fieldsArr,function(o,p){
+	var indexToChoose=colNameMap[o];
+	localArr.push(k[indexToChoose]);
+	});
+	extendedArr.push(localArr);
+});
+return extendedArr;
+	
+	};
    interpolateMonthFixed=function(data,view){
   if (view.typeinfo.interpolateXAxis=="Yes") {
   var categoryName; var valueNames=[];
@@ -1906,7 +1947,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
     objKey = Object.keys(data[0]);
     model_keyArray = [];
     columnNameArray = [];
-  
+	keyArray=[];
   //legendFormating
   var formatLegend; //formatLegend should be a class containing the Legend format for each model 
   if (formatLegendCast==="" && legendKey==="formatLegend")
@@ -1932,7 +1973,9 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
         }
         model_keyArray.push(model_keyObj);
         columnNameArray.push(columnNameObj);
+		keyArray.push(key);
     });
+	console.log("inside keyArray",JSON.stringify(keyArray));
     data.forEach(function(d, i) {
         var Category, ColumnName, GroupNameArr, Model, ReadObj, Value, lastGroupby, propertyName;
         ReadObj = {};
