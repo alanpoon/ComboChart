@@ -1,0 +1,134 @@
+<table class='ui-widget ui-widget-content' style='width:100%'></table>
+<form id="periodSelect">
+	<div id="radio">
+	<input type="radio" id="radio1" name="radio" value="month" ><label for="radio1">month</label>
+
+	<input type="radio" id="radio2" name="radio" value="year" checked="checked">
+		<label for="radio2">year</label>
+	<input type="radio" id="radio3" name="radio" value="quarter" ><label for="radio3">quarter</label>
+	</div>
+</form>
+<form id="subPeriodSelect">
+</form>
+<div class='elx-datahtml-script'>
+	var viewId='v-2';
+	var parent = $("#" + viewId).css("overflow", "auto");
+	var data = parent.data("data");
+     //  console.log("dajk",JSON.stringify(data));
+	var typeInfoPath = {};
+    var key1ColName="4breduced.stock_category";
+    var typeInfoPath={"dateCol":"Date","valueCol":"Value","key1Col":key1ColName};
+    //console.log("typeInfoPath...",JSON.stringify(typeInfoPath));
+   
+	$("#radio").buttonset();
+	var selectBox=d3.select("#subPeriodSelect").append("select").attr("class","select_"+viewId);
+
+	//function to know what radio button is clicked
+	var periodClass = {
+	    "month": function(){ $("#subPeriodSelect").empty(); 
+		
+		var selectBoxArr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+				_.each(selectBoxArr,function(m,n){selectBox.append("option").attr("value",m).html(m); 
+				});
+		return },
+	    "year": 10,
+	    "quarter": 20
+	};
+
+	var topVal;
+	var dataJSON = arrToJSON(data, typeInfoPath);
+	//console.log("dataJSON", JSON.stringify(dataJSON));
+	var groupData = [];
+//function to aggregate <>
+var nest=d3.nest();
+nest.key(function(d) {
+return d['key1Col'];});
+nest.rollup(function(d) {
+	        var values = d3.sum(d, function(g) {
+	            return d3.round(g.valueCol);
+	        });
+	        groupData.push({
+	            "valueCol": values,
+	            "key1Col": d[0].key1Col
+	        });
+	    })
+	    .entries(dataJSON);
+
+	console.log("nest", JSON.stringify(nest));
+	console.log("groupData", JSON.stringify(groupData));
+	var groupData2 = [];
+	var nest2 = d3.nest().key(function(d) {
+	        return processOp(d.valueCol);
+	    })
+	    .sortKeys(d3.descending)
+	    .entries(groupData);
+//console.log("nest2",JSON.stringify(nest2));
+	_.each(nest2, function(m, n) {
+    	_.each(m.values,function(d,i){
+	    groupData2.push(d);
+        });
+	});
+    console.log("groupData2",JSON.stringify(groupData2));
+    var selScheme=$('input[name="radio"]:checked', '#myForm').val();
+    console.log("selScheme",selScheme);
+	notifyData(groupData2,periodClass,selScheme);
+	$("input[name='radio']").change(function() {
+	    var selScheme = $(this).next().text();
+	   notifyData(groupData2,periodClass,selScheme);
+	});
+
+	function arrToJSON(data, typeInfoPath) {
+	    var typeInfoArr = [];
+	    var dataArr = [];
+	    for (var propertyName in typeInfoPath) {
+	        typeInfoArr.push(propertyName);
+	    }
+	    console.log("typeinfoArr", JSON.stringify(typeInfoArr));
+	    _.each(data, function(d, i) {
+
+	        var dataObject = _.object(typeInfoArr, d);
+	        dataArr.push(dataObject);
+	    })
+	    return dataArr;
+	}
+     function formatTypeInfoPath(data,keyArr,key1ColName){
+    var typeInfoPath={};
+    _.each(data[0],function(d,i){
+    if(i===0) {
+    typeInfoPath['valueCol']='Value';
+    }
+    else if (i===1) {
+    typeInfoPath['key1Col']=key1ColName;
+    keyArr.push('key1Col');
+    }
+    else { var propertyName='key'+i+'Col';
+    typeInfoPath[propertyName]='Key'+i;
+    keyArr.push(propertyName);
+    }
+    });
+    return typeInfoPath;
+    }
+    
+    function notifyData(groupData2,periodClass,selScheme) {
+     var topVal = periodClass[selScheme];
+   
+  console.log('topVal',topVal);
+	    var groupData3 = _.first(groupData2, topVal);
+        console.log("groupData3",JSON.stringify(groupData3));
+        selData = _.pluck(groupData3, 'key1Col');
+        selCol=typeInfoPath.key1Col;
+        console.log("selData: ",JSON.stringify(selData)," selCol: ",selCol);
+        	    if (!view.id.contains('preview')) {
+         		window.elx.dashboard.view.notifySelect(view.id,{
+	            type: "value",
+	            col: selCol,
+	            sels: selData
+	        });
+	    }
+    }
+    
+    function processOp(value) {
+    return d3.round(value/90,0);
+    
+    }
+</div>

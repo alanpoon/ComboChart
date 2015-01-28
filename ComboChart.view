@@ -529,7 +529,7 @@
       "formatXTicksCast":"",
       "orderingKey":"monthString",
       "formatOrderingCast":"",
-      "interpolateGroupbyKey":"interpolateGroupbyKey",
+      "interpolateGroupbyKey":"default",
       "fixedGroupbyClassCast":"fixedGroupbyClass={'groupby1':['asd']}",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
@@ -1213,7 +1213,7 @@ var f=view.typeinfo.data.fields;
   /*rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
   ["2014-01-20",32],["2014-07-20",46]];
   */
-  rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
+  rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   var extendedArr=rawdata;
   } else { rawdata=${data}; var extendedArr=extendArr(rawdata,f,view);}
   
@@ -1226,14 +1226,15 @@ console.log("data1",JSON.stringify(data1));
   
   data2=interpolateMonthFixed(data1,view);
   data2=interpolateGroupby(data2,view);
-  //console.log("data2",JSON.stringify(data2));
+  console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
+  console.log("data3",JSON.stringify(data3));
   var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
   var data5=formatXTicksAndOrdering(data4,view);
   console.log("data5",JSON.stringify(data5));
   var data6=sortCategory(data5);
   smpColName = _.groupBy(data6, function(d) {
-    return d["columnName"];
+    return d["columnName"]+d['model'];
   });		
   console.log("initialSmpColName",JSON.stringify(smpColName));
    var toCategoryArray=Get_CategoryFn(smpColName);
@@ -1272,11 +1273,12 @@ console.log("data1",JSON.stringify(data1));
 		var toYaxisArray=[];
   var yAxisArray=(view.typeinfo.yAxisArray).split(",");
   var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
+   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
+  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
    set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
   
   //console.log("output",JSON.stringify(output));
-  console.log("toSeriesArray",JSON.stringify(toSeriesArray));
-  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
+ 
   console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
   console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
   console.log("modelAPIJSON",JSON.stringify(model_APIClass));
@@ -1797,10 +1799,13 @@ chartGen = function(smpColName, model_APIClass, output) {
     var index;
     index = 0;
   var modelType;
-      _.each(smpColName, function(t, unit) {
+      _.each(smpColName, function(t, unit_model) {
         var columnName, propertyName, splitModel, yAxisNum;
         modelType = _.first(_.pluck(t, "model"));
-        columnName = unit;
+        columnName = _.first(_.pluck(t,"columnName"));
+		console.log("YY unit_model",unit_model);
+		var unit=_.first(_.pluck(t,"columnName"));
+		console.log("YY unit",unit); 
         propertyName = modelType+"_"+columnName;
           if (typeof modelType != 'undefined') {
             console.log("typeof", typeof modelType);
@@ -1945,9 +1950,10 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
     ReadArray = [];
   
     objKey = Object.keys(data[0]);
+	console.log("before objKey",JSON.stringify(objKey));
     model_keyArray = [];
     columnNameArray = [];
-	keyArray=[];
+	var keyArray=[];
   //legendFormating
   var formatLegend; //formatLegend should be a class containing the Legend format for each model 
   if (formatLegendCast==="" && legendKey==="formatLegend")
@@ -1965,15 +1971,13 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
   //-end legendFormating
     objKey.forEach(function(key) {
         var columnNameObj, model_keyObj;
-        if (key.contains("#[") === true) {
-            model_keyObj = key.replace(/.*\[|\]/g, "");
-            columnNameObj = key.replace(/\#.*/, "");
-        } else {
+		if ( (key.contains("|")==false) &&(key.contains("#{")==false)) {
+			keyArray.push(key);
+			} else {
             return;
         }
-        model_keyArray.push(model_keyObj);
-        columnNameArray.push(columnNameObj);
-		keyArray.push(key);
+      
+		
     });
 	console.log("inside keyArray",JSON.stringify(keyArray));
     data.forEach(function(d, i) {
@@ -1995,7 +1999,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
             }
         }
   		var dataZero=[];
-          columnNameArray.forEach(function(modelKey,n) {
+          keyArray.forEach(function(modelKey,n) {
             var allGroupby, cName, lastGroupby_op, model_keyObj, model_keyObjArr, model_yAxisObj, objPush;
             for (propertyName in d) {
                 if (propertyName.contains(modelKey) === true) {
@@ -2005,6 +2009,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                     cName = propertyName.replace(/\#.*/, "");
                   // for taking string in brackets
                   var regExp = /\(([^)]+)\)/;
+				  console.log("cName",cName);
                   var matches=regExp.exec(cName);
                   columnNameWithoutOp=matches[1];
                   opName=cName.split("(")[0];
