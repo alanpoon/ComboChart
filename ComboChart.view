@@ -1280,7 +1280,7 @@ var f=view.typeinfo.data.fields;
 	var periodSelect_el,subPeriodSelect_el;
 	var chartPreGen;
 	
-  var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, arrToHex1,hexToModel1, smpColName, sum, 
+  var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn,reduceCToggle, arrToHex1,hexToModel1, smpColName, sum, 
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   
@@ -1301,8 +1301,9 @@ var f=view.typeinfo.data.fields;
   [["CHIEW HIANG TOH CH","2014-05-01",660],["CHIEW HIANG TOH CH","2014-06-01",799],["CHIEW HIANG TOH CH","2014-07-01",650],["CHIEW HIANG TOH CH","2014-08-01",670],["CHIEW HIANG TOH CH","2014-09-01",626],["CHIEW HIANG TOH CH","2014-10-01",200],["CHONG BENG NG NG","2014-03-01",800],["CHONG BENG NG NG","2014-05-01",1000],["CHONG BENG NG NG","2014-06-01",800],["CHONG BENG NG NG","2014-07-01",800],["CHONG BENG NG NG","2014-08-01",880],["CHONG BENG NG NG","2014-09-01",660],["CHONG BENG NG NG","2014-10-01",400],["ELEX CHAN EC","2014-03-01",626],["ELEX CHAN EC","2014-05-01",690],["ELEX CHAN EC","2014-06-01",883],["ELEX CHAN EC","2014-07-01",669],["ELEX CHAN EC","2014-08-01",661],["ELEX CHAN EC","2014-09-01",662],["ELEX CHAN EC","2014-10-01",236],["KOK MENG LEO KM","2014-04-01",641],["KOK MENG LEO KM","2014-05-01",335],["KOK MENG LEO KM","2014-06-01",679],["KOK MENG LEO KM","2014-07-01",786],["KOK MENG LEO KM","2014-08-01",537],["KOK MENG LEO KM","2014-09-01",696],["LIANG TIAN TL","2014-05-01",724],["LIANG TIAN TL","2014-06-01",683],["LIANG TIAN TL","2014-07-01",644],["LIANG TIAN TL","2014-08-01",444],["LIANG TIAN TL","2014-09-01",676],["LIANG TIAN TL","2014-10-01",196],["LIJUN QIAO LJ","2014-05-01",1310],["LIJUN QIAO LJ","2014-06-01",1117],["LIJUN QIAO LJ","2014-07-01",777],["LIJUN QIAO LJ","2014-08-01",833],["LIJUN QIAO LJ","2014-09-01",1037],["LIJUN QIAO LJ","2014-10-01",420],["MOHD HISHAM BIN MANSOR HS","2014-05-01",665],["MOHD HISHAM BIN MANSOR HS","2014-06-01",707],["MOHD HISHAM BIN MANSOR HS","2014-07-01",999],["MOHD HISHAM BIN MANSOR HS","2014-08-01",815],["MOHD HISHAM BIN MANSOR HS","2014-09-01",662],["MOHD HISHAM BIN MANSOR HS","2014-10-01",240]];
  // [["2014-03-01","CHONG BENG NG NG",800],["2014-03-01","ELEX CHAN EC",626],["2014-04-01","KOK MENG LEO KM",641],["2014-05-01","CHIEW HIANG TOH CH",660],["2014-05-01","CHONG BENG NG NG",1000],["2014-05-01","ELEX CHAN EC",690],["2014-05-01","KOK MENG LEO KM",335],["2014-05-01","LIANG TIAN TL",724],["2014-05-01","LIJUN QIAO LJ",1310],["2014-05-01","MOHD HISHAM BIN MANSOR HS",665],["2014-06-01","CHIEW HIANG TOH CH",799],["2014-06-01","CHONG BENG NG NG",800],["2014-06-01","ELEX CHAN EC",883],["2014-06-01","KOK MENG LEO KM",679],["2014-06-01","LIANG TIAN TL",683],["2014-06-01","LIJUN QIAO LJ",1117],["2014-06-01","MOHD HISHAM BIN MANSOR HS",707],["2014-07-01","CHIEW HIANG TOH CH",650],["2014-07-01","CHONG BENG NG NG",800],["2014-07-01","ELEX CHAN EC",669],["2014-07-01","KOK MENG LEO KM",786],["2014-07-01","LIANG TIAN TL",644],["2014-07-01","LIJUN QIAO LJ",777],["2014-07-01","MOHD HISHAM BIN MANSOR HS",999],["2014-08-01","CHIEW HIANG TOH CH",670],["2014-08-01","CHONG BENG NG NG",880],["2014-08-01","ELEX CHAN EC",661],["2014-08-01","KOK MENG LEO KM",537],["2014-08-01","LIANG TIAN TL",444],["2014-08-01","LIJUN QIAO LJ",833],["2014-08-01","MOHD HISHAM BIN MANSOR HS",815],["2014-09-01","CHIEW HIANG TOH CH",626],["2014-09-01","CHONG BENG NG NG",660],["2014-09-01","ELEX CHAN EC",662],["2014-09-01","KOK MENG LEO KM",696],["2014-09-01","LIANG TIAN TL",676],["2014-09-01","LIJUN QIAO LJ",1037],["2014-09-01","MOHD HISHAM BIN MANSOR HS",662],["2014-10-01","CHIEW HIANG TOH CH",200],["2014-10-01","CHONG BENG NG NG",400],["2014-10-01","ELEX CHAN EC",236],["2014-10-01","LIANG TIAN TL",196],["2014-10-01","LIJUN QIAO LJ",420],["2014-10-01","MOHD HISHAM BIN MANSOR HS",240]];
   //rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
+  rawdata=reduceCToggle(rawdata,view);
   var extendedArr=rawdata;
-  } else { rawdata=${data}; var extendedArr=extendArr(rawdata,f,view);}
+  } else { rawdata=${data}; rawdata=reduceCToggle(rawdata,view); var extendedArr=extendArr(rawdata,f,view);}
   
 console.log("extendedArr",JSON.stringify(extendedArr));
   console.log("rawdata",JSON.stringify(rawdata));
@@ -1775,6 +1776,9 @@ console.log("yAxis Series Formatter",series);
   if ( 4< smpGroupbySize) {
   placementCalibr =0.07;
   }
+      if (  smpGroupbySize==7) {
+  placementCalibr =0;
+  }
   var scale =d3.scale.linear().domain([1,smpGroupbySize])
   			.range([-smpGroupbySize/2*placementCalibr,smpGroupbySize/2*placementCalibr]);
   console.log("Index:",(index+1)," .scaleIndex",scale(index+1));
@@ -2035,6 +2039,17 @@ groupByFn = function(data, groupByArr, modelFunction) {
     });
     rolledup = nest.rollup(function(d) {});
 };
+  
+  reduceCToggle = function(data,view) { //remove the first element of all entries if cToggleKey is default
+	var newData=[];
+	  if(view.typeinfo.cToggleKey=='default') {
+	  _.each(data,function(d){
+	  newData.push(_.rest(d));
+	  });
+	  return newData;
+	  } else return data;
+  
+  };
   arrToHex1 = function(data, f,view){
 	  var keyLength = f.keys.length;
       var nameArr = getArr(f, 'name',view);
@@ -2253,7 +2268,7 @@ zeroOrOne_OperableClass = {
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
 			if (typeof model_APIClass[modelType]=='undefined') {
-			var legendName=legendEscortLines[index]+' '+cToggleType;
+			var legendName=(view.typeinfo.cToggleKey=='cToggleEnabled') ?legendEscortLines[index]+' '+cToggleType:legendEscortLines[index] ;
 			} else var legendName= columnName;
 			
             output[propertyName] = {
