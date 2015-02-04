@@ -1291,6 +1291,7 @@ data();
 var f=view.typeinfo.data.fields;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var addDataGroupFn,dataGroupClasses,addPeriodOptions,addSubPeriodOptions,dataGroupAvailClass;
 	var periodSelect_val='month', subPeriodSelect_val,dataGroupUsed, cToggleType,smpGroupbySize;
 	var periodSelect_el,subPeriodSelect_el;
@@ -1298,6 +1299,8 @@ var f=view.typeinfo.data.fields;
 	
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn,reduceCToggle, arrToHex1,hexToModel1, smpColName, sum, 
 =======
+=======
+>>>>>>> parent of 325f741... added extendArr function (not confident)
  if (view.data.jsonClass === "DataEmbedded"){ 
   /*rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
   ["2014-01-20",32],["2014-07-20",46]];
@@ -1320,6 +1323,7 @@ var f=view.typeinfo.data.fields;
   multiSelectFn(jQuery);// initalise multiSelect datagroup js
   
 <<<<<<< HEAD
+<<<<<<< HEAD
  if (view.data.jsonClass === "DataEmbedded"){ 
   rawdata=
   /*[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
@@ -1333,6 +1337,8 @@ var f=view.typeinfo.data.fields;
   } else { rawdata=${data}; rawdata=reduceCToggle(rawdata,view); var extendedArr=extendArr(rawdata,f,view);}
   
 
+=======
+>>>>>>> parent of 325f741... added extendArr function (not confident)
 =======
 >>>>>>> parent of 325f741... added extendArr function (not confident)
   console.log("rawdata",JSON.stringify(rawdata));
@@ -1349,6 +1355,7 @@ console.log("data1",JSON.stringify(data1));
   
   // //console.log("jess",model_APIClass);
  function debugFn(){
+<<<<<<< HEAD
 <<<<<<< HEAD
     extendArr=function(data,f,view){
 	//used when you want to use the same columns in operables
@@ -1392,6 +1399,9 @@ var localArr=[];
 return extendedArr;
 	
 	};
+=======
+    
+>>>>>>> parent of 325f741... added extendArr function (not confident)
 =======
     
 >>>>>>> parent of 325f741... added extendArr function (not confident)
@@ -2159,7 +2169,11 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
 	model_keyArray = [];
     columnNameArray = [];
 <<<<<<< HEAD
+<<<<<<< HEAD
 	var keyArray=[];
+=======
+  
+>>>>>>> parent of 325f741... added extendArr function (not confident)
 =======
   
 >>>>>>> parent of 325f741... added extendArr function (not confident)
@@ -2194,6 +2208,9 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
         model_keyArray.push(model_keyObj);
         columnNameArray.push(columnNameObj);
     });
+<<<<<<< HEAD
+>>>>>>> parent of 325f741... added extendArr function (not confident)
+=======
 >>>>>>> parent of 325f741... added extendArr function (not confident)
     data.forEach(function(d, i) {
         var Category, ColumnName, GroupNameArr, Model, ReadObj, Value, lastGroupby, propertyName;
