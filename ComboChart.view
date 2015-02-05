@@ -542,7 +542,6 @@
       "cToggleKey":"cToggleEnabled",
            "toolTipKey":"default",
       "legendEscortLines":"Gross Profit",
-      "typeAntiType":"",
       "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}",
       "inducedKey":"default",
       "formatInducedCast":"",
@@ -987,26 +986,12 @@
         "jsonClass":"Label",
         "id":"typeinfo-legendEscortLines-label",
         "type":"label",
-        "text":"Legends for Escort Lines $/type/"
+        "text":"Legends for Escort Lines"
       },{
         "jsonClass":"Field",
         "id":"typeinfo-legendEscortLines",
         "type":"field",
         "value":"${typeinfo.legendEscortLines}",
-        "readonly":false
-      }]
-    },{
-      "jsonClass":"Row",
-      "cols":[{
-        "jsonClass":"Label",
-        "id":"typeinfo-typeAntiType-label",
-        "type":"label",
-        "text":"Type and AntiType for chart Toggle"
-      },{
-        "jsonClass":"Field",
-        "id":"typeinfo-typeAntiType",
-        "type":"field",
-        "value":"${typeinfo.typeAntiType}",
         "readonly":false
       }]
     },{
@@ -1253,7 +1238,6 @@ elx.bundle.type.ComboChart = {
   var seriesInsertKey=view.typeinfo.seriesInsertKey;
 var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var legendEscortLines=(view.typeinfo.legendEscortLines).split(",");
-  var typeAntiType=(view.typeinfo.typeAntiType).split(",");
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
   var formatValueOperationCast=view.typeinfo.formatValueOperationCast;
@@ -1262,6 +1246,7 @@ var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   
     k.forEach(function(d,i) {
     keys.push(d.name);})
+  //console.log("keysAr",JSON.stringify(keys));
   var columns=[]; var operations=[];
   var t=view.typeinfo.data.fields.operable.values;
     t.forEach(function(d,i) {
@@ -1290,26 +1275,12 @@ data();
    */  
 var f=view.typeinfo.data.fields;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	var addDataGroupFn,dataGroupClasses,addPeriodOptions,addSubPeriodOptions,dataGroupAvailClass;
-	var periodSelect_val='month', subPeriodSelect_val,dataGroupUsed, cToggleType,smpGroupbySize;
+	var periodSelect_val='month', subPeriodSelect_val,dataGroupUsed, cToggleType;
 	var periodSelect_el,subPeriodSelect_el;
-	var chartPreGen;
+	var chartPreGen;var containsModelType; //Requires rearranging toSeries because of linked series
 	
   var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn,reduceCToggle, arrToHex1,hexToModel1, smpColName, sum, 
-=======
-=======
->>>>>>> parent of 325f741... added extendArr function (not confident)
- if (view.data.jsonClass === "DataEmbedded"){ 
-  /*rawdata=[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
-  ["2014-01-20",32],["2014-07-20",46]];
-  */
-  rawdata= [["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
-  } else rawdata=${data};
-  
-  var Set_GroupFn1, Get_CategoryFn,average, chartGen, groupByFn, hexToModel1, smpColName, sum, 
->>>>>>> parent of 325f741... added extendArr function (not confident)
   zeroOrOne_OperableClass;
   var model_TypeSplitClass,model_DataConvertClass,model_APIClass;
   
@@ -1322,8 +1293,6 @@ var f=view.typeinfo.data.fields;
  debugFn();
   multiSelectFn(jQuery);// initalise multiSelect datagroup js
   
-<<<<<<< HEAD
-<<<<<<< HEAD
  if (view.data.jsonClass === "DataEmbedded"){ 
   rawdata=
   /*[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
@@ -1334,36 +1303,33 @@ var f=view.typeinfo.data.fields;
   //rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   rawdata=reduceCToggle(rawdata,view);
   var extendedArr=rawdata;
-  } else { rawdata=${data}; rawdata=reduceCToggle(rawdata,view); var extendedArr=extendArr(rawdata,f,view);}
+  var reduceCToggleArr=extendedArr;
+  } else { rawdata=${data};  var extendedArr=extendArr(rawdata,f,view); var reduceCToggleArr=reduceCToggle(extendedArr,view);}
   
-
-=======
->>>>>>> parent of 325f741... added extendArr function (not confident)
-=======
->>>>>>> parent of 325f741... added extendArr function (not confident)
+console.log("extendedArr",JSON.stringify(extendedArr));
   console.log("rawdata",JSON.stringify(rawdata));
+  console.log("reduceCToggleArr",JSON.stringify(reduceCToggleArr));
   var data1, data2, data3, smpColName;
-  data1 = arrToHex1(rawdata, f, view);
+  data1 = arrToHex1(reduceCToggleArr, f, view);
   // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
 console.log("data1",JSON.stringify(data1));
   
   data2=interpolateMonthFixed(data1,view);
   data2=interpolateGroupby(data2,view);
+  console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
-   var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
+  console.log("data3",JSON.stringify(data3));
+  var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
   addDataGroupFn(data4, 'category', dataGroupKey, '#dataGroup_' + viewId, viewId);
   
   // //console.log("jess",model_APIClass);
  function debugFn(){
-<<<<<<< HEAD
-<<<<<<< HEAD
     extendArr=function(data,f,view){
 	//used when you want to use the same columns in operables
 //obtain uniq columnNames
 var colNameMap={};
 var uniqColName=[];
 var fieldsArr=getArr(f,'name',view);
-if(view.typeinfo.cToggleKey=='default') fieldsArr=_.rest(fieldsArr);
 console.log("fieldsArr",fieldsArr);
 var n=0;  //n is the index of unextended Arr
 for(var i=0;i< _.size(fieldsArr);i++){
@@ -1399,12 +1365,6 @@ var localArr=[];
 return extendedArr;
 	
 	};
-=======
-    
->>>>>>> parent of 325f741... added extendArr function (not confident)
-=======
-    
->>>>>>> parent of 325f741... added extendArr function (not confident)
    interpolateMonthFixed=function(data,view){
   if (view.typeinfo.interpolateXAxis=="Yes") {
   var categoryName; var valueNames=[];
@@ -1726,6 +1686,7 @@ model_APIClass.yAxis['stackLabels']= {
    model_APIClass['tooltip']={
                       formatter: function() {
   if(typeof this.point.stackTotal ==='undefined') {
+  console.log("this.point",this);
    return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;';
                         
@@ -1743,6 +1704,7 @@ model_APIClass.yAxis['stackLabels']= {
   }
   }, columnStack:{
   0:function(t,unit,index) {
+  console.log("t:",JSON.stringify(t));
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
@@ -1844,33 +1806,38 @@ console.log("yAxis Series Formatter",series);
  
   chartPreGen = function(data4){
 		  var data5=formatXTicksAndOrdering(data4,view);
-		  	var data6=sortCategory(data5);
+		  console.log("data5",JSON.stringify(data5));
+			var data6=sortCategory(data5);
 			
 		  smpColName = _.groupBy(data6, function(d) {
 			return d["columnName"]+d['model'];
 		  });		
-	   var toCategoryArray=Get_CategoryFn(smpColName);
+		  console.log("initialSmpColName",JSON.stringify(smpColName));
+		   var toCategoryArray=Get_CategoryFn(smpColName);
 		  var smpGroupby1=_.groupBy(data6,function(d) {
 			return d["groupby1"];
 		  });
-		  if ((_.where(data3,{model:'columnStackGroup'})).length>0) {
+		  if ((_.where(data6,{model:'columnStackGroup'})).length>0) {
+		 
 			smpGroupby1=_.groupBy(data6,function(d) {
 			return d["groupby1"];
 		  });smpColName={};
 		  _.each(smpGroupby1,function(t,unit) {
 		   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
 		  });
-		   smpGroupbySize=_.size(smpGroupby1);
+		  var smpGroupbySize=_.size(smpGroupby1);
+		   console.log("before there is columnStackGroup, smppGroupby1",JSON.stringify(smpGroupby1));
 		  }
 
 		 
 		   
-		  console.log("smpColName",JSON.stringify(smpColName));
+		  //console.log("smpColName",JSON.stringify(smpColName));
 		  console.log("toCategoryArray",JSON.stringify(toCategoryArray));
 		  var toSeriesArray=[];var output={};model_APIClass={};
-		  var containsModelType; //Requires rearranging toSeries because of linked series
+		  
 		  
 		  chartGen(smpColName,model_APIClass,output);
+		  console.log("before output",JSON.stringify(output));
 		  for (var propertyName in output) {
 			if (Array.isArray(output[propertyName])==true) {
 			_.each(output[propertyName],function(d,i){
@@ -1892,6 +1859,7 @@ console.log("yAxis Series Formatter",series);
 		  //console.log("output",JSON.stringify(output));
 		 
 		  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
+		  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
 		  console.log("modelAPIJSON",JSON.stringify(model_APIClass));
 			  Highcharts.setOptions({
 				colors: colorSeriesArray
@@ -1931,21 +1899,29 @@ chartGen = function(smpColName, model_APIClass, output) {
     var index;
     index = 0;
   var modelType;
-  
       _.each(smpColName, function(t, unit_model) {
-        var columnName, propertyName, splitModel, yAxisNum;
-        modelType = _.first(_.pluck(t, "model"));
-        columnName = _.first(_.pluck(t,"columnName"));
-		var unit=_.first(_.pluck(t,"columnName"));
-	        propertyName = modelType+"_"+columnName;
+	  console.log("before tt",JSON.stringify(t));
+        var columnName, propertyName, splitModel, yAxisNum,unit;
+    	if (_.isArray(t)==false) { //t will be object if the modelType is columnStackGroup
+			unit=unit_model;
+			modelType=_.first(_.pluck(t[unit_model],'model'));
+			columnName=unit_model;
+		} else {
+		    modelType = _.first(_.pluck(t, "model"));
+			columnName = _.first(_.pluck(t,"columnName"));
+		unit=_.first(_.pluck(t,"columnName"));
+		}
+        propertyName = modelType+"_"+columnName;
           if (typeof modelType != 'undefined') {
             console.log("typeof", typeof modelType);
             yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
             splitModel = model_TypeSplitClass[modelType];
                 _.each(splitModel, function(subModel, n) {
                 if (subModel !== null) {
+
                     zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
- 				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
+				
+  				 zeroOrOne_OperableClass[n].Draw(t, unit, index, output,index2);
                 }
             });
             index++;
@@ -1988,7 +1964,8 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType,index2) {
     groupCountArr.forEach(function(d, i) {
         groupProp.push("groupby" + (d + 1));
     });
-     uniqCategory = _.uniq(_.pluck(data, "category"));
+    console.log("groupProp", JSON.stringify(groupProp));
+    uniqCategory = _.uniq(_.pluck(data, "category"));
     nest = d3.nest();
     output = [];
     groupProp.forEach(function(d, i) {
@@ -2061,8 +2038,8 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType,index2) {
     return output;
 };
 
-groupByFn = function(data, groupByArr) {
-    var aggreData, nest;
+groupByFn = function(data, groupByArr, modelFunction) {
+    var aggreData, nest, rolledup;
     nest = d3.nest();
     aggreData = [];
     _.each(groupByArr, function(m, n) {
@@ -2070,14 +2047,7 @@ groupByFn = function(data, groupByArr) {
             return d[m];
         });
     });
-	var result=[];
-    nest.rollup(function(d) {
-		var sampleObj=_.clone(d[0]);
-		var sumValue=d3.sum(d, function(g) {return g.value; });
-		sampleObj['value']=sumValue;
-		result.push(sampleObj);
-		}).entries(data);
-	return result;
+    rolledup = nest.rollup(function(d) {});
 };
   
   reduceCToggle = function(data,view) { //remove the first element of all entries if cToggleKey is default
@@ -2129,9 +2099,11 @@ groupByFn = function(data, groupByArr) {
           propertiesArr.push(obj);
       })
   } else if(view.typeinfo.cToggleKey =='default')
-   {	
+   {
+		nameArr=_.rest(nameArr); //remove the first element which is the cToggleType
 		var keyArr = _.first(nameArr, keyLength);
          var colArr = _.last(nameArr, nameArr.length - keyLength);
+		 console.log("keyArr: ",keyArr,"  , colArr",colArr);
       var nameArr = _.map(colArr, function(num, i) {
           return opArr[i] + "(" + num + ")";
       });
@@ -2166,17 +2138,10 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
     ReadArray = [];
   
     objKey = Object.keys(data[0]);
-	model_keyArray = [];
+	console.log("before objKey",JSON.stringify(objKey));
+    model_keyArray = [];
     columnNameArray = [];
-<<<<<<< HEAD
-<<<<<<< HEAD
 	var keyArray=[];
-=======
-  
->>>>>>> parent of 325f741... added extendArr function (not confident)
-=======
-  
->>>>>>> parent of 325f741... added extendArr function (not confident)
   //legendFormating
   var formatLegend; //formatLegend should be a class containing the Legend format for each model 
   if (formatLegendCast==="" && legendKey==="formatLegend")
@@ -2199,19 +2164,10 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
 			} else {
             return;
         }
-<<<<<<< HEAD
       
 		
     });
-
-=======
-        model_keyArray.push(model_keyObj);
-        columnNameArray.push(columnNameObj);
-    });
-<<<<<<< HEAD
->>>>>>> parent of 325f741... added extendArr function (not confident)
-=======
->>>>>>> parent of 325f741... added extendArr function (not confident)
+	console.log("inside keyArray",JSON.stringify(keyArray));
     data.forEach(function(d, i) {
         var Category, ColumnName, GroupNameArr, Model, ReadObj, Value, lastGroupby, propertyName;
         ReadObj = {};
@@ -2241,7 +2197,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                     cName = propertyName.replace(/\#.*/, "");
                   // for taking string in brackets
                   var regExp = /\(([^)]+)\)/;
-			
+				  console.log("cName",cName);
                   var matches=regExp.exec(cName);
                   columnNameWithoutOp=matches[1];
                   opName=cName.split("(")[0];
@@ -2319,17 +2275,12 @@ zeroOrOne_OperableClass = {
     },
   1: { //for Average lines
         Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-		    var propertyName;
+			console.log("before index",index);
+            var propertyName;
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
 			if (typeof model_APIClass[modelType]=='undefined') {
-				if (view.typeinfo.cToggleKey=='cToggleEnabled') {
-				var cToggleAntiType=_.without(typeAntiType,cToggleType)[0];
-			var legendName=( _.str.include(legendEscortLines[index],'$/type/')  ) ?legendEscortLines[index].split('$/')[0]+cToggleType:
-			(_.str.include(legendEscortLines[index],'$/antiType/') ) 
-			? legendEscortLines[index].split('$/')[0] + cToggleAntiType: legendEscortLines[index];
-			
-			}else var legendName=legendEscortLines[index];
+			var legendName=(view.typeinfo.cToggleKey=='cToggleEnabled') ?legendEscortLines[index]+' '+cToggleType:legendEscortLines[index] ;
 			} else var legendName= columnName;
 			
             output[propertyName] = {
@@ -2358,7 +2309,6 @@ zeroOrOne_OperableClass = {
             smpCat = _.groupBy(d, function(d) {
                 return d["category"];
             });
-		
             _.each(smpCat, function(t, unit) {
                 var columnName, modelType, propertyName;
                 modelType = _.first(_.pluck(t, "model"));
@@ -2461,6 +2411,7 @@ safeRead = function() {
   return date instanceof Date && !isNaN(date.valueOf());
        },
   "month":function(d) { var date=new Date(d+" 2,2014");
+  console.log("date",date);
   return date instanceof Date && !isNaN(date.valueOf());}
   };
   
@@ -2503,6 +2454,7 @@ var objPushCount=0;
   var arr=(d.category).split('-');
   var monthValue=(parseInt(arr[1].split("Q")[1]))*3;
   var monthArr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  console.log("before monthValue",monthValue);
   var date=new Date(monthArr[monthValue-1]+' 15,'+arr[0]);return date.getTime()/1000
   }; break;
     case 'year-year':formatOrdering=function(d){
@@ -2530,6 +2482,7 @@ var objPushCount=0;
     if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(record));
   
     if (typeof formatOrdering!=='undefined'){
+  console.log("ordering:",formatOrdering(record));
    autoObj['ordering']=formatOrdering(record); 
     } 
   
@@ -2592,7 +2545,8 @@ var objPushCount=0;
   return toSeriesArray;
   };*/
   reArrangeToSeries = function(toSeriesArray, containsModelType,seriesInsertKey) {
-console.log('containsModelType',containsModelType);
+console.log('containsModelType',containsModelType, '..seriesInsertKey',seriesInsertKey);
+console.log('rearrange toSeriesArray',JSON.stringify(toSeriesArray));
 if (containsModelType === 'columnStackGroup') { //rearrange 'output'
 var columnData = _.where(toSeriesArray,{'type':'column'});
 var sortedOutput = _.sortBy(columnData, function(d) {
@@ -2600,6 +2554,7 @@ return d.colorIndex;
 });
 var lineData = _.where(toSeriesArray,{'type':'line'});
 toSeriesArray = _.union(sortedOutput,lineData);
+
 }
 if (containsModelType ==='columnInducedGroup') {
 var sortedOutput = _.sortBy(toSeriesArray,function(d) {
@@ -2611,6 +2566,8 @@ switch(seriesInsertKey) {
 case 'formatSeriesInsertCast':
 //check all the name of the Series are in the formatSeriesInsertCast
 var formatSeriesInsert=formatSeriesInsertCast.split(",");
+console.log("before formatSeriesInsert",JSON.stringify(formatSeriesInsert));
+console.log("before early toSeriesArray",JSON.stringify(toSeriesArray));
 var existingSeries=[];
 var sampleObj={};
 _.each(toSeriesArray,function(d,i) {
@@ -2623,7 +2580,7 @@ if (d.name==formatSeriesInsert[m]) { sampleObj=_.clone(d); break;
 var newToSeriesArray=toSeriesArray;
 var blankArray=[];
 var insertSeries=_.difference(formatSeriesInsert,existingSeries);
-
+console.log("before insertSeries",insertSeries);
 _.each(insertSeries,function(m,i){
 sampleObj['name']=m; sampleObj['data']=[];
 toSeriesArray.push(sampleObj);
@@ -2737,7 +2694,7 @@ for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 		});
 	
 	}
-		
+		//console.log("sampleObj",JSON.stringify(sampleObj));
 	return vObj['processedValue'];
 
 };
@@ -2768,6 +2725,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 
 //--Data Grouping Tab
     addDataGroupFn = function(modelData, tCol, dataGroupKey, dataGroupHex, viewId) {
+		console.log("dataGroupKey",dataGroupKey);
         if (dataGroupKey === 'timePeriodOptions') {
 			
             var dataGroupContent = d3.select(dataGroupHex);
@@ -2780,7 +2738,8 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 			
             var tDomainDate = setTDomain1(modelData, tCol);
             var periodSelect_hex = '#periodSelect_' + viewId;
-	            var subPeriodSelect_hex = '#subPeriodSelect_' + viewId
+			console.log("front periodSelect_el",$(periodSelect_hex));
+            var subPeriodSelect_hex = '#subPeriodSelect_' + viewId
             addSubPeriodOptions(modelData, tDomainDate, tCol, 'month', subPeriodSelect_hex);
             periodSelect_el = $(periodSelect_hex).multiselect({
                 selectedList: 1,
@@ -2795,7 +2754,8 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 				minWidth:100
 
             });
-		    addPeriodOptions(periodSelect_el);
+			console.log("periodSelect_el",periodSelect_el);
+            addPeriodOptions(periodSelect_el);
 	
         } else {
 	
@@ -2830,6 +2790,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                 return monthFormat(date);
             },
             'year': function(date) {
+                console.log("now is year", date.getFullYear());
                 return date.getFullYear();
 
             },
@@ -2837,7 +2798,6 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                 return date.getFullYear()+'-Q' + getQuarter(date);
             }
 		};
-		
         var filteredData = [];
         var subPeriodData = _.map(modelData, function(num, key) {
             var sampleObj = _.clone(num);
@@ -2852,19 +2812,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                 'tColSubPeriod': m
             }));
         });
-		
-		// group the data by category and aggregate the 'value' column
-		var groupCount=0;
-	for (var property in filteredData[0]) {
-	if (_.str.include(property,'groupby')) groupCount++;
-	}
-		var groupbyRange=_.map(_.range(1,groupCount+1),function(m){ return 'groupby'+m;});
-		var groupByArr=['model','category'];
-		var groupByArr=_.union(groupByArr,groupbyRange);
-		
-		var aggregateData=groupByFn(filteredData,groupByArr);
-		console.log('aggregateData',JSON.stringify(aggregateData));
-		return aggregateData;
+        return filteredData;
     };
     addPeriodOptions = function(periodSelect_el) {
         _.each(['month', 'year', 'quarter'], function(m) {
@@ -2875,7 +2823,8 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
             });
             opt.appendTo(periodSelect_el);
         });
-		periodSelect_el.multiselect('refresh');
+		console.log("add Period",periodSelect_el);
+        periodSelect_el.multiselect('refresh');
     };
     updateSubPeriodOptions = function(modelData, tDomainDate, tCol, subPeriodSelect_hex) {
         var updatesubPeriodSelect_el = $(subPeriodSelect_hex);
@@ -2889,21 +2838,26 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
             });
             opt.appendTo(updatesubPeriodSelect_el);
         });
-	
+		console.log("updatesubPeriodSelect_el",updatesubPeriodSelect_el);
         updatesubPeriodSelect_el.multiselect('refresh');
     };
     addSubPeriodOptions = function(modelData, tDomainDate, tCol,periodSelect_val, subPeriodSelect_hex) {
         subPeriodSelect_el = $(subPeriodSelect_hex).multiselect({
 
             selectedText: function(numChecked, numTotal, checkedItems) {
-		                subPeriodSelect_val = $.map(checkedItems, function(checkbox) {
+			console.log("help");
+                subPeriodSelect_val = $.map(checkedItems, function(checkbox) {
                     return checkbox.value;
                 });
-                           
+                console.log("subPeriodSelect_val _sel", subPeriodSelect_val);
+                
                 var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val); //data filtered by subPeriodselected_val
-				if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
+				
+				
+				 if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 				chartPreGen(groupedData);
-              
+                console.log('groupedData_selected', JSON.stringify(groupedData));
+
                 return subPeriodSelect_val.join(", ");
             },
 
@@ -2912,12 +2866,14 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val);
 			   if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 			   chartPreGen(groupedData);
-              
+                console.log('groupedData_unchecked', JSON.stringify(groupedData));
+
             },minWidth:400
 
         });
         var subPeriodArr = dataGroupAvailClass[periodSelect_val](tDomainDate[0], tDomainDate[1]);
-           subPeriodSelect_val = subPeriodArr;
+        console.log("subPeriodArr", subPeriodArr);
+        subPeriodSelect_val = subPeriodArr;
         _.each(subPeriodArr, function(m) {
 
             var opt = $('&lt;option /&gt;', {
@@ -2927,6 +2883,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
             });
             opt.appendTo(subPeriodSelect_el);
         });
+		console.log("subPeriodSelect_el",subPeriodSelect_el);
         subPeriodSelect_el.multiselect('refresh');
     };
     dataGroupAvailClass = { //return the available options in each type of dataGroup as an array
