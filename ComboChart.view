@@ -2503,7 +2503,12 @@ zeroOrOne_OperableClass = {
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
 			if (typeof model_APIClass[modelType]=='undefined') {
-			var legendName=(view.typeinfo.cToggleKey=='cToggleEnabled') ?legendEscortLines[index]+' '+cToggleType:legendEscortLines[index] ;
+			if (view.typeinfo.cToggleKey=='cToggleEnabled') {
+			var cToggleAntiType=_.without(typeAntiType,cToggleType)[0];
+			var legendName=( _.str.include(legendEscortLines[index],'$/type/') ) ?legendEscortLines[index].split('$/')[0]+cToggleType:
+			(_.str.include(legendEscortLines[index],'$/antiType/') )
+			? legendEscortLines[index].split('$/')[0] + cToggleAntiType: legendEscortLines[index];
+			}else var legendName=legendEscortLines[index];
 			} else var legendName= columnName;
 			
             output[propertyName] = {
