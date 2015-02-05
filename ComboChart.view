@@ -1826,8 +1826,7 @@ console.log("yAxis Series Formatter",series);
 		   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
 		  });
 		  var smpGroupbySize=_.size(smpGroupby1);
-		   console.log("before there is columnStackGroup, smppGroupby1",JSON.stringify(smpGroupby1));
-		  }
+		   }
 
 		 
 		   
@@ -1900,8 +1899,7 @@ chartGen = function(smpColName, model_APIClass, output) {
     index = 0;
   var modelType;
       _.each(smpColName, function(t, unit_model) {
-	  console.log("before tt",JSON.stringify(t));
-        var columnName, propertyName, splitModel, yAxisNum,unit;
+	         var columnName, propertyName, splitModel, yAxisNum,unit;
     	if (_.isArray(t)==false) { //t will be object if the modelType is columnStackGroup
 			unit=unit_model;
 			modelType=_.first(_.pluck(t[unit_model],'model'));
@@ -2138,8 +2136,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
     ReadArray = [];
   
     objKey = Object.keys(data[0]);
-	console.log("before objKey",JSON.stringify(objKey));
-    model_keyArray = [];
+	model_keyArray = [];
     columnNameArray = [];
 	var keyArray=[];
   //legendFormating
@@ -2275,8 +2272,7 @@ zeroOrOne_OperableClass = {
     },
   1: { //for Average lines
         Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-			console.log("before index",index);
-            var propertyName;
+			var propertyName;
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
 			if (typeof model_APIClass[modelType]=='undefined') {
@@ -2566,8 +2562,6 @@ switch(seriesInsertKey) {
 case 'formatSeriesInsertCast':
 //check all the name of the Series are in the formatSeriesInsertCast
 var formatSeriesInsert=formatSeriesInsertCast.split(",");
-console.log("before formatSeriesInsert",JSON.stringify(formatSeriesInsert));
-console.log("before early toSeriesArray",JSON.stringify(toSeriesArray));
 var existingSeries=[];
 var sampleObj={};
 _.each(toSeriesArray,function(d,i) {
@@ -2580,7 +2574,6 @@ if (d.name==formatSeriesInsert[m]) { sampleObj=_.clone(d); break;
 var newToSeriesArray=toSeriesArray;
 var blankArray=[];
 var insertSeries=_.difference(formatSeriesInsert,existingSeries);
-console.log("before insertSeries",insertSeries);
 _.each(insertSeries,function(m,i){
 sampleObj['name']=m; sampleObj['data']=[];
 toSeriesArray.push(sampleObj);
