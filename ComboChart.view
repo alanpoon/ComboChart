@@ -995,6 +995,20 @@
         "readonly":false
       }]
     },{
+"jsonClass":"Row",
+"cols":[{
+"jsonClass":"Label",
+"id":"typeinfo-typeAntiType-label",
+"type":"label",
+"text":"Type and AntiType for chart Toggle"
+},{
+"jsonClass":"Field",
+"id":"typeinfo-typeAntiType",
+"type":"field",
+"value":"${typeinfo.typeAntiType}",
+"readonly":false
+}]
+},{
       "jsonClass":"Row",
       "cols":[{
         "jsonClass":"Label",
@@ -1238,6 +1252,7 @@ elx.bundle.type.ComboChart = {
   var seriesInsertKey=view.typeinfo.seriesInsertKey;
 var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var legendEscortLines=(view.typeinfo.legendEscortLines).split(",");
+  var typeAntiType=(view.typeinfo.typeAntiType).split(",");
   var toolTipKey=view.typeinfo.toolTipKey;
   var formatToolTipCast=view.typeinfo.formatToolTipCast;
   var formatValueOperationCast=view.typeinfo.formatValueOperationCast;
@@ -1330,6 +1345,7 @@ console.log("data1",JSON.stringify(data1));
 var colNameMap={};
 var uniqColName=[];
 var fieldsArr=getArr(f,'name',view);
+if(view.typeinfo.cToggleKey=='default') fieldsArr=_.rest(fieldsArr);
 console.log("fieldsArr",fieldsArr);
 var n=0;  //n is the index of unextended Arr
 for(var i=0;i< _.size(fieldsArr);i++){
@@ -2036,16 +2052,23 @@ Set_GroupFn1 = function(data, groupCount, subModel,modelType,index2) {
     return output;
 };
 
-groupByFn = function(data, groupByArr, modelFunction) {
-    var aggreData, nest, rolledup;
-    nest = d3.nest();
-    aggreData = [];
-    _.each(groupByArr, function(m, n) {
-        nest.key(function(d) {
-            return d[m];
-        });
-    });
-    rolledup = nest.rollup(function(d) {});
+groupByFn = function(data, groupByArr) {
+var aggreData, nest;
+nest = d3.nest();
+aggreData = [];
+_.each(groupByArr, function(m, n) {
+nest.key(function(d) {
+return d[m];
+});
+});
+var result=[];
+nest.rollup(function(d) {
+var sampleObj=_.clone(d[0]);
+var sumValue=d3.sum(d, function(g) {return g.value; });
+sampleObj['value']=sumValue;
+result.push(sampleObj);
+}).entries(data);
+return result;
 };
   
   reduceCToggle = function(data,view) { //remove the first element of all entries if cToggleKey is default
