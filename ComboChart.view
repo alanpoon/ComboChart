@@ -1538,8 +1538,8 @@ console.log("data1",JSON.stringify(data1));
   console.log("data2",JSON.stringify(data2));
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   console.log("data3",JSON.stringify(data3));
-  var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
-  addDataGroupFn(data4, 'category', dataGroupKey, '#dataGroup_' + viewId, viewId);
+ // var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
+  addDataGroupFn(data3, 'category', dataGroupKey, '#dataGroup_' + viewId, viewId);
   
   // //console.log("jess",model_APIClass);
  function debugFn(){
@@ -1672,20 +1672,16 @@ return extendedArr;
 	
 	
 	data=sortByFixedGroupbyClass(data,fixedGroupbyClass,columnNameGroupby,'groupby1');
+	
   } return data;
   };
   	//sort the new data by the fixedGroupbyClass
 		 sortByFixedGroupbyClass=function(data,fixedGroupbyClass,columnNameGroupby,basedOn){
 		var sortedData=[];
-			d3.nest().key(function(d,i) { var columnName=columnNameGroupby[basedOn]; return d[columnName];})
-		.rollup(function(d,i){   
-			var orderedByColName=d.sort(function(a,b) {
-			  return fixedGroupbyClass[basedOn].indexOf(a)-fixedGroupbyClass[basedOn].indexOf(b);
-			  }); 
-			  _.each(orderedByColName,function(d){
-			  sortedData.push(d);
-			  });
-			  return; }).entries(data);
+	sortedData=_.sortBy(data,function(d){ 
+	
+	return fixedGroupbyClass[basedOn].indexOf(d[columnNameGroupby[basedOn]]);});
+		 console.log("after sortedData",JSON.stringify(sortedData));
 		return sortedData;};
 		
 		
@@ -1996,14 +1992,14 @@ console.log("yAxis Series Formatter",series);
   placementCalibr =0.12;
   }
   if ( 4< smpGroupbySize) {
-  placementCalibr =0.07;
+  placementCalibr =0.072;
   }
-      if (  smpGroupbySize==7) {
+    /*  if (  smpGroupbySize==7) {
   placementCalibr =0;
-  }
+  } */
   var scale =d3.scale.linear().domain([1,smpGroupbySize])
   			.range([-smpGroupbySize/2*placementCalibr,smpGroupbySize/2*placementCalibr]);
-  console.log("Index:",(index+1)," .scaleIndex",scale(index+1));
+  console.log("Index:",(index+1)," .scaleIndex",scale(index+1),',smpGroupbySize:',smpGroupbySize,',placementCalibr:',placementCalibr);
    colToSeriesArr={type:'line', name:columnNameData,
   data:valueData, 
   color: complementaryColor(Highcharts.getOptions().colors[index]),
@@ -2421,8 +2417,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                     cName = propertyName.replace(/\#.*/, "");
                   // for taking string in brackets
                   var regExp = /\(([^)]+)\)/;
-				  console.log("cName",cName);
-                  var matches=regExp.exec(cName);
+				  var matches=regExp.exec(cName);
                   columnNameWithoutOp=matches[1];
                   opName=cName.split("(")[0];
                   //-end
@@ -2710,7 +2705,6 @@ var objPushCount=0;
     if (objPushCount ==0) console.log("objpush for Formating Order",JSON.stringify(record));
   
     if (typeof formatOrdering!=='undefined'){
-  console.log("ordering:",formatOrdering(record));
    autoObj['ordering']=formatOrdering(record); 
     } 
   
@@ -3043,7 +3037,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 	if (_.str.include(property,'groupby')) groupCount++;
 	}
 		var groupbyRange=_.map(_.range(1,groupCount+1),function(m){ return 'groupby'+m;});
-		var groupByArr=['model','category'];
+		var groupByArr=['model','category','columnName'];
 		var groupByArr=_.union(groupByArr,groupbyRange);
 		
 		var aggregateData=groupByFn(filteredData,groupByArr);
@@ -3088,7 +3082,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                 console.log("subPeriodSelect_val _sel", subPeriodSelect_val);
                 
                 var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val); //data filtered by subPeriodselected_val
-				
+				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast);
 				
 				 if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 				chartPreGen(groupedData);
@@ -3100,6 +3094,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
             uncheckAll: function() {
                 subPeriodSelect_val = [];
                var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val);
+			   groupedData =valueOperating(groupedData,valueOperationKey,formatValueOperationCast);
 			   if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 			   chartPreGen(groupedData);
                 console.log('groupedData_unchecked', JSON.stringify(groupedData));
