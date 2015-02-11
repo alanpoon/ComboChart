@@ -533,6 +533,7 @@
       "formatSeriesInsertCast":"",
       "xTicksKey":"string",
       "formatXTicksCast":"",
+      "xTicksRotation":"0",
       "orderingKey":"monthString",
       "formatOrderingCast":"",
       "interpolateGroupbyKey":"default",
@@ -895,6 +896,55 @@
                            "jsonClass":"Option",
                            "text":"format XTicks Cast",
                            "value":"formatXTicksCast"
+                        }
+                     ]
+                  }
+               ]
+            },,
+            {
+               "jsonClass":"Row",
+               "cols":[
+                  {
+                     "jsonClass":"Label",
+                     "id":"typeinfo-xTicksRotation-label",
+                     "type":"label",
+                     "text":"XTicks Rotation"
+                  },
+                  {
+                     "jsonClass":"Select",
+                     "id":"typeinfo-xTicksRotation",
+                     "type":"select",
+                     "value":"${typeinfo.xTicksRotation}",
+                     "options":[
+                        {
+                           "jsonClass":"Option",
+                           "text":"0",
+                           "value":"0"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"45",
+                           "value":"45"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"-45",
+                           "value":"-45"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"90",
+                           "value":"90"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"-90",
+                           "value":"-90"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"270",
+                           "value":"270"
                         }
                      ]
                   }
@@ -1448,6 +1498,7 @@ elx.bundle.type.ComboChart = {
    var keys=[];
    var dataGroupKey=view.typeinfo.dataGroupKey;
   var xTicksKey=view.typeinfo.xTicksKey;
+  var xTicksRotation=view.typeinfo.xTicksRotation;
   var formatXTicksCast=view.typeinfo.formatXTicksCast;
   var orderingKey=view.typeinfo.orderingKey;
   var formatOrderingCast=view.typeinfo.formatOrderingCast;
@@ -2092,13 +2143,15 @@ console.log("yAxis Series Formatter",series);
 			  subtitle: {
 				text: cfgoptions.subtitle
 			  },
-			  xAxis: [
+			  xAxis: 
 				{
-				  categories: toCategoryArray
-				}
-			  ],
+				  categories: toCategoryArray ,labels:{rotation:parseInt(xTicksRotation)}
+				  
+				  }
+			  ,
 			  yAxis: toYaxisArray,
 		  labels: {},
+		
 			  plotOptions: {
 				column: {
 				  pointPadding: 0.2,
@@ -2464,15 +2517,15 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
 };
 
 sum = function(arr) {
-    return _.reduce(arr, (function(memo, num) {
+    return d3.round(_.reduce(arr, (function(memo, num) {
         return memo + num;
-    }), 0);
+    }), 0),2);
 };
 
 average = function(arr) {
-    return _.reduce(arr, function(memo, num) {
+    return d3.round(_.reduce(arr, function(memo, num) {
         return memo + num;
-    }, 0) / arr.length;
+    }, 0) / arr.length,2);
 };
 
 zeroOrOne_OperableClass = {
@@ -2814,11 +2867,21 @@ return toSeriesArray;
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
   var formatToolTip;
+  console.log("before .. modelType",modelType);
   eval(formatToolTipCast);
+  var formatToolTipForCToggle=function(propertyName,formatToolTip,cToggleType){
+  return {valueDecimals:formatToolTip[propertyName]['valueDecimals'](cToggleType),
+  valueSuffix:formatToolTip[propertyName]['valueSuffix'](cToggleType),
+  valuePrefix:formatToolTip[propertyName]['valuePrefix'](cToggleType)}
+  };
   for (var propertyName in formatToolTip) {
-  if (propertyName==modelType) {
+  if (propertyName==modelType && view.typeinfo.cToggleKey=='default') {
   var newObj=finalObj;
   newObj['tooltip']=formatToolTip[propertyName];
+  finalObj=newObj;
+  } else if (propertyName==modelType && view.typeinfo.cToggleKey=='cToggleEnabled') {
+  var newObj=finalObj;
+  newObj['tooltip']=formatToolTipForCToggle(propertyName,formatToolTip,cToggleType);
   finalObj=newObj;
   }
   }
@@ -3129,7 +3192,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                     newMonthName.push(monthName[listed]);
                 });
             }
-            return (mDiff >= 12) ? monthName : newMonthName;
+            return monthName;
         },
         'year': function(minDate, maxDate) {
             return _.range(minDate.getFullYear(), maxDate.getFullYear() + 1);
@@ -3143,7 +3206,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                     quarterArr.push('Q' + m);
                 });
             }
-            return (qDiff == 4) ? ['Q1', 'Q2', 'Q3', 'Q4'] : quarterArr;
+            return  ['Q1', 'Q2', 'Q3', 'Q4'];
         }
 
     };
