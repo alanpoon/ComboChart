@@ -2941,7 +2941,7 @@ operation=function(ABvalue){
 		this[key]=ABvalue[key]; //declare this.A and this.B as a value
 	}
 };
-operationProcesser=function(vObj){ 
+operationProcesser=function(vObj,cToggleType){ 
 	//vObj={A:[...],B:[...]};
 	//for each record, process operation.prototype.value once
 	
@@ -2970,7 +2970,7 @@ for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 		var sampleObj=_.clone(vObj[arg][i]);
 		var beforeId=(sampleObj.model).split("?id")[0];
 		var afterId=(sampleObj.model).split("/")[1];
-		sampleObj['value']=method.value()[n];
+		sampleObj['value']=method.value(cToggleType)[n];
 		sampleObj['model']=beforeId+afterId;
 		vObj['processedValue'].push(sampleObj);
 		});
@@ -2981,7 +2981,7 @@ for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 
 };
 
-valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
+valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cToggleType){
 	if (valueOperationKey==='formatValueOperation')
 	eval(formatValueOperationCast);
 	var uniqModel=_.uniq(_.pluck(modelData,'model'));
@@ -3000,7 +3000,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 		vObj[m]=filteredOp;
 		});
 	
-	var newVObj=operationProcesser(vObj);
+	var newVObj=operationProcesser(vObj,cToggleType);
 	return (valueOperationKey==='formatValueOperation')? newVObj:modelData;
 };
 //--end valueOperating
@@ -3145,7 +3145,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
                 console.log("subPeriodSelect_val _sel", subPeriodSelect_val);
                 
                 var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val); //data filtered by subPeriodselected_val
-				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast);
+				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
 				
 				 if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 				chartPreGen(groupedData);
@@ -3157,7 +3157,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
             uncheckAll: function() {
                 subPeriodSelect_val = [];
                var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val);
-			   groupedData =valueOperating(groupedData,valueOperationKey,formatValueOperationCast);
+			   groupedData =valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
 			   if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 			   chartPreGen(groupedData);
                 console.log('groupedData_unchecked', JSON.stringify(groupedData));
