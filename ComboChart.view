@@ -928,23 +928,8 @@
                         },
                         {
                            "jsonClass":"Option",
-                           "text":"-45",
-                           "value":"-45"
-                        },
-                        {
-                           "jsonClass":"Option",
                            "text":"90",
                            "value":"90"
-                        },
-                        {
-                           "jsonClass":"Option",
-                           "text":"-90",
-                           "value":"-90"
-                        },
-                        {
-                           "jsonClass":"Option",
-                           "text":"270",
-                           "value":"270"
                         }
                      ]
                   }
@@ -1444,15 +1429,16 @@
 elx.bundle.type.ComboChart = {
 
   	init : function(view) {
-         	  var dataKey = elx.MultiKeyColumnSection.getKeyData(view,view.typeinfo.data.fields.keys);
-           var tableKey=  new elx.MultiKeyColumnSection("typeinfo-property-keys","typeinfo-property", view, dataKey);
-      $("#typeinfo-property-keys").data("table",tableKey);
-            var dataOps =  elx.utils.getElxChartOperablesData(view, view.typeinfo.data.fields.operable.values);
-   		var tableOp = new elx.MultiChartValueColumnSection("typeinfo-data-fields-operable-values-table",
+         var dataKey = elx.MultiKeyColumnSection.getKeyData(view,view.typeinfo.data.fields.keys);
+         var tableKey=  new elx.MultiKeyColumnSection("typeinfo-property-keys","typeinfo-property", view, dataKey);
+         $("#typeinfo-property-keys").data("table",tableKey);
+      console.log("tableKey",tableKey);
+         var dataOps =  elx.utils.getElxChartOperablesData(view, view.typeinfo.data.fields.operable.values);
+   		 var tableOp = new elx.MultiChartValueColumnSection("typeinfo-data-fields-operable-values-table",
                                                         "typeinfo-data-fields-operable-values", view, dataOps);
-		$("#typeinfo-data-fields-operable-values-table").data("table",tableOp);
-      elx.host.utils.initSectionGroups(view,$("#ComboChart-div"));
-        $("#typeinfo-data-cToggleTypeCol").val(view.typeinfo.data.fields.cToggleTypeCol[0].name);
+		 $("#typeinfo-data-fields-operable-values-table").data("table",tableOp);
+         elx.host.utils.initSectionGroups(view,$("#ComboChart-div"));
+         $("#typeinfo-data-cToggleTypeCol").val(view.typeinfo.data.fields.cToggleTypeCol[0].name);
       
 	},
 
@@ -2003,7 +1989,7 @@ console.log("yAxis Series Formatter",series);
       sum+=series[i].yData[this.x];
     }
   if (sum < 0 && this.isNegative || sum >= 0 && !this.isNegative) {
-  sum=(sum>100000) ? d3.round(sum/1000,2)+'k' : sum;
+  sum=(sum>50000) ? d3.round(sum/1000,2)+'k' : d3.round(sum,2);
   return sum;}
   
   }}};
@@ -2867,21 +2853,11 @@ return toSeriesArray;
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
   var formatToolTip;
-  console.log("before .. modelType",modelType);
   eval(formatToolTipCast);
-  var formatToolTipForCToggle=function(propertyName,formatToolTip,cToggleType){
-  return {valueDecimals:formatToolTip[propertyName]['valueDecimals'](cToggleType),
-  valueSuffix:formatToolTip[propertyName]['valueSuffix'](cToggleType),
-  valuePrefix:formatToolTip[propertyName]['valuePrefix'](cToggleType)}
-  };
   for (var propertyName in formatToolTip) {
-  if (propertyName==modelType && view.typeinfo.cToggleKey=='default') {
+  if (propertyName==modelType) {
   var newObj=finalObj;
   newObj['tooltip']=formatToolTip[propertyName];
-  finalObj=newObj;
-  } else if (propertyName==modelType && view.typeinfo.cToggleKey=='cToggleEnabled') {
-  var newObj=finalObj;
-  newObj['tooltip']=formatToolTipForCToggle(propertyName,formatToolTip,cToggleType);
   finalObj=newObj;
   }
   }
@@ -2941,7 +2917,7 @@ operation=function(ABvalue){
 		this[key]=ABvalue[key]; //declare this.A and this.B as a value
 	}
 };
-operationProcesser=function(vObj,cToggleType){ 
+operationProcesser=function(vObj){ 
 	//vObj={A:[...],B:[...]};
 	//for each record, process operation.prototype.value once
 	
@@ -2970,7 +2946,7 @@ for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 		var sampleObj=_.clone(vObj[arg][i]);
 		var beforeId=(sampleObj.model).split("?id")[0];
 		var afterId=(sampleObj.model).split("/")[1];
-		sampleObj['value']=method.value(cToggleType)[n];
+		sampleObj['value']=method.value()[n];
 		sampleObj['model']=beforeId+afterId;
 		vObj['processedValue'].push(sampleObj);
 		});
@@ -2981,7 +2957,7 @@ for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 
 };
 
-valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cToggleType){
+valueOperating=function(modelData,valueOperationKey,formatValueOperationCast){
 	if (valueOperationKey==='formatValueOperation')
 	eval(formatValueOperationCast);
 	var uniqModel=_.uniq(_.pluck(modelData,'model'));
@@ -3000,7 +2976,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 		vObj[m]=filteredOp;
 		});
 	
-	var newVObj=operationProcesser(vObj,cToggleType);
+	var newVObj=operationProcesser(vObj);
 	return (valueOperationKey==='formatValueOperation')? newVObj:modelData;
 };
 //--end valueOperating
@@ -3021,17 +2997,18 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             var tDomainDate = setTDomain1(modelData, tCol);
             var periodSelect_hex = '#periodSelect_' + viewId;
 			console.log("front periodSelect_el",$(periodSelect_hex));
-            var subPeriodSelect_hex = '#subPeriodSelect_' + viewId
-            addSubPeriodOptions(modelData, tDomainDate, tCol, 'month', subPeriodSelect_hex);
+            var subPeriodSelect_hex = '#subPeriodSelect_' + viewId;
+		     addSubPeriodOptions(modelData, tDomainDate, tCol, subPeriodSelect_hex);
             periodSelect_el = $(periodSelect_hex).multiselect({
                 selectedList: 1,
                 multiple: false,
                 click: function(event, ui) {
                     periodSelect_val = [ui.value];
+					console.log('periodSelect_val in click',periodSelect_val);
                     //clear options in subPeriodSelect
                     $(subPeriodSelect_hex).empty();
                     //add options in subPeriodSelects
-                       	updateSubPeriodOptions(modelData,tDomainDate,tCol,subPeriodSelect_hex);
+                       	updateSubPeriodOptions(modelData,tDomainDate,tCol,periodSelect_val,subPeriodSelect_hex);
                 },
 				minWidth:100
 
@@ -3058,8 +3035,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 return monthFormat(date);
             },
             'year': function(date) {
-                console.log("now is year", date.getFullYear());
-                return date.getFullYear();
+                    return date.getFullYear();
 
             },
             'quarter': function(date) {
@@ -3072,8 +3048,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 return monthFormat(date);
             },
             'year': function(date) {
-                console.log("now is year", date.getFullYear());
-                return date.getFullYear();
+                 return date.getFullYear();
 
             },
             'quarter': function(date) {
@@ -3119,9 +3094,12 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 		console.log("add Period",periodSelect_el);
         periodSelect_el.multiselect('refresh');
     };
-    updateSubPeriodOptions = function(modelData, tDomainDate, tCol, subPeriodSelect_hex) {
+    updateSubPeriodOptions = function(modelData, tDomainDate, tCol,periodSelect_val, subPeriodSelect_hex) {
         var updatesubPeriodSelect_el = $(subPeriodSelect_hex);
+		
         var subPeriodArr = dataGroupAvailClass[periodSelect_val](tDomainDate[0], tDomainDate[1]);
+		console.log("periodSelect_val in update",periodSelect_val);
+		console.log("subPeriod in update",subPeriodArr);
         _.each(subPeriodArr, function(m) {
 
             var opt = $('&lt;option /&gt;', {
@@ -3130,11 +3108,19 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 selected: 'selected'
             });
             opt.appendTo(updatesubPeriodSelect_el);
+		 
         });
 		console.log("updatesubPeriodSelect_el",updatesubPeriodSelect_el);
         updatesubPeriodSelect_el.multiselect('refresh');
+	  
     };
-    addSubPeriodOptions = function(modelData, tDomainDate, tCol,periodSelect_val, subPeriodSelect_hex) {
+    addSubPeriodOptions = function(modelData, tDomainDate, tCol, subPeriodSelect_hex) {
+	
+	             console.log("subPeriodSelect_val _sel out", subPeriodSelect_val);
+                console.log("periodSelect_val _sel out", periodSelect_val);
+				console.log("viewId out",viewId);
+
+		console.log("subPeriodSelect_el",subPeriodSelect_el);
         subPeriodSelect_el = $(subPeriodSelect_hex).multiselect({
 
             selectedText: function(numChecked, numTotal, checkedItems) {
@@ -3142,10 +3128,13 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 subPeriodSelect_val = $.map(checkedItems, function(checkbox) {
                     return checkbox.value;
                 });
-                console.log("subPeriodSelect_val _sel", subPeriodSelect_val);
-                
+				console.log("subPeriodSelect_el add",subPeriodSelect_el);
+                console.log("subPeriodSelect_val _sel add", subPeriodSelect_val);
+                console.log("periodSelect_val _sel add", periodSelect_val);
+				console.log("viewId add",viewId);
+				console.log("subPeriodSelect_hex add",subPeriodSelect_hex);
                 var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val); //data filtered by subPeriodselected_val
-				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
+				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast);
 				
 				 if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 				chartPreGen(groupedData);
@@ -3157,7 +3146,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             uncheckAll: function() {
                 subPeriodSelect_val = [];
                var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val);
-			   groupedData =valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
+			   groupedData =valueOperating(groupedData,valueOperationKey,formatValueOperationCast);
 			   if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 			   chartPreGen(groupedData);
                 console.log('groupedData_unchecked', JSON.stringify(groupedData));
@@ -3165,7 +3154,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             },minWidth:400
 
         });
-        var subPeriodArr = dataGroupAvailClass[periodSelect_val](tDomainDate[0], tDomainDate[1]);
+		  var subPeriodArr = dataGroupAvailClass[periodSelect_val](tDomainDate[0], tDomainDate[1]);
         console.log("subPeriodArr", subPeriodArr);
         subPeriodSelect_val = subPeriodArr;
         _.each(subPeriodArr, function(m) {
@@ -3177,7 +3166,6 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             });
             opt.appendTo(subPeriodSelect_el);
         });
-		console.log("subPeriodSelect_el",subPeriodSelect_el);
         subPeriodSelect_el.multiselect('refresh');
     };
     dataGroupAvailClass = { //return the available options in each type of dataGroup as an array
