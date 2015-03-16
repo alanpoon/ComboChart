@@ -51,6 +51,11 @@
             "name":"Employees",
             "dtype":"String",
             "attrs":[]
+          },{
+            "jsonClass":"SchemaColumn",
+            "name":"Team",
+            "dtype":"String",
+            "attrs":[]
           }]
         },
         "data":{
@@ -72,420 +77,9 @@
             },{
               "jsonClass":"Field",
               "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":71.5
-            },{
-              "jsonClass":"Field",
-              "value":6.9
-            },{
-              "jsonClass":"Field",
-              "value":14
-            },{
-              "jsonClass":"Field",
-              "value":"Feb"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":106.4
-            },{
-              "jsonClass":"Field",
-              "value":9.5
-            },{
-              "jsonClass":"Field",
-              "value":21
-            },{
-              "jsonClass":"Field",
-              "value":"Mar"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":129.2
-            },{
-              "jsonClass":"Field",
-              "value":14.5
-            },{
-              "jsonClass":"Field",
-              "value":57
-            },{
-              "jsonClass":"Field",
-              "value":"Apr"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":144
-            },{
-              "jsonClass":"Field",
-              "value":18.2
-            },{
-              "jsonClass":"Field",
-              "value":8
-            },{
-              "jsonClass":"Field",
-              "value":"May"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":176
-            },{
-              "jsonClass":"Field",
-              "value":21.5
-            },{
-              "jsonClass":"Field",
-              "value":12
-            },{
-              "jsonClass":"Field",
-              "value":"Jun"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":135.6
-            },{
-              "jsonClass":"Field",
-              "value":25.2
-            },{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":"Jul"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":148.5
-            },{
-              "jsonClass":"Field",
-              "value":26.5
-            },{
-              "jsonClass":"Field",
-              "value":67
-            },{
-              "jsonClass":"Field",
-              "value":"Aug"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":216.4
-            },{
-              "jsonClass":"Field",
-              "value":23.3
-            },{
-              "jsonClass":"Field",
-              "value":53
-            },{
-              "jsonClass":"Field",
-              "value":"Sep"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":194.1
-            },{
-              "jsonClass":"Field",
-              "value":18.3
-            },{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":"Oct"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":95.6
-            },{
-              "jsonClass":"Field",
-              "value":13.9
-            },{
-              "jsonClass":"Field",
-              "value":29
-            },{
-              "jsonClass":"Field",
-              "value":"Nov"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":54.4
-            },{
-              "jsonClass":"Field",
-              "value":9.6
-            },{
-              "jsonClass":"Field",
-              "value":18.2
-            },{
-              "jsonClass":"Field",
-              "value":"Dec"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee1"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":43
-            },{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":15
-            },{
-              "jsonClass":"Field",
-              "value":"Jan"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":63
-            },{
-              "jsonClass":"Field",
-              "value":34
-            },{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":"Feb"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":12
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":"Mar"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":52
-            },{
-              "jsonClass":"Field",
-              "value":12
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":"Apr"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":21
-            },{
-              "jsonClass":"Field",
-              "value":35
-            },{
-              "jsonClass":"Field",
-              "value":6
-            },{
-              "jsonClass":"Field",
-              "value":"May"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":53
-            },{
-              "jsonClass":"Field",
-              "value":8
-            },{
-              "jsonClass":"Field",
-              "value":"Jun"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":106.4
-            },{
-              "jsonClass":"Field",
-              "value":9.5
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":"Jul"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":129.2
-            },{
-              "jsonClass":"Field",
-              "value":14.5
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":"Aug"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":144
-            },{
-              "jsonClass":"Field",
-              "value":18.2
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":"Sep"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":176
-            },{
-              "jsonClass":"Field",
-              "value":21.5
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":"Oct"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":106.4
-            },{
-              "jsonClass":"Field",
-              "value":9.5
-            },{
-              "jsonClass":"Field",
-              "value":45
-            },{
-              "jsonClass":"Field",
-              "value":"Nov"
-            },{
-              "jsonClass":"Field",
-              "value":"Employee2"
-            }]
-          },{
-            "jsonClass":"Record",
-            "fields":[{
-              "jsonClass":"Field",
-              "value":129.2
-            },{
-              "jsonClass":"Field",
-              "value":14.5
-            },{
-              "jsonClass":"Field",
-              "value":23
-            },{
-              "jsonClass":"Field",
-              "value":"Dec"
             },{
               "jsonClass":"Field",
-              "value":"Employee2"
+              "value":"TeamA"
             }]
           }]
         }
@@ -504,18 +98,22 @@
           "sort":"key-asc"
         },
         "fields":{ 
-          "cToggleTypeCol":[
-                  {
-                     "name":"Employees"
-                  }
-               ],
+          "cToggleTypeCol":[{
+            "name":"Employees"
+             }],
           "keys":[{
             "name":"Categories"
+          },{
+            "name":"Team"
           }],
           "operable":{
             "values":[{
               "id":"columnStack.L1",
-              "name":"Tonnage",
+              "name":"Diesel",
+              "op":"sum"
+            },{
+              "id":"columnNoEscortAvgScatter.L1",
+              "name":"Diesel",
               "op":"sum"
             }]
           }
@@ -540,7 +138,7 @@
       "fixedGroupbyClassCast":"fixedGroupbyClass={'groupby1':['asd']}",
       "formatLegendCast":"formatLegend={'columnInducedGroupby.L1': function(dataZero) {   return dataZero.columnNameWithoutOp;   } };",
       "legendKey":"ColumnName",
-      "cToggleKey":"cToggleEnabled",
+      "cToggleKey":"default",
            "toolTipKey":"default",
       "legendEscortLines":"Gross Profit",
       "typeAntiType":"",
@@ -1551,10 +1149,9 @@ var f=view.typeinfo.data.fields;
   
  if (view.data.jsonClass === "DataEmbedded"){ 
   rawdata=
-  /*[["2014-04-20",100],["2012-06-20",60],["2014-12-20",92],["2014-02-20",48],
-  ["2014-01-20",32],["2014-07-20",46]]; */
- 
-  [["CHIEW HIANG TOH CH","2014-05-01",660],["CHIEW HIANG TOH CH","2014-06-01",799],["CHIEW HIANG TOH CH","2014-07-01",650],["CHIEW HIANG TOH CH","2014-08-01",670],["CHIEW HIANG TOH CH","2014-09-01",626],["CHIEW HIANG TOH CH","2014-10-01",200],["CHONG BENG NG NG","2014-03-01",800],["CHONG BENG NG NG","2014-05-01",1000],["CHONG BENG NG NG","2014-06-01",800],["CHONG BENG NG NG","2014-07-01",800],["CHONG BENG NG NG","2014-08-01",880],["CHONG BENG NG NG","2014-09-01",660],["CHONG BENG NG NG","2014-10-01",400],["ELEX CHAN EC","2014-03-01",626],["ELEX CHAN EC","2014-05-01",690],["ELEX CHAN EC","2014-06-01",883],["ELEX CHAN EC","2014-07-01",669],["ELEX CHAN EC","2014-08-01",661],["ELEX CHAN EC","2014-09-01",662],["ELEX CHAN EC","2014-10-01",236],["KOK MENG LEO KM","2014-04-01",641],["KOK MENG LEO KM","2014-05-01",335],["KOK MENG LEO KM","2014-06-01",679],["KOK MENG LEO KM","2014-07-01",786],["KOK MENG LEO KM","2014-08-01",537],["KOK MENG LEO KM","2014-09-01",696],["LIANG TIAN TL","2014-05-01",724],["LIANG TIAN TL","2014-06-01",683],["LIANG TIAN TL","2014-07-01",644],["LIANG TIAN TL","2014-08-01",444],["LIANG TIAN TL","2014-09-01",676],["LIANG TIAN TL","2014-10-01",196],["LIJUN QIAO LJ","2014-05-01",1310],["LIJUN QIAO LJ","2014-06-01",1117],["LIJUN QIAO LJ","2014-07-01",777],["LIJUN QIAO LJ","2014-08-01",833],["LIJUN QIAO LJ","2014-09-01",1037],["LIJUN QIAO LJ","2014-10-01",420],["MOHD HISHAM BIN MANSOR HS","2014-05-01",665],["MOHD HISHAM BIN MANSOR HS","2014-06-01",707],["MOHD HISHAM BIN MANSOR HS","2014-07-01",999],["MOHD HISHAM BIN MANSOR HS","2014-08-01",815],["MOHD HISHAM BIN MANSOR HS","2014-09-01",662],["MOHD HISHAM BIN MANSOR HS","2014-10-01",240]];
+  
+ [["CHIEW HIANG TOH CH","2014-05-01","TeamA",660,560],["CHIEW HIANG TOH CH","2014-06-01","TeamA",799,699],["CHIEW HIANG TOH CH","2014-07-01","TeamA",650,550],["CHIEW HIANG TOH CH","2014-08-01","TeamA",670,570],["CHIEW HIANG TOH CH","2014-09-01","TeamA",626,526],["CHIEW HIANG TOH CH","2014-10-01","TeamA",200,100],["CHONG BENG NG NG","2014-03-01","TeamA",800,700],["CHONG BENG NG NG","2014-05-01","TeamA",1000,900],["CHONG BENG NG NG","2014-06-01","TeamA",800,700],["CHONG BENG NG NG","2014-07-01","TeamA",800,700],["CHONG BENG NG NG","2014-08-01","TeamA",880,780],["CHONG BENG NG NG","2014-09-01","TeamA",660,560],["CHONG BENG NG NG","2014-10-01","TeamA",400,300],["ELEX CHAN EC","2014-03-01","TeamB",626,526],["ELEX CHAN EC","2014-05-01","TeamB",690,590],["ELEX CHAN EC","2014-06-01","TeamB",883,783],["ELEX CHAN EC","2014-07-01","TeamB",669,569],["ELEX CHAN EC","2014-08-01","TeamB",661,561],["ELEX CHAN EC","2014-09-01","TeamB",662,562],["ELEX CHAN EC","2014-10-01","TeamB",236,136],["KOK MENG LEO KM","2014-04-01","TeamB",641,541],["KOK MENG LEO KM","2014-05-01","TeamB",335,235],["KOK MENG LEO KM","2014-06-01","TeamB",679,579],["KOK MENG LEO KM","2014-07-01","TeamB",786,686],["KOK MENG LEO KM","2014-08-01","TeamB",537,437],["KOK MENG LEO KM","2014-09-01","TeamB",696,596],["LIANG TIAN TL","2014-05-01","TeamC",724,624],["LIANG TIAN TL","2014-06-01","TeamC",683,583],["LIANG TIAN TL","2014-07-01","TeamC",644,544],["LIANG TIAN TL","2014-08-01","TeamC",444,344],["LIANG TIAN TL","2014-09-01","TeamC",676,576],["LIANG TIAN TL","2014-10-01","TeamC",196,96],["LIJUN QIAO LJ","2014-05-01","TeamC",1310,1210],["LIJUN QIAO LJ","2014-06-01","TeamC",1117,1017],["LIJUN QIAO LJ","2014-07-01","TeamC",777,677],["LIJUN QIAO LJ","2014-08-01","TeamC",833,733],["LIJUN QIAO LJ","2014-09-01","TeamC",1037,937],["LIJUN QIAO LJ","2014-10-01","TeamC",420,320],["MOHD HISHAM BIN MANSOR HS","2014-05-01","TeamC",665,565],["MOHD HISHAM BIN MANSOR HS","2014-06-01","TeamC",707,607],["MOHD HISHAM BIN MANSOR HS","2014-07-01","TeamC",999,899],["MOHD HISHAM BIN MANSOR HS","2014-08-01","TeamC",815,715],["MOHD HISHAM BIN MANSOR HS","2014-09-01","TeamC",662,562],["MOHD HISHAM BIN MANSOR HS","2014-10-01","TeamC",240,140]];
+  //[["CHIEW HIANG TOH CH","2014-05-01",660],["CHIEW HIANG TOH CH","2014-06-01",799],["CHIEW HIANG TOH CH","2014-07-01",650],["CHIEW HIANG TOH CH","2014-08-01",670],["CHIEW HIANG TOH CH","2014-09-01",626],["CHIEW HIANG TOH CH","2014-10-01",200],["CHONG BENG NG NG","2014-03-01",800],["CHONG BENG NG NG","2014-05-01",1000],["CHONG BENG NG NG","2014-06-01",800],["CHONG BENG NG NG","2014-07-01",800],["CHONG BENG NG NG","2014-08-01",880],["CHONG BENG NG NG","2014-09-01",660],["CHONG BENG NG NG","2014-10-01",400],["ELEX CHAN EC","2014-03-01",626],["ELEX CHAN EC","2014-05-01",690],["ELEX CHAN EC","2014-06-01",883],["ELEX CHAN EC","2014-07-01",669],["ELEX CHAN EC","2014-08-01",661],["ELEX CHAN EC","2014-09-01",662],["ELEX CHAN EC","2014-10-01",236],["KOK MENG LEO KM","2014-04-01",641],["KOK MENG LEO KM","2014-05-01",335],["KOK MENG LEO KM","2014-06-01",679],["KOK MENG LEO KM","2014-07-01",786],["KOK MENG LEO KM","2014-08-01",537],["KOK MENG LEO KM","2014-09-01",696],["LIANG TIAN TL","2014-05-01",724],["LIANG TIAN TL","2014-06-01",683],["LIANG TIAN TL","2014-07-01",644],["LIANG TIAN TL","2014-08-01",444],["LIANG TIAN TL","2014-09-01",676],["LIANG TIAN TL","2014-10-01",196],["LIJUN QIAO LJ","2014-05-01",1310],["LIJUN QIAO LJ","2014-06-01",1117],["LIJUN QIAO LJ","2014-07-01",777],["LIJUN QIAO LJ","2014-08-01",833],["LIJUN QIAO LJ","2014-09-01",1037],["LIJUN QIAO LJ","2014-10-01",420],["MOHD HISHAM BIN MANSOR HS","2014-05-01",665],["MOHD HISHAM BIN MANSOR HS","2014-06-01",707],["MOHD HISHAM BIN MANSOR HS","2014-07-01",999],["MOHD HISHAM BIN MANSOR HS","2014-08-01",815],["MOHD HISHAM BIN MANSOR HS","2014-09-01",662],["MOHD HISHAM BIN MANSOR HS","2014-10-01",240]];
  // [["2014-03-01","CHONG BENG NG NG",800],["2014-03-01","ELEX CHAN EC",626],["2014-04-01","KOK MENG LEO KM",641],["2014-05-01","CHIEW HIANG TOH CH",660],["2014-05-01","CHONG BENG NG NG",1000],["2014-05-01","ELEX CHAN EC",690],["2014-05-01","KOK MENG LEO KM",335],["2014-05-01","LIANG TIAN TL",724],["2014-05-01","LIJUN QIAO LJ",1310],["2014-05-01","MOHD HISHAM BIN MANSOR HS",665],["2014-06-01","CHIEW HIANG TOH CH",799],["2014-06-01","CHONG BENG NG NG",800],["2014-06-01","ELEX CHAN EC",883],["2014-06-01","KOK MENG LEO KM",679],["2014-06-01","LIANG TIAN TL",683],["2014-06-01","LIJUN QIAO LJ",1117],["2014-06-01","MOHD HISHAM BIN MANSOR HS",707],["2014-07-01","CHIEW HIANG TOH CH",650],["2014-07-01","CHONG BENG NG NG",800],["2014-07-01","ELEX CHAN EC",669],["2014-07-01","KOK MENG LEO KM",786],["2014-07-01","LIANG TIAN TL",644],["2014-07-01","LIJUN QIAO LJ",777],["2014-07-01","MOHD HISHAM BIN MANSOR HS",999],["2014-08-01","CHIEW HIANG TOH CH",670],["2014-08-01","CHONG BENG NG NG",880],["2014-08-01","ELEX CHAN EC",661],["2014-08-01","KOK MENG LEO KM",537],["2014-08-01","LIANG TIAN TL",444],["2014-08-01","LIJUN QIAO LJ",833],["2014-08-01","MOHD HISHAM BIN MANSOR HS",815],["2014-09-01","CHIEW HIANG TOH CH",626],["2014-09-01","CHONG BENG NG NG",660],["2014-09-01","ELEX CHAN EC",662],["2014-09-01","KOK MENG LEO KM",696],["2014-09-01","LIANG TIAN TL",676],["2014-09-01","LIJUN QIAO LJ",1037],["2014-09-01","MOHD HISHAM BIN MANSOR HS",662],["2014-10-01","CHIEW HIANG TOH CH",200],["2014-10-01","CHONG BENG NG NG",400],["2014-10-01","ELEX CHAN EC",236],["2014-10-01","LIANG TIAN TL",196],["2014-10-01","LIJUN QIAO LJ",420],["2014-10-01","MOHD HISHAM BIN MANSOR HS",240]];
   //rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   rawdata=reduceCToggle(rawdata,view);
@@ -1743,15 +1340,21 @@ return extendedArr;
    model_TypeSplitClass={
     columnEscortAvgLine:['column','spline'],
     columnEscortSumLine:['column','spline'],
-  columnEscortPie:['column',null,'pie'],
+	columnEscortPie:['column',null,'pie'],
     columnNoEscortAvgLine:[,'spline'],
     columnNoEscortSumLine:[,'spline'],
+	
+	 columnEscortAvgScatter:['column','spline'],
+	 columnEscortSumScatter:['column','spline'],
+	 columnNoEscortAvgScatter:[,'spline'],
+	 columnNoEscortSumScatter:[,'spline'],
     splineEscortAvgLine:['spline','spline'],
     splineEscortSumLine:['spline','spline'],
     splineNoEscortAvgLine:[,'spline'],
     splineNoEscortSumLine:[,'spline'],
     column:['column'],
     spline:['spline'],
+	scatter:['scatter'],
   columnStackGroup:['column'],
   columnStack:['column'],
   columnInducedGroupby:['column'],
@@ -1836,6 +1439,58 @@ model_DataConvertClass = {
       return totalValue;
     }
   },
+  columnEscortSumScatter: {
+    0: function(t,unit, index) {
+      var colToSeriesArr, gCount, subModel;
+      subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      gCount = Get_groupCountFn(t);
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
+      return colToSeriesArr;
+    },
+    1: function(t,unit, index) {
+      var totalValue, valueData;
+      valueData = _.pluck(t, "value");
+      totalValue = sum(valueData);
+      return totalValue;
+    }
+  },
+  columnEscortAvgScatter: {
+    0: function(t,unit, index) {
+      var colToSeriesArr, gCount, subModel;
+      subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      gCount = Get_groupCountFn(t);
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
+      return colToSeriesArr;
+    },
+    1: function(t,unit, index) {
+      var totalValue, valueData;
+      valueData = _.pluck(t, "value");
+      totalValue = average(valueData);
+      return totalValue;
+    }
+  },
+  columnNoEscortSumScatter: {
+    0: null,
+    1: function(t,unit, index) {
+      var totalValue, valueData;
+      valueData = _.pluck(t, "value");
+      totalValue = sum(valueData);
+      return totalValue;
+    }
+  },
+  columnNoEscortAvgScatter: {
+    0: null,
+    1: function(t,unit, index) {
+
+      var totalValue, valueData;
+      valueData = _.pluck(t, "value");
+      totalValue = average(valueData);
+      return totalValue;
+    }
+  }
+  ,
   splineEscortAvgLine: {
     0: function(t,unit,index) {
       var colToSeriesArr, gCount, subModel;
@@ -1904,6 +1559,40 @@ model_DataConvertClass = {
       gCount = Get_groupCountFn(t);
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
 	 
+      return colToSeriesArr;
+    }
+  },
+  scatter:{
+	0:function(t,unit,index) {
+      var colToSeriesArr, gCount, subModel;
+      subModel = "scatter";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      gCount = Get_groupCountFn(t);
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
+		model_APIClass['plotOptions']={};
+		model_APIClass['plotOptions']['scatter']= {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}: </b><br>',
+                    pointFormat: '{point.category}  [{point.y}] '
+                }
+            };
+		
       return colToSeriesArr;
     }
   },
@@ -2143,7 +1832,8 @@ console.log("yAxis Series Formatter",series);
 				  pointPadding: 0.2,
 				  borderWidth: 0,
 				stacking: safeRead(model_APIClass,'plotOptions','column','stacking')
-				}
+				},
+				scatter:safeRead(model_APIClass,'plotOptions','scatter')
 			  },
 			  series: toSeriesArray
 			});
@@ -2544,11 +2234,12 @@ zeroOrOne_OperableClass = {
 			? legendEscortLines[index].split('$/')[0] + cToggleAntiType: legendEscortLines[index];
 			}else var legendName=legendEscortLines[index];
 			} else var legendName= columnName;
-			
+			console.log("modelType",modelType);
             output[propertyName] = {
                 type: subModel,
                 name: legendName,
                 data: [],
+				lineWidth:(_.str.include(modelType,'Scatter'))?0:2,
 
                 marker: {
                     lineWidth: 2,
