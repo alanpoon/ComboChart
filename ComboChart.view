@@ -111,10 +111,6 @@
               "id":"columnStack.L1",
               "name":"Diesel",
               "op":"sum"
-            },{
-              "id":"columnNoEscortAvgScatter.L1",
-              "name":"Diesel",
-              "op":"sum"
             }]
           }
         }
@@ -1070,8 +1066,7 @@ elx.bundle.type.ComboChart = {
   </div>
 
 <div class='elx-script'>
-  //http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/highcharts/demo/combo/
-  //for the single mouseover
+  //SHA-3c230a54193a3c6a5fb6ec9a32bd26eac9d03fd3
   
   cfgoptions=view.typeinfo;
     
@@ -1099,6 +1094,7 @@ var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var valueOpArr=(view.typeinfo.formatValueOperationArg).split(",");
   
 
+console.log('view.typeinfo;',JSON.stringify(view.typeinfo));
     /* data tab
   
 function data(){
@@ -1311,7 +1307,7 @@ return extendedArr;
 		
 		
 	getWordsBetweenCurlies=function(str) {
-		  var results = [], re = /{([^}]+)}/g, text;
+		var results = [], re = /{([^}]+)}/g, text;
 
 		  while(text = re.exec(str)) {
 			results.push(text[1]);
@@ -1758,14 +1754,8 @@ console.log("yAxis Series Formatter",series);
 		  _.each(smpGroupby1,function(t,unit) {
 		   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
 		  });
-
 		   smpGroupbySize=_.size(smpGroupby1);
 		   }
-
-		  var smpGroupbySize=_.size(smpGroupby1);
-		   console.log("before there is columnStackGroup, smppGroupby1",JSON.stringify(smpGroupby1));
-		  }
-
 
 		 
 		   
@@ -1841,7 +1831,7 @@ chartGen = function(smpColName, model_APIClass, output) {
     index = 0;
   var modelType;
       _.each(smpColName, function(t, unit_model) {
-        var columnName, propertyName, splitModel, yAxisNum,unit;
+	         var columnName, propertyName, splitModel, yAxisNum,unit;
     	if (_.isArray(t)==false) { //t will be object if the modelType is columnStackGroup
 			unit=unit_model;
 			modelType=_.first(_.pluck(t[unit_model],'model'));
@@ -2085,7 +2075,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
     ReadArray = [];
   
     objKey = Object.keys(data[0]);
-    model_keyArray = [];
+	model_keyArray = [];
     columnNameArray = [];
 	var keyArray=[];
   //legendFormating
@@ -2220,8 +2210,7 @@ zeroOrOne_OperableClass = {
     },
   1: { //for Average lines
         Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-		
-            var propertyName;
+			var propertyName;
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
 			if (typeof model_APIClass[modelType]=='undefined') {
@@ -2516,7 +2505,6 @@ switch(seriesInsertKey) {
 case 'formatSeriesInsertCast':
 //check all the name of the Series are in the formatSeriesInsertCast
 var formatSeriesInsert=formatSeriesInsertCast.split(",");
-
 var existingSeries=[];
 var sampleObj={};
 _.each(toSeriesArray,function(d,i) {
@@ -2529,7 +2517,6 @@ if (d.name==formatSeriesInsert[m]) { sampleObj=_.clone(d); break;
 var newToSeriesArray=toSeriesArray;
 var blankArray=[];
 var insertSeries=_.difference(formatSeriesInsert,existingSeries);
-console.log("before insertSeries",insertSeries);
 _.each(insertSeries,function(m,i){
 sampleObj['name']=m; sampleObj['data']=[];
 toSeriesArray.push(sampleObj);
