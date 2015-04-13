@@ -1,0 +1,75 @@
+{
+   "jsonClass":"Bundle",
+   "type":"ComboChart",
+   "data":{
+      "series":{
+         "sort":"series-asc"
+      },
+      "keys":{
+         "sort":"key-asc"
+      },
+      "fields":{
+         "cToggleTypeCol":[
+            {
+               "name":"ds_6f_customer.YearMonth"
+            }
+         ],
+         "keys":[
+            {
+               "name":"ds_6f_customer.CreationDate"
+            },
+            {
+               "name":"ds_6f_customer.industry"
+            }
+         ],
+         "operable":{
+            "values":[
+               {
+                  "id":"column.L1",
+                  "name":"ds_6f_customer.total_tonnage",
+                  "op":"sum"
+               },
+               {
+                  "id":"spline.R2",
+                  "name":"ds_6f_customer.total_amt",
+                  "op":"sum"
+               },
+               {
+                  "id":"spline.R3",
+                  "name":"ds_6f_customer.gross_profit",
+                  "op":"sum"
+               }
+            ]
+         }
+      }
+   },
+   "width":"500",
+   "height":"700",
+   "dataGroupKey":"timePeriodOptions",
+   "title":"Sales VS GP VS Tonnage",
+   "subtitle":"by Industry",
+   "yAxisArray":"Tonnage,Sales ($),Profit ($)",
+   "colorSeriesArray":"#7cb5ec,#434348,#90ed7d,#f7a35c,#ffc0cb,#f15c80,#e4d354,#8085e8,#8d4653,#91e8e1,#d89b00,#9fb27e,#c6c6cd,#284040,#5ead06",
+   "interpolateXAxisKey":"default",
+   "seriesInsertKey":"default",
+   "formatSeriesInsertCast":"",
+   "xTicksKey":"string",
+   "formatXTicksCast":"",
+   "xTicksRotation":"0",
+   "orderingKey":"monthString",
+   "formatOrderingCast":"",
+   "interpolateGroupbyKey":"default",
+   "fixedGroupbyClassCast":"fixedGroupbyClass={'groupby1':['asd']}",
+   "formatLegendCast":"formatLegend={'column.L1': function(d) {   return d.groupby1+' Tonnage';   },'spline.R2': function(d) {   return d.groupby1+' Sales';   },'spline.R3': function(d) {   return d.groupby1+' Profit';   } };",
+   "legendKey":"formatLegend",
+   "cToggleKey":"default",
+   "toolTipKey":"default",
+   "legendEscortLines":"Gross Profit",
+   "typeAntiType":"",
+   "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}",
+   "inducedKey":"default",
+   "formatInducedCast":"",
+   "valueOperationKey":"default",
+   "formatValueOperationCast":"operation.prototype.value=function(){ return [this.A-this.B];}",
+   "formatValueOperationArg":"A"
+}
