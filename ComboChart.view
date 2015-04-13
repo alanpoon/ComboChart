@@ -1098,15 +1098,6 @@ var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var valueOperationKey =view.typeinfo.valueOperationKey;
   var valueOpArr=(view.typeinfo.formatValueOperationArg).split(",");
   
-    k.forEach(function(d,i) {
-    keys.push(d.name);})
-  //console.log("keysAr",JSON.stringify(keys));
-  var columns=[]; var operations=[];
-  var t=view.typeinfo.data.fields.operable.values;
-    t.forEach(function(d,i) {
-  columns.push(d.name);
-    operations.push(d.op);
-  })
 
     /* data tab
   
@@ -1767,14 +1758,14 @@ console.log("yAxis Series Formatter",series);
 		  _.each(smpGroupby1,function(t,unit) {
 		   smpColName[unit]=_.groupBy(t,function(d){ return d["columnName"];});
 		  });
-<<<<<<< HEAD
+
 		   smpGroupbySize=_.size(smpGroupby1);
 		   }
-=======
+
 		  var smpGroupbySize=_.size(smpGroupby1);
 		   console.log("before there is columnStackGroup, smppGroupby1",JSON.stringify(smpGroupby1));
 		  }
->>>>>>> parent of 79289f7... fixed columnStackGroup issue
+
 
 		 
 		   
@@ -1850,7 +1841,6 @@ chartGen = function(smpColName, model_APIClass, output) {
     index = 0;
   var modelType;
       _.each(smpColName, function(t, unit_model) {
-	  console.log("before tt",JSON.stringify(t));
         var columnName, propertyName, splitModel, yAxisNum,unit;
     	if (_.isArray(t)==false) { //t will be object if the modelType is columnStackGroup
 			unit=unit_model;
@@ -2095,7 +2085,6 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
     ReadArray = [];
   
     objKey = Object.keys(data[0]);
-	console.log("before objKey",JSON.stringify(objKey));
     model_keyArray = [];
     columnNameArray = [];
 	var keyArray=[];
@@ -2231,7 +2220,7 @@ zeroOrOne_OperableClass = {
     },
   1: { //for Average lines
         Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-			console.log("before index",index);
+		
             var propertyName;
             propertyName = modelType + "_" + columnName + "_1";
 			// determine legendName
@@ -2527,8 +2516,7 @@ switch(seriesInsertKey) {
 case 'formatSeriesInsertCast':
 //check all the name of the Series are in the formatSeriesInsertCast
 var formatSeriesInsert=formatSeriesInsertCast.split(",");
-console.log("before formatSeriesInsert",JSON.stringify(formatSeriesInsert));
-console.log("before early toSeriesArray",JSON.stringify(toSeriesArray));
+
 var existingSeries=[];
 var sampleObj={};
 _.each(toSeriesArray,function(d,i) {
