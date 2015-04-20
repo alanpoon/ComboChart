@@ -103,8 +103,6 @@
              }],
           "keys":[{
             "name":"Categories"
-          },{
-            "name":"Team"
           }],
           "operable":{
             "values":[{
