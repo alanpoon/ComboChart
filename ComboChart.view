@@ -106,7 +106,7 @@
           }],
           "operable":{
             "values":[{
-              "id":"areaRange.L1",
+              "id":"bar.L1",
               "name":"Diesel",
               "op":"sum"
             }]
@@ -1119,11 +1119,12 @@ var f=view.typeinfo.data.fields;
   //rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   var rawdata=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
 		//above for arearange
-	rawdata=[["Team1",25,35,20],["Team1",35,70,20],["Team1",70,100,40],["Team1",96,100,50],["Team1",20,100,50],["Team2",14,100,60],["Team2",60,100,70]];
+/*	rawdata=[["Team1",25,35,20],["Team1",35,70,20],["Team1",70,100,40],["Team1",96,100,50],["Team1",20,100,50],["Team2",14,100,60],["Team2",60,100,70]];
 		//above for bubble
 	rawdata=[["week1","James",35],["week1","Tim",70],["week2","James",100],["week2","Tim",50],["week3","James",50]
 	,["week3","Tim",60],["week4","James",100],["week4","Tim",120]];
   console.log('cToggleStatus',view.typeinfo.cToggleKey);
+  */
   //rawdata=reduceCToggle(rawdata,view);
   var extendedArr=rawdata;
   var reduceCToggleArr=extendedArr;
