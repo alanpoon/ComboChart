@@ -109,10 +109,6 @@
               "id":"areaRange.L1",
               "name":"Diesel",
               "op":"sum"
-            },{
-              "id":"areaRange.L1",
-              "name":"Manpower",
-              "op":"sum"
             }]
           }
         }
@@ -1125,6 +1121,8 @@ var f=view.typeinfo.data.fields;
 		//above for arearange
 	rawdata=[["Team1",25,35,20],["Team1",35,70,20],["Team1",70,100,40],["Team1",96,100,50],["Team1",20,100,50],["Team2",14,100,60],["Team2",60,100,70]];
 		//above for bubble
+	rawdata=[["week1","James",35],["week1","Tim",70],["week2","James",100],["week2","Tim",50],["week3","James",50]
+	,["week3","Tim",60],["week4","James",100],["week4","Tim",120]];
   console.log('cToggleStatus',view.typeinfo.cToggleKey);
   //rawdata=reduceCToggle(rawdata,view);
   var extendedArr=rawdata;
@@ -1334,7 +1332,8 @@ return extendedArr;
   columnInducedGroupby:['column'],
   dotGroupby:['spline'],
   pie:[,,'pie'],
-  bubble:['bubble']
+  bubble:['bubble'],
+  bar:['bar']
     };
   model_APIClass={
   
@@ -1552,6 +1551,21 @@ model_DataConvertClass = {
       subModel = "spline";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
       gCount = Get_groupCountFn(t);
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
+	 
+      return colToSeriesArr;
+    }
+  },  
+  bar: {
+    0: function(t,unit,index) {
+      var colToSeriesArr, gCount, subModel;
+      subModel = "bar";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      gCount = Get_groupCountFn(t);
+	  model_APIClass['plotOptions']={};
+	  model_APIClass['plotOptions']['bar']={   
+				dataLabels: { enabled: true}};
+	  
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
 	 
       return colToSeriesArr;
@@ -1897,9 +1911,11 @@ console.log("yAxis Series Formatter",series);
 				  borderWidth: 0,
 				stacking: safeRead(model_APIClass,'plotOptions','column','stacking')
 				},
-				scatter:safeRead(model_APIClass,'plotOptions','scatter')
+				scatter:safeRead(model_APIClass,'plotOptions','scatter'),
+				bar:safeRead(model_APIClass,'plotOptions','bar')
 			  },
-			  series: toSeriesArray
+			  series: toSeriesArray,
+			  credits:{enabled:false}
 			});
   };
 
