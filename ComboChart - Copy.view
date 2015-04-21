@@ -106,12 +106,8 @@
           }],
           "operable":{
             "values":[{
-              "id":"areaRange.L1",
+              "id":"columnStack.L1",
               "name":"Diesel",
-              "op":"sum"
-            },{
-              "id":"areaRange.L1",
-              "name":"Manpower",
               "op":"sum"
             }]
           }
@@ -148,7 +144,7 @@
       "formatValueOperationArg":"A"
     }
   },
-  "includes":["/elx/lib/highcharts.js","/elx/lib/highcharts-more.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js","/elx/lib/multiSelectCustom.js"],
+  "includes":["/elx/lib/highcharts.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js","/elx/lib/multiSelectCustom.js"],
   "edit-section":[{
     "id":"view",
     "name":"View"
@@ -1112,21 +1108,16 @@ var f=view.typeinfo.data.fields;
   var reArrangeToSeries,toolTipInserter,complementaryColor;
   var set_yAxisFnBySeries;
   var valueOperating,operation,operationProcesser;
-  var detected;
  debugFn();
   multiSelectFn(jQuery);// initalise multiSelect datagroup js
   
  if (view.data.jsonClass === "DataEmbedded"){ 
-  //rawdata= [["CHIEW HIANG TOH CH","2014-05-01","TeamA",660,560],["CHIEW HIANG TOH CH","2014-06-01","TeamA",799,699],["CHIEW HIANG TOH CH","2014-07-01","TeamA",650,550],["CHIEW HIANG TOH CH","2014-08-01","TeamA",670,570],["CHIEW HIANG TOH CH","2014-09-01","TeamA",626,526],["CHIEW HIANG TOH CH","2014-10-01","TeamA",200,100],["CHONG BENG NG NG","2014-03-01","TeamA",800,700],["CHONG BENG NG NG","2014-05-01","TeamA",1000,900],["CHONG BENG NG NG","2014-06-01","TeamA",800,700],["CHONG BENG NG NG","2014-07-01","TeamA",800,700],["CHONG BENG NG NG","2014-08-01","TeamA",880,780],["CHONG BENG NG NG","2014-09-01","TeamA",660,560],["CHONG BENG NG NG","2014-10-01","TeamA",400,300],["ELEX CHAN EC","2014-03-01","TeamB",626,526],["ELEX CHAN EC","2014-05-01","TeamB",690,590],["ELEX CHAN EC","2014-06-01","TeamB",883,783],["ELEX CHAN EC","2014-07-01","TeamB",669,569],["ELEX CHAN EC","2014-08-01","TeamB",661,561],["ELEX CHAN EC","2014-09-01","TeamB",662,562],["ELEX CHAN EC","2014-10-01","TeamB",236,136],["KOK MENG LEO KM","2014-04-01","TeamB",641,541],["KOK MENG LEO KM","2014-05-01","TeamB",335,235],["KOK MENG LEO KM","2014-06-01","TeamB",679,579],["KOK MENG LEO KM","2014-07-01","TeamB",786,686],["KOK MENG LEO KM","2014-08-01","TeamB",537,437],["KOK MENG LEO KM","2014-09-01","TeamB",696,596],["LIANG TIAN TL","2014-05-01","TeamC",724,624],["LIANG TIAN TL","2014-06-01","TeamC",683,583],["LIANG TIAN TL","2014-07-01","TeamC",644,544],["LIANG TIAN TL","2014-08-01","TeamC",444,344],["LIANG TIAN TL","2014-09-01","TeamC",676,576],["LIANG TIAN TL","2014-10-01","TeamC",196,96],["LIJUN QIAO LJ","2014-05-01","TeamC",1310,1210],["LIJUN QIAO LJ","2014-06-01","TeamC",1117,1017],["LIJUN QIAO LJ","2014-07-01","TeamC",777,677],["LIJUN QIAO LJ","2014-08-01","TeamC",833,733],["LIJUN QIAO LJ","2014-09-01","TeamC",1037,937],["LIJUN QIAO LJ","2014-10-01","TeamC",420,320],["MOHD HISHAM BIN MANSOR HS","2014-05-01","TeamC",665,565],["MOHD HISHAM BIN MANSOR HS","2014-06-01","TeamC",707,607],["MOHD HISHAM BIN MANSOR HS","2014-07-01","TeamC",999,899],["MOHD HISHAM BIN MANSOR HS","2014-08-01","TeamC",815,715],["MOHD HISHAM BIN MANSOR HS","2014-09-01","TeamC",662,562],["MOHD HISHAM BIN MANSOR HS","2014-10-01","TeamC",240,140]];
+  rawdata= [["CHIEW HIANG TOH CH","2014-05-01","TeamA",660,560],["CHIEW HIANG TOH CH","2014-06-01","TeamA",799,699],["CHIEW HIANG TOH CH","2014-07-01","TeamA",650,550],["CHIEW HIANG TOH CH","2014-08-01","TeamA",670,570],["CHIEW HIANG TOH CH","2014-09-01","TeamA",626,526],["CHIEW HIANG TOH CH","2014-10-01","TeamA",200,100],["CHONG BENG NG NG","2014-03-01","TeamA",800,700],["CHONG BENG NG NG","2014-05-01","TeamA",1000,900],["CHONG BENG NG NG","2014-06-01","TeamA",800,700],["CHONG BENG NG NG","2014-07-01","TeamA",800,700],["CHONG BENG NG NG","2014-08-01","TeamA",880,780],["CHONG BENG NG NG","2014-09-01","TeamA",660,560],["CHONG BENG NG NG","2014-10-01","TeamA",400,300],["ELEX CHAN EC","2014-03-01","TeamB",626,526],["ELEX CHAN EC","2014-05-01","TeamB",690,590],["ELEX CHAN EC","2014-06-01","TeamB",883,783],["ELEX CHAN EC","2014-07-01","TeamB",669,569],["ELEX CHAN EC","2014-08-01","TeamB",661,561],["ELEX CHAN EC","2014-09-01","TeamB",662,562],["ELEX CHAN EC","2014-10-01","TeamB",236,136],["KOK MENG LEO KM","2014-04-01","TeamB",641,541],["KOK MENG LEO KM","2014-05-01","TeamB",335,235],["KOK MENG LEO KM","2014-06-01","TeamB",679,579],["KOK MENG LEO KM","2014-07-01","TeamB",786,686],["KOK MENG LEO KM","2014-08-01","TeamB",537,437],["KOK MENG LEO KM","2014-09-01","TeamB",696,596],["LIANG TIAN TL","2014-05-01","TeamC",724,624],["LIANG TIAN TL","2014-06-01","TeamC",683,583],["LIANG TIAN TL","2014-07-01","TeamC",644,544],["LIANG TIAN TL","2014-08-01","TeamC",444,344],["LIANG TIAN TL","2014-09-01","TeamC",676,576],["LIANG TIAN TL","2014-10-01","TeamC",196,96],["LIJUN QIAO LJ","2014-05-01","TeamC",1310,1210],["LIJUN QIAO LJ","2014-06-01","TeamC",1117,1017],["LIJUN QIAO LJ","2014-07-01","TeamC",777,677],["LIJUN QIAO LJ","2014-08-01","TeamC",833,733],["LIJUN QIAO LJ","2014-09-01","TeamC",1037,937],["LIJUN QIAO LJ","2014-10-01","TeamC",420,320],["MOHD HISHAM BIN MANSOR HS","2014-05-01","TeamC",665,565],["MOHD HISHAM BIN MANSOR HS","2014-06-01","TeamC",707,607],["MOHD HISHAM BIN MANSOR HS","2014-07-01","TeamC",999,899],["MOHD HISHAM BIN MANSOR HS","2014-08-01","TeamC",815,715],["MOHD HISHAM BIN MANSOR HS","2014-09-01","TeamC",662,562],["MOHD HISHAM BIN MANSOR HS","2014-10-01","TeamC",240,140]];
   //[["CHIEW HIANG TOH CH","2014-05-01",660],["CHIEW HIANG TOH CH","2014-06-01",799],["CHIEW HIANG TOH CH","2014-07-01",650],["CHIEW HIANG TOH CH","2014-08-01",670],["CHIEW HIANG TOH CH","2014-09-01",626],["CHIEW HIANG TOH CH","2014-10-01",200],["CHONG BENG NG NG","2014-03-01",800],["CHONG BENG NG NG","2014-05-01",1000],["CHONG BENG NG NG","2014-06-01",800],["CHONG BENG NG NG","2014-07-01",800],["CHONG BENG NG NG","2014-08-01",880],["CHONG BENG NG NG","2014-09-01",660],["CHONG BENG NG NG","2014-10-01",400],["ELEX CHAN EC","2014-03-01",626],["ELEX CHAN EC","2014-05-01",690],["ELEX CHAN EC","2014-06-01",883],["ELEX CHAN EC","2014-07-01",669],["ELEX CHAN EC","2014-08-01",661],["ELEX CHAN EC","2014-09-01",662],["ELEX CHAN EC","2014-10-01",236],["KOK MENG LEO KM","2014-04-01",641],["KOK MENG LEO KM","2014-05-01",335],["KOK MENG LEO KM","2014-06-01",679],["KOK MENG LEO KM","2014-07-01",786],["KOK MENG LEO KM","2014-08-01",537],["KOK MENG LEO KM","2014-09-01",696],["LIANG TIAN TL","2014-05-01",724],["LIANG TIAN TL","2014-06-01",683],["LIANG TIAN TL","2014-07-01",644],["LIANG TIAN TL","2014-08-01",444],["LIANG TIAN TL","2014-09-01",676],["LIANG TIAN TL","2014-10-01",196],["LIJUN QIAO LJ","2014-05-01",1310],["LIJUN QIAO LJ","2014-06-01",1117],["LIJUN QIAO LJ","2014-07-01",777],["LIJUN QIAO LJ","2014-08-01",833],["LIJUN QIAO LJ","2014-09-01",1037],["LIJUN QIAO LJ","2014-10-01",420],["MOHD HISHAM BIN MANSOR HS","2014-05-01",665],["MOHD HISHAM BIN MANSOR HS","2014-06-01",707],["MOHD HISHAM BIN MANSOR HS","2014-07-01",999],["MOHD HISHAM BIN MANSOR HS","2014-08-01",815],["MOHD HISHAM BIN MANSOR HS","2014-09-01",662],["MOHD HISHAM BIN MANSOR HS","2014-10-01",240]];
  // [["2014-03-01","CHONG BENG NG NG",800],["2014-03-01","ELEX CHAN EC",626],["2014-04-01","KOK MENG LEO KM",641],["2014-05-01","CHIEW HIANG TOH CH",660],["2014-05-01","CHONG BENG NG NG",1000],["2014-05-01","ELEX CHAN EC",690],["2014-05-01","KOK MENG LEO KM",335],["2014-05-01","LIANG TIAN TL",724],["2014-05-01","LIJUN QIAO LJ",1310],["2014-05-01","MOHD HISHAM BIN MANSOR HS",665],["2014-06-01","CHIEW HIANG TOH CH",799],["2014-06-01","CHONG BENG NG NG",800],["2014-06-01","ELEX CHAN EC",883],["2014-06-01","KOK MENG LEO KM",679],["2014-06-01","LIANG TIAN TL",683],["2014-06-01","LIJUN QIAO LJ",1117],["2014-06-01","MOHD HISHAM BIN MANSOR HS",707],["2014-07-01","CHIEW HIANG TOH CH",650],["2014-07-01","CHONG BENG NG NG",800],["2014-07-01","ELEX CHAN EC",669],["2014-07-01","KOK MENG LEO KM",786],["2014-07-01","LIANG TIAN TL",644],["2014-07-01","LIJUN QIAO LJ",777],["2014-07-01","MOHD HISHAM BIN MANSOR HS",999],["2014-08-01","CHIEW HIANG TOH CH",670],["2014-08-01","CHONG BENG NG NG",880],["2014-08-01","ELEX CHAN EC",661],["2014-08-01","KOK MENG LEO KM",537],["2014-08-01","LIANG TIAN TL",444],["2014-08-01","LIJUN QIAO LJ",833],["2014-08-01","MOHD HISHAM BIN MANSOR HS",815],["2014-09-01","CHIEW HIANG TOH CH",626],["2014-09-01","CHONG BENG NG NG",660],["2014-09-01","ELEX CHAN EC",662],["2014-09-01","KOK MENG LEO KM",696],["2014-09-01","LIANG TIAN TL",676],["2014-09-01","LIJUN QIAO LJ",1037],["2014-09-01","MOHD HISHAM BIN MANSOR HS",662],["2014-10-01","CHIEW HIANG TOH CH",200],["2014-10-01","CHONG BENG NG NG",400],["2014-10-01","ELEX CHAN EC",236],["2014-10-01","LIANG TIAN TL",196],["2014-10-01","LIJUN QIAO LJ",420],["2014-10-01","MOHD HISHAM BIN MANSOR HS",240]];
   //rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
-  var rawdata=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
-		//above for arearange
-	rawdata=[["Team1",25,35,20],["Team1",35,70,20],["Team1",70,100,40],["Team1",96,100,50],["Team1",20,100,50],["Team2",14,100,60],["Team2",60,100,70]];
-		//above for bubble
-  console.log('cToggleStatus',view.typeinfo.cToggleKey);
-  //rawdata=reduceCToggle(rawdata,view);
+  var rawData=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
+  rawdata=reduceCToggle(rawdata,view);
   var extendedArr=rawdata;
   var reduceCToggleArr=extendedArr;
   } else { rawdata=${data};  var extendedArr=extendArr(rawdata,f,view); var reduceCToggleArr=reduceCToggle(extendedArr,view);}
@@ -1205,7 +1196,7 @@ return extendedArr;
   //auto detect
   var sampleCategory=data[0][categoryName];
    var autoDetectArray=['parsableDate','month'];
-
+  var detected;
   var detected2='month';
   
    for (var i=0;i< autoDetectArray.length;i++){
@@ -1326,15 +1317,13 @@ return extendedArr;
     column:['column'],
     spline:['spline'],
 	scatter:['scatter'],
+	
   columnStackGroup:['column'],
   columnStack:['column'],
    areaStackPercent:['area'],
-   areaRange:[,,,,'arearange'],
-   areaAvgLine:[,,,,'spline'],
   columnInducedGroupby:['column'],
   dotGroupby:['spline'],
-  pie:[,,'pie'],
-  bubble:['bubble']
+  pie:[,,'pie']
     };
   model_APIClass={
   
@@ -1391,14 +1380,12 @@ model_DataConvertClass = {
       totalValue_pie = sum(valueData);
       return {
         name: name_pie,
-		 center: [50, 80],
         y: totalValue_pie,
         color: Highcharts.getOptions().colors[index],
 		modelType:modelType
       };
     }
-  },  
-  pie:{
+  },  pie:{
      2: function(t, unit,index) {
 	
       var name_pie, totalValue_pie, valueData;
@@ -1409,7 +1396,6 @@ model_DataConvertClass = {
       return {
         name: name_pie,
         y: totalValue_pie,
-		 size: 180,
         color: Highcharts.getOptions().colors[index],
 		modelType:modelType
       };
@@ -1535,7 +1521,6 @@ model_DataConvertClass = {
       return totalValue;
     }
   },
- 
   column: {
     0: function(t,unit, index) {
       var colToSeriesArr, gCount, subModel;
@@ -1704,22 +1689,7 @@ console.log("yAxis Series Formatter",series);
   }
   
   
-  },
-  areaRange:{
-      4: function(t, unit,index) {
-	
-    }
-  },
-  areaAvgLine:{
-	4:function(t,unit,index){
-	
-	var colToSeriesArr=_.map(t,function(d){
-	return [d.category,d.value];
-	});
-	return colToSeriesArr;
-	}
-  },
-  columnInducedGroupby:{
+  },columnInducedGroupby:{
   0:function(t,unit,index){
   //describle how column is induced.
   //stockType is fast when value is more than 90 and it will be red.
@@ -1773,35 +1743,6 @@ console.log("yAxis Series Formatter",series);
   
   }
   
-  },
-  bubble:{
-  0:function(t,unit,index){
-    var colToSeriesArr, gCount, subModel;
-      subModel = "bubble";
-	  // use arrToHex data instead of t
-	  var xAxisColName,xColName,yColName,sizeColName;
-	  var keys=_.keys(data1[0]);
-	  model_APIClass['xAxis']={};
-	  model_APIClass['xAxis']['categories']=null;
-	for (var propertyName in data1[0]) {
-		if(_.str.include(propertyName,'xaxis')) xAxisColName=propertyName;
-		else  if(_.str.include(propertyName,'bubbleX')) xColName=propertyName; 
-		else if(_.str.include(propertyName,'bubbleY')) yColName=propertyName;  
-		else if(_.str.include(propertyName,'bubbleSize')) sizeColName=propertyName;
-	}
-	var colToSeriesArr=[];
-	  var nest=d3.nest().key(function(d) {
-						return d[xAxisColName];})
-						.rollup(function(d) {
-						var name=d[0][xAxisColName];
-						var outputData=_.map(d,function(j){
-						return [j[xColName],j[yColName],j[sizeColName]];
-						});
-						colToSeriesArr.push({name:name,type:'bubble',data:outputData,yAxisFull:t[0].yAxis});
-						}).entries(data1);
-	
-      return colToSeriesArr;
-  }
   }
   		
 };
@@ -1815,8 +1756,7 @@ console.log("yAxis Series Formatter",series);
 			var data6=sortCategory(data5);
 			
 		  smpColName = _.groupBy(data6, function(d) {
-		  if (_.str.include(d["model"],"bubble")) {return "bubble";}
-			else {return d["columnName"]+d['model'];}
+			return d["columnName"]+d['model'];
 		  });		
 		  console.log("initialSmpColName",JSON.stringify(smpColName));
 		   var toCategoryArray=Get_CategoryFn(smpColName);
@@ -1834,6 +1774,9 @@ console.log("yAxis Series Formatter",series);
 		   smpGroupbySize=_.size(smpGroupby1);
 		   }
 
+		 
+		   
+		  //console.log("smpColName",JSON.stringify(smpColName));
 		  console.log("toCategoryArray",JSON.stringify(toCategoryArray));
 		  var toSeriesArray=[];var output={};model_APIClass={};
 		  
@@ -1861,7 +1804,6 @@ console.log("yAxis Series Formatter",series);
 		 
 		  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
 		  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
-		  console.log("tooltip,modelApiClass",(typeof safeRead(model_APIClass,'tooltip')=="undefined")? {}: safeRead(model_APIClass,'tooltip'));
 		  console.log("modelAPIJSON",JSON.stringify(model_APIClass));
 			  Highcharts.setOptions({
 				colors: colorSeriesArray
@@ -1873,7 +1815,7 @@ console.log("yAxis Series Formatter",series);
 			  title: {
 				text: cfgoptions.title
 			  },
-		  tooltip: (typeof safeRead(model_APIClass,'tooltip')=="undefined")? {}: safeRead(model_APIClass,'tooltip')
+		  tooltip: (typeof safeRead(model_APIClass,'toolTip')=="undefined")? {}: safeRead(model_APIClass,'toolTip')
 				
 			  ,
 			  subtitle: {
@@ -1881,12 +1823,9 @@ console.log("yAxis Series Formatter",series);
 			  },
 			  xAxis: 
 				{
-				//  categories: toCategoryArray ,
-				categories:(typeof safeRead(model_APIClass,'xAxis','categories') == "undefined") ?toCategoryArray:safeRead(model_APIClass,'xAxis','categories'),
-				type: (typeof safeRead(model_APIClass,'xAxis','type') == "undefined") ? "linear": safeRead(model_APIClass,'xAxis','type'),
-				labels:{rotation:parseInt(xTicksRotation)}
-				  }
+				  categories: toCategoryArray ,labels:{rotation:parseInt(xTicksRotation)}
 				  
+				  }
 			  ,
 			  yAxis: toYaxisArray,
 		  labels: {},
@@ -1922,7 +1861,6 @@ chartGen = function(smpColName, model_APIClass, output) {
           if (typeof modelType != 'undefined') {
             
             yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
-			modelType=(_.str.include(modelType,'bubble'))?'bubble':modelType;
             splitModel = model_TypeSplitClass[modelType];
                 _.each(splitModel, function(subModel, n) {
                 if (subModel !== null) {
@@ -1944,7 +1882,6 @@ chartGen = function(smpColName, model_APIClass, output) {
                 columnName = _.first(_.pluck(t, "columnName"));
                 propertyName = modelType + "_" + columnName;
                 yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
-				modelType=(_.str.include(modelType,'bubble'))?'bubble':modelType;
                 splitModel = model_TypeSplitClass[modelType];
                 //console.log("splitModel", splitModel);
                 _.each(splitModel, function(subModel, n) {
@@ -2081,7 +2018,7 @@ return result;
       var nameArr = getArr(f, 'name',view);
       var opArr = getArr(f, 'op',view);
       var idArr = getArr(f, 'id',view);
-	     console.log('idArr..',idArr); 
+	      
   
 	         var propertiesArr = [];
   if(view.typeinfo.cToggleKey =='cToggleEnabled'){ //cToggle Toggle the chart based on eikon filter
@@ -2280,7 +2217,6 @@ zeroOrOne_OperableClass = {
         Draw: function(d, unit, index, initialized, index2) {
             var columnName, modelType, propertyName;
             modelType = _.first(_.pluck(d, "model"));
-			modelType = (_.str.include(modelType,'bubble')) ? 'bubble':modelType;
             columnName = _.first(_.pluck(d, "columnName"));
             propertyName = modelType + "_" + columnName + "_0:" + unit;
             initialized[propertyName] = model_DataConvertClass[modelType][0](d, unit, index, index2);
@@ -2343,29 +2279,44 @@ zeroOrOne_OperableClass = {
 			
         }
     },
-  2: { //for pie
+  2: { //for pies
         Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
             var propertyName;
-            propertyName ='pie';
+            propertyName = "pie";
             if (_.has(output, propertyName) == false) {
-			if(_.str.include(modelType,'pie')) {
-					output[propertyName] = {
+				if(modelType=='pie'){
+				 output[propertyName] = {
                     type: "pie",
                     name: "pie",
                     data: [],
-                 
+                    //center: [50, 80],
+                    size: 180,
                     showInLegend: true,
                     dataLabels: {
                         enabled: false
                     }
-				};
-			} 
+				};} 
+				else { 
+                output[propertyName] = {
+                    type: "pie",
+                    name: "pie",
+                    data: [],
+                    center: [50, 80],
+                    size: 100,
+                    showInLegend: false,
+                    dataLabels: {
+                        enabled: false
+                    }
+
+                };
+				}
             }
         },
         Draw: function(d, unit, index, initialized) {
             var columnName, modelType, propertyName;
-        
-         propertyName ='pie'
+            modelType = _.first(_.pluck(d, "model"));
+            columnName = _.first(_.pluck(d, "columnName"));
+            propertyName = "pie";
 			
 			_.each(rawdata,function(o){
 			//take from the first 2 indexes
@@ -2404,76 +2355,10 @@ zeroOrOne_OperableClass = {
         }
 
     },
-	4:{ //for Unix timeStamp cases
-		Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-			 var propertyName;
-           model_APIClass['xAxis']={};
-		   model_APIClass['xAxis']['type']="datetime";
-		   model_APIClass['xAxis']['categories']=null;
-			// if modelType is areaRange, you allow them to share the output
-			if (_.str.include(modelType,'areaRange')) {
-			propertyName='areaRange'; if(typeof output[propertyName]=='undefined') {
-			output[propertyName]={'type':'arearange',data:[]
-					,lineWidth: 0,
-		    	linkedTo: ':previous',
-		    	color: Highcharts.getOptions().colors[0],
-		    	fillOpacity: 0.3,
-		    	zIndex: 0,  colorIndex:index};
-				model_APIClass['tooltip']={};
-				model_APIClass['tooltip']['crosshairs']=true;
-				model_APIClass['tooltip']['shared']=true;
-			}
-			} else {propertyName = modelType + "_" + columnName + "_0:" + unit;
-            output[propertyName] = {'data':[],zIndex: 1,marker: {
-		    		fillColor: 'white',
-		    		lineWidth: 2,
-		    		lineColor: Highcharts.getOptions().colors[0]
-					
-		    	}, colorIndex:index}; 
-			
-		}
-		},
-		 Draw: function(d, unit, index, initialized) {
-		//convert date into unix timeStamp
-		var modelType=d[0]['model'];
-		var propertyName; var columnName = d[0].columnName;
-		if(modelType=='areaRange') { propertyName='areaRange' } else {
-		propertyName = modelType + "_" + columnName + "_0:" + unit;
-		}
-		if (detected=='parsableDate'){
-		var processedData=_.map(d,function(d) {
-		var sampleObj=_.clone(d);
-		sampleObj['category'] = (new Date(d.category)).getTime();
-		return sampleObj;
-		});
-			if(modelType=='areaRange' ) {
-				if(_.size(initialized['areaRange']['data'])==0){ 
-					_.each(processedData,function(d) {
-					initialized['areaRange']['data'].push([d.category,d.value]);});
-					initialized['areaRange']['yAxisFull']=processedData[0].yAxis;
-					} else {
-					_.each(processedData,function(d,i){
-					initialized['areaRange']['data'][i].push(d.value);
-					initialized['areaRange']['yAxisFull']=processedData[0].yAxis;
-					});
-					}
-				}
-			} else	{initialized[propertyName].data.push(model_DataConvertClass[modelType][4](processedData, unit, index));	
-			initialized[propertyName]['yAxisFull']=processedData[0].yAxis;
-			}
-		}
-		 },
-	5 :{ //for bubble
-		Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-		console.log('kop f',f);
+	4:{ //for arearange
 		
-		},
-		draw: function(d, unit, index, initialized) {
-		
-		}
-}	
-	};
-
+	}
+};
 safeRead = function() {
     var current, formatProperty, obj, prop, props, val, _i, _len;
 
@@ -2519,7 +2404,7 @@ safeRead = function() {
   var testArray=["2012-11-25","Jan","Peter","Jan-2014"];
   var sampleCategory=modelData[0].category;
   var autoDetectArray=['parsableDate','month'];
-  
+  var detected;
   var detected2='month';
   _.each(autoDetectArray,function(d,i) {
   if (autoDetectCategory[d](sampleCategory)) detected=d; 
@@ -3084,6 +2969,9 @@ function getQuarter(d) {
 	return secondDate.getFullYear()-firstDate.getFullYear();
 	}
 	//--end helper function for data grouping multiselect
+
+	
+</div>
 
 	
 </div>
