@@ -1638,7 +1638,7 @@ model_APIClass.yAxis['stackLabels']= {
    model_APIClass['tooltip']={
                       formatter: function() {
   if(typeof this.point.stackTotal ==='undefined') {
-  console.log("this.point",this);
+ 
    return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;';
                         
@@ -1656,7 +1656,7 @@ model_APIClass.yAxis['stackLabels']= {
   }
   }, columnStack:{
   0:function(t,unit,index) {
-  console.log("t:",JSON.stringify(t));
+
       var colToSeriesArr, gCount, subModel;
       subModel = "column";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
@@ -1722,7 +1722,24 @@ console.log("yAxis Series Formatter",series);
   },
   areaRange:{
       4: function(t, unit,index) {
-	
+		console.log('jess..',t[0].category);
+		var colToSeriesArr=[];
+		var monthYearFormat=d3.time.format('%y-%b');
+	  var nest=d3.nest().key(function(d) {
+						return monthYearFormat(new Date(d.category));})
+						.rollup(function(d) {
+						var groupedDate=(monthYearFormat.parse(monthYearFormat(new Date(d[0].category)))).getTime();
+						 var uniqModelList=['areaRangeL','areaRangeH'];
+						 var subData=[groupedDate];
+						 _.each(uniqModelList,function(k){
+						 var filtered=_.where(d,{model:k});
+						 var sum=d3.sum(filtered,function(j) {return j.value;});
+						 subData.push(d3.round(sum,2));
+						 });
+						 colToSeriesArr.push(subData);
+						}).entries(t);
+						
+		return colToSeriesArr;
     }
   },
   areaAvgLine:{
@@ -1791,13 +1808,12 @@ console.log("yAxis Series Formatter",series);
   },
   bubble:{
   0:function(t,unit,index){
-    var colToSeriesArr, gCount, subModel;
-      subModel = "bubble";
+   
 	  // use arrToHex data instead of t
 	  var xAxisColName,xColName,yColName,sizeColName;
 	  var keys=_.keys(data1[0]);
 	  model_APIClass['xAxis']={};
-	  model_APIClass['xAxis']['categories']=null;
+	  model_APIClass['xAxis']['categories']='null';
 	for (var propertyName in data1[0]) {
 		if(_.str.include(propertyName,'xaxis')) xAxisColName=propertyName;
 		else  if(_.str.include(propertyName,'bubbleX')) xColName=propertyName; 
@@ -1830,7 +1846,7 @@ console.log("yAxis Series Formatter",series);
 			var data6=sortCategory(data5);
 			
 		  smpColName = _.groupBy(data6, function(d) {
-		  if (_.str.include(d["model"],"bubble")) {return "bubble";}
+		  if (_.str.include(d["model"],"bubble")) {return "bubble";} else if (_.str.include(d["model"],"areaRange")){return "areaRange";}
 			else {return d["columnName"]+d['model'];}
 		  });		
 		  console.log("initialSmpColName",JSON.stringify(smpColName));
@@ -1876,7 +1892,7 @@ console.log("yAxis Series Formatter",series);
 		 
 		  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
 		  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
-		  console.log("tooltip,modelApiClass",(typeof safeRead(model_APIClass,'tooltip')=="undefined")? {}: safeRead(model_APIClass,'tooltip'));
+		  console.log("tooltip,modelApiClass_xAxis", safeRead(model_APIClass,'xAxis','categories'));
 		  console.log("modelAPIJSON",JSON.stringify(model_APIClass));
 			  Highcharts.setOptions({
 				colors: colorSeriesArray
@@ -1897,7 +1913,8 @@ console.log("yAxis Series Formatter",series);
 			  xAxis: 
 				{
 				//  categories: toCategoryArray ,
-				categories:(typeof safeRead(model_APIClass,'xAxis','categories') == "undefined") ?toCategoryArray:safeRead(model_APIClass,'xAxis','categories'),
+				categories:(typeof safeRead(model_APIClass,'xAxis','categories') == "undefined") ?toCategoryArray:
+				(safeRead(model_APIClass,'xAxis','categories')=='null')?null:toCategoryArray,
 				type: (typeof safeRead(model_APIClass,'xAxis','type') == "undefined") ? "linear": safeRead(model_APIClass,'xAxis','type'),
 				labels:{rotation:parseInt(xTicksRotation)}
 				  }
@@ -1939,7 +1956,7 @@ chartGen = function(smpColName, model_APIClass, output) {
           if (typeof modelType != 'undefined') {
             
             yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
-			modelType=(_.str.include(modelType,'bubble'))?'bubble':modelType;
+			modelType=(_.str.include(modelType,'bubble'))?'bubble':(_.str.include(modelType,'areaRange'))?'areaRange':modelType;
             splitModel = model_TypeSplitClass[modelType];
                 _.each(splitModel, function(subModel, n) {
                 if (subModel !== null) {
@@ -1961,7 +1978,7 @@ chartGen = function(smpColName, model_APIClass, output) {
                 columnName = _.first(_.pluck(t, "columnName"));
                 propertyName = modelType + "_" + columnName;
                 yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
-				modelType=(_.str.include(modelType,'bubble'))?'bubble':modelType;
+				modelType=(_.str.include(modelType,'bubble'))?'bubble':(_.str.include(modelType,'areaRange'))?'areaRange':modelType;
                 splitModel = model_TypeSplitClass[modelType];
                 //console.log("splitModel", splitModel);
                 _.each(splitModel, function(subModel, n) {
@@ -2426,11 +2443,13 @@ zeroOrOne_OperableClass = {
 			 var propertyName;
            model_APIClass['xAxis']={};
 		   model_APIClass['xAxis']['type']="datetime";
-		   model_APIClass['xAxis']['categories']=null;
+		   model_APIClass['xAxis']['categories']='null';
+		   console.log('here xAxis',safeRead(model_APIClass,'xAxis','categories'));
 			// if modelType is areaRange, you allow them to share the output
 			if (_.str.include(modelType,'areaRange')) {
-			propertyName='areaRange'; if(typeof output[propertyName]=='undefined') {
-			output[propertyName]={'type':'arearange',data:[]
+			propertyName='areaRange'; 
+			output[propertyName]={name:(xTicksKey=='formatXTicksCast')?formatXTicks('2'): 'Difference'
+						,'type':'arearange'
 					,lineWidth: 0,
 		    	linkedTo: ':previous',
 		    	color: Highcharts.getOptions().colors[0],
@@ -2439,9 +2458,9 @@ zeroOrOne_OperableClass = {
 				model_APIClass['tooltip']={};
 				model_APIClass['tooltip']['crosshairs']=true;
 				model_APIClass['tooltip']['shared']=true;
-			}
+		
 			} else {propertyName = modelType + "_" + columnName + "_0:" + unit;
-            output[propertyName] = {'data':[],zIndex: 1,marker: {
+            output[propertyName] = { 'data':[],zIndex: 1,marker: {
 		    		fillColor: 'white',
 		    		lineWidth: 2,
 		    		lineColor: Highcharts.getOptions().colors[0]
@@ -2454,41 +2473,24 @@ zeroOrOne_OperableClass = {
 		//convert date into unix timeStamp
 		var modelType=d[0]['model'];
 		var propertyName; var columnName = d[0].columnName;
-		if(modelType=='areaRange') { propertyName='areaRange' } else {
+		if(_.str.include(modelType,'areaRange')) { propertyName='areaRange'; modelType='areaRange';} else {
 		propertyName = modelType + "_" + columnName + "_0:" + unit;
 		}
+		
 		if (detected=='parsableDate'){
-		var processedData=_.map(d,function(d) {
+		var processedData=_.map(d,function(d,i) {
 		var sampleObj=_.clone(d);
 		sampleObj['category'] = (new Date(d.category)).getTime();
 		return sampleObj;
 		});
-			if(modelType=='areaRange' ) {
-				if(_.size(initialized['areaRange']['data'])==0){ 
-					_.each(processedData,function(d) {
-					initialized['areaRange']['data'].push([d.category,d.value]);});
-					initialized['areaRange']['yAxisFull']=processedData[0].yAxis;
-					} else {
-					_.each(processedData,function(d,i){
-					initialized['areaRange']['data'][i].push(d.value);
-					initialized['areaRange']['yAxisFull']=processedData[0].yAxis;
-					});
-					}
-				}
-			} else	{initialized[propertyName].data.push(model_DataConvertClass[modelType][4](processedData, unit, index));	
+		
+		initialized[propertyName]['data']=model_DataConvertClass[modelType][4](processedData, unit, index);	
 			initialized[propertyName]['yAxisFull']=processedData[0].yAxis;
+			initialized[propertyName]=toolTipInserter(initialized[propertyName],modelType+'.'+processedData[0].yAxis);
 			}
-		}
-		 },
-	5 :{ //for bubble
-		Init: function(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output) {
-		console.log('kop f',f);
 		
-		},
-		draw: function(d, unit, index, initialized) {
-		
-		}
-}	
+		 }
+	}
 	};
 
 safeRead = function() {
@@ -2636,26 +2638,7 @@ var objPushCount=0;
   
   
   };
- /* reArrangeToSeries = function(toSeriesArray, containsModelType) {
-  console.log('containsModelType',containsModelType);
-      if (containsModelType === 'columnStackGroup') { //rearrange 'output'
-  var columnData = _.where(toSeriesArray,{'type':'column'});
  
-          var sortedOutput = _.sortBy(columnData, function(d) {
-              return d.colorIndex;
-          });
-     var lineData = _.where(toSeriesArray,{'type':'line'});
-            toSeriesArray = _.union(sortedOutput,lineData);
-        }
-  
-  if (containsModelType ==='columnInducedGroup') {
-  var sortedOutput = _.sortBy(toSeriesArray,function(d) {
-  return d.yAxis;
-  });
-  toSeriesArray=sortedOutput;
-  }
-  return toSeriesArray;
-  };*/
   reArrangeToSeries = function(toSeriesArray, containsModelType,seriesInsertKey) {
 console.log('containsModelType',containsModelType, '..seriesInsertKey',seriesInsertKey);
 console.log('rearrange toSeriesArray',JSON.stringify(toSeriesArray));
@@ -2895,7 +2878,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 return monthFormat(date);
             },
             'year': function(date) {
-                console.log("now is year", date.getFullYear());
+               
                 return date.getFullYear();
 
             },
@@ -2909,7 +2892,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 return monthFormat(date);
             },
             'year': function(date) {
-                console.log("now is year", date.getFullYear());
+              
                 return date.getFullYear();
 
             },
@@ -2941,7 +2924,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 		var groupByArr=_.union(groupByArr,groupbyRange);
 		
 		var aggregateData=groupByFn(filteredData,groupByArr);
-		console.log('aggregateData',JSON.stringify(aggregateData));
+		
 		return aggregateData;
     };
     addPeriodOptions = function(periodSelect_el) {
@@ -2985,7 +2968,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 				
 				 if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 				chartPreGen(groupedData);
-                console.log('groupedData_selected', JSON.stringify(groupedData));
+            
 
                 return subPeriodSelect_val.join(", ");
             },
@@ -3102,6 +3085,8 @@ function getQuarter(d) {
 	}
 	//--end helper function for data grouping multiselect
 
+	
+</div>
 	
 </div>
 ========
