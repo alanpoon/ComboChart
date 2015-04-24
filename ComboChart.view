@@ -141,7 +141,10 @@
       "formatInducedCast":"",
       "valueOperationKey":"default",
       "formatValueOperationCast":"operation.prototype.value=function(){ return [this.A-this.B];}",
-      "formatValueOperationArg":"A"
+      "formatValueOperationArg":"A",
+      "dataAjaxKey":"default",
+      "dataAjaxCast":"company,bubbleSize,quantity,sales",
+      "dataAjax":"default"
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/highcharts-more.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js","/elx/lib/multiSelectCustom.js"],
@@ -1013,6 +1016,88 @@
                ]
             }
          ]
+      },
+      {
+         "jsonClass":"Group",
+         "label":"Data Ajax",
+         "rows":[
+            {
+               "jsonClass":"Row",
+               "cols":[
+                  {
+                     "jsonClass":"Label",
+                     "id":"typeinfo-dataAjaxKey-label",
+                     "type":"label",
+                     "text":"Data Ajax Key"
+                  },
+                  {
+                     "jsonClass":"Select",
+                     "id":"typeinfo-dataAjaxKey",
+                     "type":"select",
+                     "value":"${typeinfo.dataAjaxKey}",
+                     "options":[
+                        {
+                           "jsonClass":"Option",
+                           "text":"default",
+                           "value":"default"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"dataAjax",
+                           "value":"dataAjax"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "jsonClass":"Row",
+               "cols":[
+                  {
+                     "jsonClass":"Label",
+                     "id":"typeinfo-dataAjaxCast-label",
+                     "type":"label",
+                     "text":"Data Ajax Cast"
+                  },
+                  {
+                     "jsonClass":"Field",
+                     "id":"typeinfo-dataAjaxCast",
+                     "type":"field",
+                     "value":"${typeinfo.dataAjaxCast}",
+                     "readonly":false
+                  }
+               ]
+            },
+            {
+               "jsonClass":"Row",
+               "cols":[
+                  {
+                     "jsonClass":"Label",
+                     "id":"typeinfo-dataAjaxReset-label",
+                     "type":"label",
+                     "text":"Data Ajax Reset"
+                  },
+                  {
+                     "jsonClass":"Select",
+                     "id":"typeinfo-dataAjaxKey",
+                     "type":"select",
+                     "value":"${typeinfo.dataAjaxKey}",
+                     "options":[
+                        {
+                           "jsonClass":"Option",
+                           "text":"default",
+                           "value":"default"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"reset",
+                           "value":"reset"
+                        }
+                     ]
+                  }
+               ]
+            }
+         ]
       }
    ]
 }
@@ -1111,12 +1196,14 @@ var f=view.typeinfo.data.fields;
   var detected;
  debugFn();
   multiSelectFn(jQuery);// initalise multiSelect datagroup js
-  
+  if(view.typeinfo.dataAjaxReset=='reset') { view.typeinfo.dataAjax=='default';}
+    var viewHolder = elx.app.dashboardFrame.getViewById(view.id);
+    if(viewHolder){
+	  var v = new elx.PullRequest(view,{});
+	viewHolder.setBaseView(v);
+	viewHolder.resize();
+  }
  if (view.data.jsonClass === "DataEmbedded"){ 
-  //rawdata= [["CHIEW HIANG TOH CH","2014-05-01","TeamA",660,560],["CHIEW HIANG TOH CH","2014-06-01","TeamA",799,699],["CHIEW HIANG TOH CH","2014-07-01","TeamA",650,550],["CHIEW HIANG TOH CH","2014-08-01","TeamA",670,570],["CHIEW HIANG TOH CH","2014-09-01","TeamA",626,526],["CHIEW HIANG TOH CH","2014-10-01","TeamA",200,100],["CHONG BENG NG NG","2014-03-01","TeamA",800,700],["CHONG BENG NG NG","2014-05-01","TeamA",1000,900],["CHONG BENG NG NG","2014-06-01","TeamA",800,700],["CHONG BENG NG NG","2014-07-01","TeamA",800,700],["CHONG BENG NG NG","2014-08-01","TeamA",880,780],["CHONG BENG NG NG","2014-09-01","TeamA",660,560],["CHONG BENG NG NG","2014-10-01","TeamA",400,300],["ELEX CHAN EC","2014-03-01","TeamB",626,526],["ELEX CHAN EC","2014-05-01","TeamB",690,590],["ELEX CHAN EC","2014-06-01","TeamB",883,783],["ELEX CHAN EC","2014-07-01","TeamB",669,569],["ELEX CHAN EC","2014-08-01","TeamB",661,561],["ELEX CHAN EC","2014-09-01","TeamB",662,562],["ELEX CHAN EC","2014-10-01","TeamB",236,136],["KOK MENG LEO KM","2014-04-01","TeamB",641,541],["KOK MENG LEO KM","2014-05-01","TeamB",335,235],["KOK MENG LEO KM","2014-06-01","TeamB",679,579],["KOK MENG LEO KM","2014-07-01","TeamB",786,686],["KOK MENG LEO KM","2014-08-01","TeamB",537,437],["KOK MENG LEO KM","2014-09-01","TeamB",696,596],["LIANG TIAN TL","2014-05-01","TeamC",724,624],["LIANG TIAN TL","2014-06-01","TeamC",683,583],["LIANG TIAN TL","2014-07-01","TeamC",644,544],["LIANG TIAN TL","2014-08-01","TeamC",444,344],["LIANG TIAN TL","2014-09-01","TeamC",676,576],["LIANG TIAN TL","2014-10-01","TeamC",196,96],["LIJUN QIAO LJ","2014-05-01","TeamC",1310,1210],["LIJUN QIAO LJ","2014-06-01","TeamC",1117,1017],["LIJUN QIAO LJ","2014-07-01","TeamC",777,677],["LIJUN QIAO LJ","2014-08-01","TeamC",833,733],["LIJUN QIAO LJ","2014-09-01","TeamC",1037,937],["LIJUN QIAO LJ","2014-10-01","TeamC",420,320],["MOHD HISHAM BIN MANSOR HS","2014-05-01","TeamC",665,565],["MOHD HISHAM BIN MANSOR HS","2014-06-01","TeamC",707,607],["MOHD HISHAM BIN MANSOR HS","2014-07-01","TeamC",999,899],["MOHD HISHAM BIN MANSOR HS","2014-08-01","TeamC",815,715],["MOHD HISHAM BIN MANSOR HS","2014-09-01","TeamC",662,562],["MOHD HISHAM BIN MANSOR HS","2014-10-01","TeamC",240,140]];
-  //[["CHIEW HIANG TOH CH","2014-05-01",660],["CHIEW HIANG TOH CH","2014-06-01",799],["CHIEW HIANG TOH CH","2014-07-01",650],["CHIEW HIANG TOH CH","2014-08-01",670],["CHIEW HIANG TOH CH","2014-09-01",626],["CHIEW HIANG TOH CH","2014-10-01",200],["CHONG BENG NG NG","2014-03-01",800],["CHONG BENG NG NG","2014-05-01",1000],["CHONG BENG NG NG","2014-06-01",800],["CHONG BENG NG NG","2014-07-01",800],["CHONG BENG NG NG","2014-08-01",880],["CHONG BENG NG NG","2014-09-01",660],["CHONG BENG NG NG","2014-10-01",400],["ELEX CHAN EC","2014-03-01",626],["ELEX CHAN EC","2014-05-01",690],["ELEX CHAN EC","2014-06-01",883],["ELEX CHAN EC","2014-07-01",669],["ELEX CHAN EC","2014-08-01",661],["ELEX CHAN EC","2014-09-01",662],["ELEX CHAN EC","2014-10-01",236],["KOK MENG LEO KM","2014-04-01",641],["KOK MENG LEO KM","2014-05-01",335],["KOK MENG LEO KM","2014-06-01",679],["KOK MENG LEO KM","2014-07-01",786],["KOK MENG LEO KM","2014-08-01",537],["KOK MENG LEO KM","2014-09-01",696],["LIANG TIAN TL","2014-05-01",724],["LIANG TIAN TL","2014-06-01",683],["LIANG TIAN TL","2014-07-01",644],["LIANG TIAN TL","2014-08-01",444],["LIANG TIAN TL","2014-09-01",676],["LIANG TIAN TL","2014-10-01",196],["LIJUN QIAO LJ","2014-05-01",1310],["LIJUN QIAO LJ","2014-06-01",1117],["LIJUN QIAO LJ","2014-07-01",777],["LIJUN QIAO LJ","2014-08-01",833],["LIJUN QIAO LJ","2014-09-01",1037],["LIJUN QIAO LJ","2014-10-01",420],["MOHD HISHAM BIN MANSOR HS","2014-05-01",665],["MOHD HISHAM BIN MANSOR HS","2014-06-01",707],["MOHD HISHAM BIN MANSOR HS","2014-07-01",999],["MOHD HISHAM BIN MANSOR HS","2014-08-01",815],["MOHD HISHAM BIN MANSOR HS","2014-09-01",662],["MOHD HISHAM BIN MANSOR HS","2014-10-01",240]];
- // [["2014-03-01","CHONG BENG NG NG",800],["2014-03-01","ELEX CHAN EC",626],["2014-04-01","KOK MENG LEO KM",641],["2014-05-01","CHIEW HIANG TOH CH",660],["2014-05-01","CHONG BENG NG NG",1000],["2014-05-01","ELEX CHAN EC",690],["2014-05-01","KOK MENG LEO KM",335],["2014-05-01","LIANG TIAN TL",724],["2014-05-01","LIJUN QIAO LJ",1310],["2014-05-01","MOHD HISHAM BIN MANSOR HS",665],["2014-06-01","CHIEW HIANG TOH CH",799],["2014-06-01","CHONG BENG NG NG",800],["2014-06-01","ELEX CHAN EC",883],["2014-06-01","KOK MENG LEO KM",679],["2014-06-01","LIANG TIAN TL",683],["2014-06-01","LIJUN QIAO LJ",1117],["2014-06-01","MOHD HISHAM BIN MANSOR HS",707],["2014-07-01","CHIEW HIANG TOH CH",650],["2014-07-01","CHONG BENG NG NG",800],["2014-07-01","ELEX CHAN EC",669],["2014-07-01","KOK MENG LEO KM",786],["2014-07-01","LIANG TIAN TL",644],["2014-07-01","LIJUN QIAO LJ",777],["2014-07-01","MOHD HISHAM BIN MANSOR HS",999],["2014-08-01","CHIEW HIANG TOH CH",670],["2014-08-01","CHONG BENG NG NG",880],["2014-08-01","ELEX CHAN EC",661],["2014-08-01","KOK MENG LEO KM",537],["2014-08-01","LIANG TIAN TL",444],["2014-08-01","LIJUN QIAO LJ",833],["2014-08-01","MOHD HISHAM BIN MANSOR HS",815],["2014-09-01","CHIEW HIANG TOH CH",626],["2014-09-01","CHONG BENG NG NG",660],["2014-09-01","ELEX CHAN EC",662],["2014-09-01","KOK MENG LEO KM",696],["2014-09-01","LIANG TIAN TL",676],["2014-09-01","LIJUN QIAO LJ",1037],["2014-09-01","MOHD HISHAM BIN MANSOR HS",662],["2014-10-01","CHIEW HIANG TOH CH",200],["2014-10-01","CHONG BENG NG NG",400],["2014-10-01","ELEX CHAN EC",236],["2014-10-01","LIANG TIAN TL",196],["2014-10-01","LIJUN QIAO LJ",420],["2014-10-01","MOHD HISHAM BIN MANSOR HS",240]];
-  //rawdata= [["Apr",100],["Apr",100],["Aug",60],["Dec",92],["Feb",48],["Jan",32],["Jul",46],["Jun",92],["Mar",111],["May",120],["Nov",56],["Oct",45],["Sep",44]];
   var rawdata=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
 		//above for arearange
 /*	rawdata=[["Team1",25,35,20],["Team1",35,70,20],["Team1",70,100,40],["Team1",96,100,50],["Team1",20,100,50],["Team2",14,100,60],["Team2",60,100,70]];
@@ -1125,10 +1212,24 @@ var f=view.typeinfo.data.fields;
 	,["week3","Tim",60],["week4","James",100],["week4","Tim",120]];
   console.log('cToggleStatus',view.typeinfo.cToggleKey);
   */
-  //rawdata=reduceCToggle(rawdata,view);
+	
   var extendedArr=rawdata;
   var reduceCToggleArr=extendedArr;
-  } else { rawdata=${data};  var extendedArr=extendArr(rawdata,f,view); var reduceCToggleArr=reduceCToggle(extendedArr,view);}
+  } else { 
+   
+
+  if(view.typeinfo.dataAjaxKey=='dataAjax'&& view.typeinfo.dataAjax!='default'){
+  var reduceCToggleArr=_.map(view.typeinfo.dataAjax,function(d,j){
+	var arr=[];
+	if(j==0) {console.log('j',j,'nom:',d);}
+	_.each(view.typeinfo.dataAjaxCast.split(","),function(i){
+	arr.push(d[i]);
+	}); return arr;
+  });
+  } else {
+  var rawdata=${data};  var extendedArr=extendArr(rawdata,f,view); var reduceCToggleArr=reduceCToggle(extendedArr,view);
+  }
+  }
   
 console.log("extendedArr",JSON.stringify(extendedArr));
   console.log("rawdata",JSON.stringify(rawdata));
@@ -1136,13 +1237,12 @@ console.log("extendedArr",JSON.stringify(extendedArr));
   var data1, data2, data3, smpColName;
   data1 = arrToHex1(reduceCToggleArr, f, view);
   // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
-console.log("data1",JSON.stringify(data1));
-  
+
   data2=interpolateMonthFixed(data1,view);
   data2=interpolateGroupby(data2,view);
-  console.log("data2",JSON.stringify(data2));
+
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
-  console.log("data3",JSON.stringify(data3));
+
  // var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
   addDataGroupFn(data3, 'category', dataGroupKey, '#dataGroup_' + viewId, viewId);
  
@@ -2640,8 +2740,7 @@ var objPushCount=0;
   };
  
   reArrangeToSeries = function(toSeriesArray, containsModelType,seriesInsertKey) {
-console.log('containsModelType',containsModelType, '..seriesInsertKey',seriesInsertKey);
-console.log('rearrange toSeriesArray',JSON.stringify(toSeriesArray));
+
 if (containsModelType === 'columnStackGroup') { //rearrange 'output'
 var columnData = _.where(toSeriesArray,{'type':'column'});
 var sortedOutput = _.sortBy(columnData, function(d) {
@@ -3088,5 +3187,5 @@ function getQuarter(d) {
 	
 </div>
 	
-</div>
+
 ========
