@@ -1197,12 +1197,13 @@ var f=view.typeinfo.data.fields;
  debugFn();
   multiSelectFn(jQuery);// initalise multiSelect datagroup js
   if(view.typeinfo.dataAjaxReset=='reset') { view.typeinfo.dataAjax=='default';}
-    var viewHolder = elx.app.dashboardFrame.getViewById(view.id);
-	
-    if(viewHolder && typeof elx.pullRequest=='constructor'){
+    var viewHolder = elx.app.dashboardFrame.getViewById(viewId);
+	console.log('viewHolder out',viewHolder,typeof elx.PullRequest);
+    if(viewHolder && typeof elx.PullRequest=='function'){
+	console.log('viewHolder inside');
 	  var v = new elx.PullRequest(view,{});
 	viewHolder.setBaseView(v);
-	viewHolder.resize();
+	//viewHolder.resize();
   }
  if (view.data.jsonClass === "DataEmbedded"){ 
   var rawdata=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
@@ -1218,7 +1219,7 @@ var f=view.typeinfo.data.fields;
   var reduceCToggleArr=extendedArr;
   } else { 
    
-
+console.log('view.typeinfo',view.typeinfo);
   if(view.typeinfo.dataAjaxKey=='dataAjax'&& view.typeinfo.dataAjax!='default'){
   var reduceCToggleArr=_.map(view.typeinfo.dataAjax,function(d,j){
 	var arr=[];
