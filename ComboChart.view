@@ -1837,7 +1837,7 @@ console.log("yAxis Series Formatter",series);
 						 var filtered=_.where(d,{model:k});
 						 var sum=d3.sum(filtered,function(j) {return j.value;});
 						 subData.push(d3.round(sum,2));
-						 });
+						 });subData.push(d3.round(subData[2]-subData[1],2));
 						 colToSeriesArr.push(subData);
 						}).entries(t);
 						
