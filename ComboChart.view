@@ -144,7 +144,10 @@
       "formatValueOperationArg":"A",
       "dataAjaxKey":"default",
       "dataAjaxCast":"company,bubbleSize,quantity,sales",
-      "dataAjax":"default"
+      "dataAjax":"default",
+      "dataAjaxHexToModelKey":"default",
+      "dataAjaxHexToModel":"default",
+      "dataAjaxReset":"default"
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/highcharts-more.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js","/elx/lib/multiSelectCustom.js"],
@@ -476,6 +479,10 @@
                            "jsonClass":"Option",
                            "text":"month string",
                            "value":"%b"
+                        }, {
+                           "jsonClass":"Option",
+                           "text":"year-month",
+                           "value":"%Y-%b"
                         },
                         {
                            "jsonClass":"Option",
@@ -1067,6 +1074,34 @@
                      "readonly":false
                   }
                ]
+            },{
+               "jsonClass":"Row",
+               "cols":[
+                  {
+                     "jsonClass":"Label",
+                     "id":"typeinfo-dataAjaxHexToModelKey-label",
+                     "type":"label",
+                     "text":"Data Ajax HexToModel Key"
+                  },
+                  {
+                     "jsonClass":"Select",
+                     "id":"typeinfo-dataAjaxHexToModelKey",
+                     "type":"select",
+                     "value":"${typeinfo.dataAjaxHexToModelKey}",
+                     "options":[
+                        {
+                           "jsonClass":"Option",
+                           "text":"default",
+                           "value":"default"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"dataAjax",
+                           "value":"dataAjax"
+                        }
+                     ]
+                  }
+               ]
             },
             {
                "jsonClass":"Row",
@@ -1079,9 +1114,9 @@
                   },
                   {
                      "jsonClass":"Select",
-                     "id":"typeinfo-dataAjaxKey",
+                     "id":"typeinfo-dataAjaxReset",
                      "type":"select",
-                     "value":"${typeinfo.dataAjaxKey}",
+                     "value":"${typeinfo.dataAjaxReset}",
                      "options":[
                         {
                            "jsonClass":"Option",
@@ -1196,7 +1231,7 @@ var f=view.typeinfo.data.fields;
   var detected;
  debugFn();
   multiSelectFn(jQuery);// initalise multiSelect datagroup js
-  if(view.typeinfo.dataAjaxReset=='reset') { view.typeinfo.dataAjax=='default';}
+  if(view.typeinfo.dataAjaxReset=='reset') { view.typeinfo.dataAjax=='default';view.typeinfo.dataAjaxHexToModel=='default';}
     var viewHolder = elx.app.dashboardFrame.getViewById(viewId);
 	console.log('viewHolder out',viewHolder,typeof elx.PullRequest);
     if(viewHolder && typeof elx.PullRequest=='function'){
@@ -1233,18 +1268,18 @@ console.log('view.typeinfo',view.typeinfo);
   }
   }
   
-console.log("extendedArr",JSON.stringify(extendedArr));
-  console.log("rawdata",JSON.stringify(rawdata));
   console.log("reduceCToggleArr",JSON.stringify(reduceCToggleArr));
   var data1, data2, data3, smpColName;
   data1 = arrToHex1(reduceCToggleArr, f, view);
+  console.log('data1',data1[0]);
   // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
 
   data2=interpolateMonthFixed(data1,view);
   data2=interpolateGroupby(data2,view);
 
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
-
+  console.log('data3',JSON.stringify(data3[0]));
+	data3=ajaxHexToModel(data3,view,viewId);
  // var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
   addDataGroupFn(data3, 'category', dataGroupKey, '#dataGroup_' + viewId, viewId);
  
@@ -1784,7 +1819,6 @@ model_APIClass.yAxis['stackLabels']= {
   formatter: function(){
     var sum = 0;
     var series = this.axis.series;
-console.log("yAxis Series Formatter",series);
   var series=_.where(series,{'stackKey':'column'});
     for (var i in series){
       sum+=series[i].yData[this.x];
@@ -1987,10 +2021,10 @@ console.log("yAxis Series Formatter",series);
 				var toYaxisArray=[];
 		  var yAxisArray=(view.typeinfo.yAxisArray).split(",");
 		  var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
-		   console.log("toSeriesArray",JSON.stringify(toSeriesArray));
+		   
 		  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
 		   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
-		  
+		  console.log("toSeriesArray",JSON.stringify(toSeriesArray));
 		 
 		  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
 		  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
@@ -2788,7 +2822,7 @@ return toSeriesArray;
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
   var formatToolTip;
-  console.log("before .. modelType",modelType);
+  console.log("before .. modelType",modelType,'..formatToolTipCast',formatToolTipCast);
   eval(formatToolTipCast);
   var formatToolTipForCToggle=function(propertyName,formatToolTip,cToggleType){
   return {valueDecimals:formatToolTip[propertyName]['valueDecimals'](cToggleType),
@@ -2925,7 +2959,19 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 	return (valueOperationKey==='formatValueOperation')? newVObj:modelData;
 };
 //--end valueOperating
-
+  ajaxHexToModel=function(modelData,view,viewId){
+  var output=modelData;
+   var viewHolder = elx.app.dashboardFrame.getViewById(viewId);
+   console.log("view.typeinfo.dataAjaxHexToModelKey before",view.typeinfo.dataAjaxHexToModelKey);
+    if(viewHolder && typeof elx.PullRequest=='function' && view.typeinfo.dataAjaxHexToModelKey=='dataAjax'){
+	console.log("view.typeinfo.dataAjaxHexToModelKey doing");
+	  var v = new elx.PullRequest(view,{});
+	viewHolder.setBaseView(v);
+	
+  output=_.union(modelData,view.typeinfo.dataAjaxHexToModel);
+  }
+  return output;
+  };
 //--Data Grouping Tab
     addDataGroupFn = function(modelData, tCol, dataGroupKey, dataGroupHex, viewId) {
 		console.log("dataGroupKey",dataGroupKey);
