@@ -1267,8 +1267,6 @@ console.log('view.typeinfo',view.typeinfo);
   var rawdata=${data};  var extendedArr=extendArr(rawdata,f,view); var reduceCToggleArr=reduceCToggle(extendedArr,view);
   }
   }
-  
-  console.log("reduceCToggleArr",JSON.stringify(reduceCToggleArr));
   var data1, data2, data3, smpColName;
   data1 = arrToHex1(reduceCToggleArr, f, view);
   console.log('data1',data1[0]);
@@ -1422,7 +1420,7 @@ return extendedArr;
 	sortedData=_.sortBy(data,function(d){ 
 	
 	return fixedGroupbyClass[basedOn].indexOf(d[columnNameGroupby[basedOn]]);});
-		 console.log("after sortedData",JSON.stringify(sortedData));
+
 		return sortedData;};
 		
 		
@@ -1858,13 +1856,15 @@ model_APIClass.yAxis['stackLabels']= {
   },
   areaRange:{
       4: function(t, unit,index) {
-		console.log('jess..',t[0].category);
+	
 		var colToSeriesArr=[];
 		var monthYearFormat=d3.time.format('%y-%b');
 	  var nest=d3.nest().key(function(d) {
 						return monthYearFormat(new Date(d.category));})
 						.rollup(function(d) {
-						var groupedDate=(monthYearFormat.parse(monthYearFormat(new Date(d[0].category)))).getTime();
+						var groupedDate=(monthYearFormat.parse(monthYearFormat(new Date(parseInt(d[0].category))))).getTime()+28800000;
+						
+			
 						 var uniqModelList=['areaRangeL','areaRangeH'];
 						 var subData=[groupedDate];
 						 _.each(uniqModelList,function(k){
@@ -1978,7 +1978,7 @@ model_APIClass.yAxis['stackLabels']= {
  
   chartPreGen = function(data4){
 		  var data5=formatXTicksAndOrdering(data4,view);
-		  console.log("data5",JSON.stringify(data5));
+	
 			var data6=sortCategory(data5);
 			
 		  smpColName = _.groupBy(data6, function(d) {
@@ -2006,7 +2006,7 @@ model_APIClass.yAxis['stackLabels']= {
 		  
 		  
 		  chartGen(smpColName,model_APIClass,output);
-		  console.log("before output",JSON.stringify(output));
+
 		  for (var propertyName in output) {
 			if (Array.isArray(output[propertyName])==true) {
 			_.each(output[propertyName],function(d,i){
@@ -2024,7 +2024,7 @@ model_APIClass.yAxis['stackLabels']= {
 		   
 		  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
 		   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
-		  console.log("toSeriesArray",JSON.stringify(toSeriesArray));
+		  console.log("toSeriesArray",JSON.stringify(toSeriesArray[0]));
 		 
 		  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
 		  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
@@ -2251,11 +2251,11 @@ return result;
       var nameArr = getArr(f, 'name',view);
       var opArr = getArr(f, 'op',view);
       var idArr = getArr(f, 'id',view);
-	     console.log('idArr..',idArr); 
+
   
 	         var propertiesArr = [];
   if(view.typeinfo.cToggleKey =='cToggleEnabled'){ //cToggle Toggle the chart based on eikon filter
-  //Console.log a existing cToggleType
+
   var cToggleTypeMaj=[];
   _.each(data,function(d) { cToggleTypeMaj.push(d[0]);});
   var cToggleTypeUniq=_.uniq(cToggleTypeMaj);
@@ -2289,7 +2289,7 @@ return result;
 		nameArr=_.rest(nameArr); //remove the first element which is the cToggleType
 		var keyArr = _.first(nameArr, keyLength);
          var colArr = _.last(nameArr, nameArr.length - keyLength);
-		 console.log("keyArr: ",keyArr,"  , colArr",colArr);
+
       var nameArr = _.map(colArr, function(num, i) {
           return opArr[i] + "(" + num + ")";
       });
@@ -2662,7 +2662,7 @@ safeRead = function() {
   return date instanceof Date && !isNaN(date.valueOf());
        },
   "month":function(d) { var date=new Date(d+" 2,2014");
-  console.log("date",date);
+
   return date instanceof Date && !isNaN(date.valueOf());}
   };
   
@@ -2705,7 +2705,7 @@ var objPushCount=0;
   var arr=(d.category).split('-');
   var monthValue=(parseInt(arr[1].split("Q")[1]))*3;
   var monthArr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  console.log("before monthValue",monthValue);
+
   var date=new Date(monthArr[monthValue-1]+' 15,'+arr[0]);return date.getTime()/1000
   }; break;
     case 'year-year':formatOrdering=function(d){
@@ -2931,7 +2931,7 @@ for (var i=0;i < _.size(vObj[firstABargument]);i++) {
 		});
 	
 	}
-		//console.log("sampleObj",JSON.stringify(sampleObj));
+		
 	return vObj['processedValue'];
 
 };
@@ -2987,7 +2987,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 			
             var tDomainDate = setTDomain1(modelData, tCol);
             var periodSelect_hex = '#periodSelect_' + viewId;
-			console.log("front periodSelect_el",$(periodSelect_hex));
+		
             var subPeriodSelect_hex = '#subPeriodSelect_' + viewId
             addSubPeriodOptions(modelData, tDomainDate, tCol, 'month', subPeriodSelect_hex);
             periodSelect_el = $(periodSelect_hex).multiselect({
@@ -3003,7 +3003,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 				minWidth:100
 
             });
-			console.log("periodSelect_el",periodSelect_el);
+	
             addPeriodOptions(periodSelect_el);
 	
         } else {
@@ -3018,7 +3018,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 	//reassign orderingKey
 	
 	orderingKey='year-'+periodSelect_val;
-	console.log("orderingKey in dataGroupUsed",orderingKey);
+	
         var periodFilterClass = {
             'month': function(date) {
                 var monthFormat = d3.time.format("%b");
@@ -3083,7 +3083,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             });
             opt.appendTo(periodSelect_el);
         });
-		console.log("add Period",periodSelect_el);
+	
         periodSelect_el.multiselect('refresh');
     };
     updateSubPeriodOptions = function(modelData, tDomainDate,  tCol,periodSelect_val, subPeriodSelect_hex) {
@@ -3108,7 +3108,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                 subPeriodSelect_val = $.map(checkedItems, function(checkbox) {
                     return checkbox.value;
                 });
-                console.log("subPeriodSelect_val _sel", subPeriodSelect_val);
+               
                 
                 var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val); //data filtered by subPeriodselected_val
 				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
@@ -3126,13 +3126,13 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 			   groupedData =valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
 			   if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 			   chartPreGen(groupedData);
-                console.log('groupedData_unchecked', JSON.stringify(groupedData));
+               
 
             },minWidth:400
 
         });
         var subPeriodArr = dataGroupAvailClass[periodSelect_val](tDomainDate[0], tDomainDate[1]);
-        console.log("subPeriodArr", subPeriodArr);
+       
         subPeriodSelect_val = subPeriodArr;
         _.each(subPeriodArr, function(m) {
 
@@ -3143,7 +3143,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             });
             opt.appendTo(subPeriodSelect_el);
         });
-		console.log("subPeriodSelect_el",subPeriodSelect_el);
+		
         subPeriodSelect_el.multiselect('refresh');
     };
     dataGroupAvailClass = { //return the available options in each type of dataGroup as an array
