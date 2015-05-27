@@ -1238,7 +1238,7 @@ var f=view.typeinfo.data.fields;
 	console.log('viewHolder inside');
 	  var v = new elx.PullRequest(view,{});
 	viewHolder.setBaseView(v);
-	//viewHolder.resize();
+	viewHolder.resize();
   }
  if (view.data.jsonClass === "DataEmbedded"){ 
   var rawdata=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
@@ -1375,12 +1375,8 @@ return extendedArr;
   };
   interpolateGroupby=function(data,view){
   if (view.typeinfo.interpolateGroupbyKey=="interpolateGroupbyKey") {
-  console.log("interpolateGroupbyKey is true");
     eval(view.typeinfo.fixedGroupbyClassCast); //fixedGroupbyClass contains a class with many arrays for interpolation
-	
-	
 	//get sample Objects from data
-	
 	//find the actual columnName that contains all the groupbys
 	var columnNameGroupby={};
 	var valueColumnNameArr=[];
@@ -1391,7 +1387,6 @@ return extendedArr;
 		columnNameGroupby[propertyName]=propertyInData;
 		} else if (_.str.include(propertyInData,'#[')) valueColumnNameArr.push(propertyInData);
 		}
-		
 	//for all the properties in fixedGroupbyClass, interpolate them into 'data',
 	for (var property in fixedGroupbyClass){
 	// e.g property is 'groupby1'
@@ -1694,6 +1689,11 @@ model_DataConvertClass = {
   },  
   bar: {
     0: function(t,unit,index) {
+	model_APIClass={};
+	var filteredSize=_.size(t);
+	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?700: (filteredSize < 20)?800 :(filteredSize < 30) ? 900: (filteredSize < 40) ?1000:(filteredSize < 50) ?1300:(filteredSize < 60) ?1500:2000;
+	model_APIClass['chart']={};
+	model_APIClass['chart']['height']=hx;
       var colToSeriesArr, gCount, subModel;
       subModel = "bar";
 	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
@@ -1977,6 +1977,7 @@ model_APIClass.yAxis['stackLabels']= {
   //$$$
  
   chartPreGen = function(data4){
+  console.log('data in chartPreGen',data4);
 		  var data5=formatXTicksAndOrdering(data4,view);
 	
 			var data6=sortCategory(data5);
@@ -2023,11 +2024,11 @@ model_APIClass.yAxis['stackLabels']= {
 		  var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
 		   
 		  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
+		  if (containsModelType!='pie'){
 		   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
+		   }
 		  console.log("toSeriesArray",JSON.stringify(toSeriesArray[0]));
-		 
-		  console.log("colorSeriesArray",JSON.stringify(colorSeriesArray));
-		  console.log("modelAPIClass",model_APIClass,"safeRead",safeRead(model_APIClass,'plotOptions','column','stacking'));
+
 		  console.log("tooltip,modelApiClass_xAxis", safeRead(model_APIClass,'xAxis','categories'));
 		  console.log("modelAPIJSON",JSON.stringify(model_APIClass));
 			  Highcharts.setOptions({
@@ -2036,6 +2037,7 @@ model_APIClass.yAxis['stackLabels']= {
 			  $("#${id}").highcharts({
 			  chart: {
 		   zoomType: "xy"
+		   ,height:(typeof safeRead(model_APIClass,'chart','height')=="undefined")? null: safeRead(model_APIClass,'chart','height')
 		  },
 			  title: {
 				text: cfgoptions.title
@@ -2089,6 +2091,7 @@ chartGen = function(smpColName, model_APIClass, output) {
 		unit=_.first(_.pluck(t,"columnName"));
 		}
         propertyName = modelType+"_"+columnName;
+		 if (modelType==='pie') {containsModelType='pie';}
           if (typeof modelType != 'undefined') {
             
             yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
@@ -2116,12 +2119,12 @@ chartGen = function(smpColName, model_APIClass, output) {
                 yAxisNum = parseInt(numDivFn(_.first(_.pluck(t, 'yAxis')))) - 1;
 				modelType=(_.str.include(modelType,'bubble'))?'bubble':(_.str.include(modelType,'areaRange'))?'areaRange':modelType;
                 splitModel = model_TypeSplitClass[modelType];
-                //console.log("splitModel", splitModel);
+                
                 _.each(splitModel, function(subModel, n) {
                     if (subModel !== null) {
 
                         zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
-                        //console.log("output", output);
+                        
                         zeroOrOne_OperableClass[n].Draw(t, unit, index, output, index2);
  				
                     }
@@ -2304,13 +2307,13 @@ return result;
       idArr.forEach(function(d, i) {
           propertiesArr.push("#[" + d + "]");
       })
-      console.log("propertiess", JSON.stringify(propertiesArr));
+      
       var combineArr = [];
       propertiesArr.forEach(function(d, i) {
           var obj = nameArr[i] + d;
           combineArr.push(obj);
       })
-      console.log("combineArrAS", JSON.stringify(combineArr));
+      
       var globalArr = [];
       data.forEach(function(d, i) {
           var localObj = _.object(combineArr, d);
@@ -2525,9 +2528,15 @@ zeroOrOne_OperableClass = {
                     data: [],
                  
                     showInLegend: true,
-                    dataLabels: {
-                        enabled: false
+                  allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '&lt;b&gt;{point.name}&lt;/b&gt;: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                     }
+                }
 				};
 			} 
             }
@@ -2536,10 +2545,10 @@ zeroOrOne_OperableClass = {
             var columnName, modelType, propertyName;
         
          propertyName ='pie'
-			
+			console.log('rawdata',rawdata[0]);
 			_.each(rawdata,function(o){
 			//take from the first 2 indexes
-			var value=o[1];
+			var value=o[2];
 			if(typeof value=='string') value=0;
 			initialized[propertyName].data.push([o[0],value]);
 			});
@@ -2822,7 +2831,7 @@ return toSeriesArray;
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
   var formatToolTip;
-  console.log("before .. modelType",modelType,'..formatToolTipCast',formatToolTipCast);
+ 
   eval(formatToolTipCast);
   var formatToolTipForCToggle=function(propertyName,formatToolTip,cToggleType){
   return {valueDecimals:formatToolTip[propertyName]['valueDecimals'](cToggleType),
@@ -2964,7 +2973,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
    var viewHolder = elx.app.dashboardFrame.getViewById(viewId);
    console.log("view.typeinfo.dataAjaxHexToModelKey before",view.typeinfo.dataAjaxHexToModelKey);
     if(viewHolder && typeof elx.PullRequest=='function' && view.typeinfo.dataAjaxHexToModelKey=='dataAjax'){
-	console.log("view.typeinfo.dataAjaxHexToModelKey doing");
+	
 	  var v = new elx.PullRequest(view,{});
 	viewHolder.setBaseView(v);
 	
@@ -2974,7 +2983,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
   };
 //--Data Grouping Tab
     addDataGroupFn = function(modelData, tCol, dataGroupKey, dataGroupHex, viewId) {
-		console.log("dataGroupKey",dataGroupKey);
+		
         if (dataGroupKey === 'timePeriodOptions') {
 			
             var dataGroupContent = d3.select(dataGroupHex);
@@ -3098,7 +3107,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
             });
             opt.appendTo(updatesubPeriodSelect_el);
         });
-		console.log("updatesubPeriodSelect_el",updatesubPeriodSelect_el);
+		
         updatesubPeriodSelect_el.multiselect('refresh');
     };
     addSubPeriodOptions = function(modelData, tDomainDate, tCol,periodSelect_val, subPeriodSelect_hex) {
