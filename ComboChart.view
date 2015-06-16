@@ -1242,14 +1242,7 @@ var f=view.typeinfo.data.fields;
   }
  if (view.data.jsonClass === "DataEmbedded"){ 
   var rawdata=[["2014-11-22",25,35],["2014-11-23",35,70],["2014-11-24",70,100],["2014-11-25",96,100],["2014-11-26",20,100],["2014-11-27",14,100],["2014-11-29",60,100]];
-		//above for arearange
-/*	rawdata=[["Team1",25,35,20],["Team1",35,70,20],["Team1",70,100,40],["Team1",96,100,50],["Team1",20,100,50],["Team2",14,100,60],["Team2",60,100,70]];
-		//above for bubble
-	rawdata=[["week1","James",35],["week1","Tim",70],["week2","James",100],["week2","Tim",50],["week3","James",50]
-	,["week3","Tim",60],["week4","James",100],["week4","Tim",120]];
-  console.log('cToggleStatus',view.typeinfo.cToggleKey);
-  */
-	
+
   var extendedArr=rawdata;
   var reduceCToggleArr=extendedArr;
   } else { 
@@ -1269,7 +1262,7 @@ console.log('view.typeinfo',view.typeinfo);
   }
   var data1, data2, data3, smpColName;
   data1 = arrToHex1(reduceCToggleArr, f, view);
-  console.log('data1',data1[0]);
+  console.log('data1',JSON.stringify(_.first(data1,8)));
   // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
 
   data2=interpolateMonthFixed(data1,view);
@@ -1278,7 +1271,7 @@ console.log('view.typeinfo',view.typeinfo);
   data3 = hexToModel1(data2, legendKey,formatLegendCast,view);
   console.log('data3',JSON.stringify(data3[0]));
 	data3=ajaxHexToModel(data3,view,viewId);
- // var data4=valueOperating(data3,valueOperationKey,formatValueOperationCast);
+	
   addDataGroupFn(data3, 'category', dataGroupKey, '#dataGroup_' + viewId, viewId);
  
  function debugFn(){
@@ -1977,7 +1970,7 @@ model_APIClass.yAxis['stackLabels']= {
   //$$$
  
   chartPreGen = function(data4){
-  console.log('data in chartPreGen',data4);
+
 		  var data5=formatXTicksAndOrdering(data4,view);
 	
 			var data6=sortCategory(data5);
@@ -2027,10 +2020,7 @@ model_APIClass.yAxis['stackLabels']= {
 		  if (containsModelType!='pie'){
 		   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
 		   }
-		  console.log("toSeriesArray",JSON.stringify(toSeriesArray[0]));
-
-		  console.log("tooltip,modelApiClass_xAxis", safeRead(model_APIClass,'xAxis','categories'));
-		  console.log("modelAPIJSON",JSON.stringify(model_APIClass));
+		
 			  Highcharts.setOptions({
 				colors: colorSeriesArray
 			});
@@ -2589,7 +2579,7 @@ zeroOrOne_OperableClass = {
            model_APIClass['xAxis']={};
 		   model_APIClass['xAxis']['type']="datetime";
 		   model_APIClass['xAxis']['categories']='null';
-		   console.log('here xAxis',safeRead(model_APIClass,'xAxis','categories'));
+		
 			// if modelType is areaRange, you allow them to share the output
 			if (_.str.include(modelType,'areaRange')) {
 			propertyName='areaRange'; 
@@ -2971,7 +2961,6 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
   ajaxHexToModel=function(modelData,view,viewId){
   var output=modelData;
    var viewHolder = elx.app.dashboardFrame.getViewById(viewId);
-   console.log("view.typeinfo.dataAjaxHexToModelKey before",view.typeinfo.dataAjaxHexToModelKey);
     if(viewHolder && typeof elx.PullRequest=='function' && view.typeinfo.dataAjaxHexToModelKey=='dataAjax'){
 	
 	  var v = new elx.PullRequest(view,{});
@@ -3019,6 +3008,7 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 	
 		$(periodSelect_hex).empty();
 		$(subPeriodSelect_hex).empty();
+		var modelData=valueOperating(modelData,valueOperationKey,formatValueOperationCast,cToggleType);
 		chartPreGen(modelData);
 		
 		}
@@ -3065,11 +3055,13 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
 			sampleObj['category'] =($.isNumeric(dataGroupCategoryVal)) ? dataGroupCategoryVal.toString() : dataGroupCategoryVal;
             return sampleObj;
         });
+
         _.each(subPeriodSelect_val, function(m) {
             filteredData = _.union(filteredData, _.where(subPeriodData, {
                 'tColSubPeriod': m
             }));
         });
+		
       // group the data by category and aggregate the 'value' column
 		var groupCount=0;
 	for (var property in filteredData[0]) {
@@ -3120,8 +3112,8 @@ valueOperating=function(modelData,valueOperationKey,formatValueOperationCast,cTo
                
                 
                 var groupedData = dataGroupUsed(modelData, tCol,subPeriodSelect_val); //data filtered by subPeriodselected_val
-				 groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
-				
+	
+				groupedData=valueOperating(groupedData,valueOperationKey,formatValueOperationCast,cToggleType);
 				 if (_.size(groupedData)==0) groupedData =[{model:'column',category:'2012-06-20',yAxis:'L1'}];
 				chartPreGen(groupedData);
             
