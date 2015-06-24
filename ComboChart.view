@@ -1260,7 +1260,7 @@ console.log('view.typeinfo',view.typeinfo);
   var rawdata=${data};  var extendedArr=extendArr(rawdata,f,view); var reduceCToggleArr=reduceCToggle(extendedArr,view);
   }
   }
-  var data1, data2, data3, smpColName;
+  var data1, data2, data3, smpColName,dataSum;
   data1 = arrToHex1(reduceCToggleArr, f, view);
   console.log('data1',JSON.stringify(_.first(data1,8)));
   // data1= [{"stock_group#{xaxis}":"AB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5298.73,"sum(Gross_Profit)#[spline.R2]":2925906.33},{"stock_group#{xaxis}":"OTHERS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":256.92,"sum(Gross_Profit)#[spline.R2]":384715.54},{"stock_group#{xaxis}":"FB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":2649.98,"sum(Gross_Profit)#[spline.R2]":1749060.57},{"stock_group#{xaxis}":"SQB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":381.59,"sum(Gross_Profit)#[spline.R2]":296729.47},{"stock_group#{xaxis}":"GR","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":347.46,"sum(Gross_Profit)#[spline.R2]":452457.37},{"stock_group#{xaxis}":"P","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":254.72,"sum(Gross_Profit)#[spline.R2]":193801.56},{"stock_group#{xaxis}":"RB","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":307.27,"sum(Gross_Profit)#[spline.R2]":294954.43},{"stock_group#{xaxis}":"CH","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":4943.44,"sum(Gross_Profit)#[spline.R2]":4506888.28},{"stock_group#{xaxis}":"PL","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":14573.05,"sum(Gross_Profit)#[spline.R2]":5688634.39},{"stock_group#{xaxis}":"GC","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":0.31,"sum(Gross_Profit)#[spline.R2]":25452.83},{"stock_group#{xaxis}":"HFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":1286.57,"sum(Gross_Profit)#[spline.R2]":1121954.75},{"stock_group#{xaxis}":"CFHS","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":5994.62,"sum(Gross_Profit)#[spline.R2]":3364209.06},{"stock_group#{xaxis}":"B","sum(Sold_Tonnage)#[columnInducedGroupby.L1]":51636.23,"sum(Gross_Profit)#[spline.R2]":14589162.73}];
@@ -1457,7 +1457,8 @@ return extendedArr;
   dotGroupby:['spline'],
   pie:[,,'pie'],
   bubble:['bubble'],
-  bar:['bar']
+  bar:['bar'],
+  barPercent:['bar']
     };
   model_APIClass={
   
@@ -1697,6 +1698,39 @@ model_DataConvertClass = {
 	  
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
 	 
+      return colToSeriesArr;
+    }
+  },  barPercent: {
+    0: function(t,unit,index) {
+	model_APIClass={};
+	var filteredSize=_.size(t);
+	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?700: (filteredSize < 20)?800 :(filteredSize < 30) ? 900: (filteredSize < 40) ?1000:(filteredSize < 50) ?1300:(filteredSize < 60) ?1500:2000;
+	model_APIClass['chart']={};
+	model_APIClass['chart']['height']=hx;
+      var colToSeriesArr, gCount, subModel;
+      subModel = "bar";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      gCount = Get_groupCountFn(t);
+	  model_APIClass['plotOptions']={};
+	    model_APIClass['plotOptions']['bar']={   
+				dataLabels: { enabled: false}};
+	  model_APIClass['plotOptions']['series']={  
+				shadow:false,
+				borderWidth:0,	  
+				dataLabels: { enabled: true,
+				formatter:function() {
+                    var pcnt = (this.y / dataSum) * 100;
+                    return Highcharts.numberFormat(pcnt) + '%';
+                }}};
+	  model_APIClass['yAxis']={};
+	  model_APIClass['yAxis']['labels']={formatter:function() {
+                var pcnt = (this.value / dataSum) * 100;
+                return Highcharts.numberFormat(pcnt,0,',') + '%';
+            }};
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
+	  console.log('colToSeriesArr',colToSeriesArr);
+	 dataSum=_.reduce(colToSeriesArr[0].data,function(memo, num){ return memo + num; }, 0);
+	 console.log('firstDatasum',dataSum);
       return colToSeriesArr;
     }
   },
@@ -1939,28 +1973,36 @@ model_APIClass.yAxis['stackLabels']= {
   0:function(t,unit,index){
    
 	  // use arrToHex data instead of t
-	  var xAxisColName,xColName,yColName,sizeColName;
+	  var xAxisColName,xColName,yColName,sizeColName,groupByColName,sizeActualColName;
 	  var keys=_.keys(data1[0]);
+	  //check if there is #{groupby1} in data1, if there is, the 'xaxis' populate the bubble, the 'groupby' groups the bubble by color
 	  model_APIClass['xAxis']={};
 	  model_APIClass['xAxis']['categories']='null';
+	   model_APIClass['tooltip']={};
+	  model_APIClass['tooltip']['pointFormat']='(x:{point.x}, y:{point.y}), Size: {point.sizeActual}%, Company: {point.labelT}';
+	  var groupBy=false, bubbleSizeActual=false;
 	for (var propertyName in data1[0]) {
-		if(_.str.include(propertyName,'xaxis')) xAxisColName=propertyName;
+		if(_.str.include(propertyName,'groupby')) {groupByColName=propertyName; groupBy=true;}
+		else if(_.str.include(propertyName,'xaxis')) xAxisColName=propertyName;
 		else  if(_.str.include(propertyName,'bubbleX')) xColName=propertyName; 
 		else if(_.str.include(propertyName,'bubbleY')) yColName=propertyName;  
 		else if(_.str.include(propertyName,'bubbleSize')) sizeColName=propertyName;
+		else if(_.str.include(propertyName,'sizeActual')) {sizeActualColName=propertyName; bubbleSizeActual=true;}
 	}
+	console.log('bubbleSizeActual bool',bubbleSizeActual, 'prop:',sizeActualColName);
 	var colToSeriesArr=[];
 	  var nest=d3.nest().key(function(d) {
-						return d[xAxisColName];})
+						return (groupBy)? d[groupByColName]:d[xAxisColName];})
 						.rollup(function(d) {
-						var name=d[0][xAxisColName];
+						var name=(groupBy)?d[0][groupByColName]: d[0][xAxisColName];
 						var outputData=_.map(d,function(j){
-						return [j[xColName],j[yColName],j[sizeColName]];
+						return [j[xColName],j[yColName],j[sizeColName],j[sizeActualColName],j[xAxisColName]];
 						});
 						colToSeriesArr.push({name:name,type:'bubble',data:outputData,yAxisFull:t[0].yAxis});
 						}).entries(data1);
 	
       return colToSeriesArr;
+	  
   }
   }
   		
@@ -2015,8 +2057,8 @@ model_APIClass.yAxis['stackLabels']= {
 				var toYaxisArray=[];
 		  var yAxisArray=(view.typeinfo.yAxisArray).split(",");
 		  var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
-		   
-		  console.log("toYaxisArray",JSON.stringify(toYaxisArray));
+		   console.log('toSeriesArray',toSeriesArray);
+		  
 		  if (containsModelType!='pie'){
 		   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
 		   }
@@ -2058,7 +2100,8 @@ model_APIClass.yAxis['stackLabels']= {
 				stacking: safeRead(model_APIClass,'plotOptions','column','stacking')
 				},
 				scatter:safeRead(model_APIClass,'plotOptions','scatter'),
-				bar:safeRead(model_APIClass,'plotOptions','bar')
+				bar:safeRead(model_APIClass,'plotOptions','bar'),
+				series:(typeof safeRead(model_APIClass,'plotOptions','series') =="undefined") ?null:safeRead(model_APIClass,'plotOptions','series')
 			  },
 			  series: toSeriesArray,
 			  credits:{enabled:false}
@@ -2112,9 +2155,7 @@ chartGen = function(smpColName, model_APIClass, output) {
                 
                 _.each(splitModel, function(subModel, n) {
                     if (subModel !== null) {
-
                         zeroOrOne_OperableClass[n].Init(subModel, modelType, columnName, yAxisNum, unit, index, model_APIClass, output);
-                        
                         zeroOrOne_OperableClass[n].Draw(t, unit, index, output, index2);
  				
                     }
@@ -2867,18 +2908,24 @@ var yAxisColorMatch={};
   if (typeof safeRead(model_APIClass,'yAxis','stackLabels') !=='undefined') {
   var stackLabelsAxis=model_APIClass['yAxis']['stackLabels']; 
   } else stackLabelsAxis=null;
+  
+  console.log('model_APIClass yAxis,label Formatter',model_APIClass, safeRead(model_APIClass,'yAxis','labels','formatter'));
+    if (typeof safeRead(model_APIClass,'yAxis','labels','formatter') !=='undefined') {
+  var yAxisLabelFormatter=model_APIClass['yAxis']['labels']['formatter']; 
+  } else yAxisLabelFormatter=null;
+  console.log('yAxisLabelFormatter',yAxisLabelFormatter);
 for (var propertyName in yAxisColorMatch) {
 	var L_R=axisDivFn(propertyName);
   	var numInYaxis=propertyName.match(/\d+$/)[0]; //obtain the number in the yAxis
 		if(L_R.contains("R")==true) {
-		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
+		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]},formatter:yAxisLabelFormatter},
 		title:{text:titleArray[numInYaxis-1],style:{
 		color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
   opposite: true, stackLabels: stackLabelsAxis
 		};
 		}
 		else if (L_R.contains("L")==true){
-		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
+		toYaxisObj={labels:{ style:{color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]},formatter:yAxisLabelFormatter},
 		title:{text:titleArray[numInYaxis-1],style:{
 		color: Highcharts.getOptions().colors[(yAxisColorMatch[propertyName].colorIndex)%colorSize]}},
 		opposite: false, stackLabels: stackLabelsAxis
