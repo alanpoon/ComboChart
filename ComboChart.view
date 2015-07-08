@@ -147,7 +147,8 @@
       "dataAjax":"default",
       "dataAjaxHexToModelKey":"default",
       "dataAjaxHexToModel":"default",
-      "dataAjaxReset":"default"
+      "dataAjaxReset":"default",
+      "dataSumForPercent":"default"
     }
   },
   "includes":["/elx/lib/highcharts.js","/elx/lib/highcharts-more.js","/elx/lib/Accent2.js","/elx/lib/highchartExporting.js","/elx/lib/multiSelectCustom.js"],
@@ -1685,7 +1686,8 @@ model_DataConvertClass = {
     0: function(t,unit,index) {
 	model_APIClass={};
 	var filteredSize=_.size(t);
-	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?700: (filteredSize < 20)?800 :(filteredSize < 30) ? 900: (filteredSize < 40) ?1000:(filteredSize < 50) ?1300:(filteredSize < 60) ?1500:2000;
+	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?880: (filteredSize < 20)?960 :(filteredSize < 30) ? 1120: (filteredSize < 40) ?1300:(filteredSize < 50) ?1500:(filteredSize < 60) ?1700:
+			(filteredSize < 70)?2200:(filteredSize < 80)?2400:(filteredSize < 90)?2600:(filteredSize < 100)?2800:3700;
 	model_APIClass['chart']={};
 	model_APIClass['chart']['height']=hx;
       var colToSeriesArr, gCount, subModel;
@@ -1704,7 +1706,8 @@ model_DataConvertClass = {
     0: function(t,unit,index) {
 	model_APIClass={};
 	var filteredSize=_.size(t);
-	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?700: (filteredSize < 20)?800 :(filteredSize < 30) ? 900: (filteredSize < 40) ?1000:(filteredSize < 50) ?1300:(filteredSize < 60) ?1500:2000;
+	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?700: (filteredSize < 20)?880 :(filteredSize < 30) ? 960: (filteredSize < 40) ?1200:(filteredSize < 50) ?1400:(filteredSize < 60) ?1600:
+			(filteredSize< 70)?1800:(filteredSize< 80)?2000:(filteredSize< 90)?2200:(filteredSize< 100)?2400:2800;
 	model_APIClass['chart']={};
 	model_APIClass['chart']['height']=hx;
       var colToSeriesArr, gCount, subModel;
@@ -1729,7 +1732,10 @@ model_DataConvertClass = {
             }};
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
 	  console.log('colToSeriesArr',colToSeriesArr);
-	 dataSum=_.reduce(colToSeriesArr[0].data,function(memo, num){ return memo + num; }, 0);
+	  if (typeof viewHolder=='undefined' && typeof elx.PullRequest!='function') { view.typeinfo.dataSumForPercent=null;}
+	  if(typeof view.typeinfo.dataSumForPercent !='undefined') { dataSum=view.typeinfo.dataSumForPercent;} else {
+	 dataSum=_.reduce(colToSeriesArr[0].data,function(memo, num){ return memo + num; }, 0); } 
+	
 	 console.log('firstDatasum',dataSum);
       return colToSeriesArr;
     }
@@ -1829,13 +1835,14 @@ model_APIClass.yAxis['stackLabels']= {
   model_APIClass.plotOptions['column']={};
   model_APIClass.plotOptions.column['stacking']='normal';
   model_APIClass['tooltip']={
-                      formatter: function() {
+                /*      formatter: function() {
                       return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
                         this.series.name +': '+ this.y +'&lt;br/&gt;'+
                           '&lt;br&gt;';
-                }
+                } */formatter:null
             };
   model_APIClass['yAxis']={};
+   colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
   model_APIClass.yAxis={stackLabels:{
    style: {
                     color: 'black'
@@ -1849,7 +1856,7 @@ model_APIClass.yAxis['stackLabels']= {
       sum+=series[i].yData[this.x];
     }
   if (sum < 0 && this.isNegative || sum >= 0 && !this.isNegative) {
-  sum=(sum>50000) ? d3.round(sum/1000,2)+'k' : d3.round(sum,2);
+  sum="$"+d3.format(",")(d3.round(sum,2));
   return sum;}
   
   }}};
@@ -1979,7 +1986,7 @@ model_APIClass.yAxis['stackLabels']= {
 	  model_APIClass['xAxis']={};
 	  model_APIClass['xAxis']['categories']='null';
 	   model_APIClass['tooltip']={};
-	  model_APIClass['tooltip']['pointFormat']='(x:{point.x}, y:{point.y}), Size: {point.sizeActual}%, Company: {point.labelT}';
+	  model_APIClass['tooltip']['pointFormat']='&lt;b&gt;Company: {point.labelT} &lt;b&gt;&lt;br/&gt;Small DO Quantity:{point.x} &lt;br/&gt;Total Sales:$ {point.y} &lt;br/&gt; Size: {point.sizeActual} ';
 	  var groupBy=false, bubbleSizeActual=false;
 	for (var propertyName in data1[0]) {
 		if(_.str.include(propertyName,'groupby')) {groupByColName=propertyName; groupBy=true;}
@@ -2058,11 +2065,11 @@ model_APIClass.yAxis['stackLabels']= {
 		  var yAxisArray=(view.typeinfo.yAxisArray).split(",");
 		  var colorSeriesArray=(view.typeinfo.colorSeriesArray).split(",");
 		   console.log('toSeriesArray',toSeriesArray);
-		  
+		
 		  if (containsModelType!='pie'){
 		   set_yAxisFnBySeries(toSeriesArray,toYaxisArray,yAxisArray,model_APIClass,colorSeriesArray);
 		   }
-		
+		  
 			  Highcharts.setOptions({
 				colors: colorSeriesArray
 			});
@@ -2082,7 +2089,6 @@ model_APIClass.yAxis['stackLabels']= {
 			  },
 			  xAxis: 
 				{
-				//  categories: toCategoryArray ,
 				categories:(typeof safeRead(model_APIClass,'xAxis','categories') == "undefined") ?toCategoryArray:
 				(safeRead(model_APIClass,'xAxis','categories')=='null')?null:toCategoryArray,
 				type: (typeof safeRead(model_APIClass,'xAxis','type') == "undefined") ? "linear": safeRead(model_APIClass,'xAxis','type'),
@@ -2099,13 +2105,18 @@ model_APIClass.yAxis['stackLabels']= {
 				  borderWidth: 0,
 				stacking: safeRead(model_APIClass,'plotOptions','column','stacking')
 				},
-				scatter:safeRead(model_APIClass,'plotOptions','scatter'),
+				scatter:safeRead(model_APIClass,'plotOptions','scatter')
+				,
 				bar:safeRead(model_APIClass,'plotOptions','bar'),
+				
 				series:(typeof safeRead(model_APIClass,'plotOptions','series') =="undefined") ?null:safeRead(model_APIClass,'plotOptions','series')
+				
 			  },
 			  series: toSeriesArray,
 			  credits:{enabled:false}
 			});
+  var chartHigh=$("#${id}").highcharts();
+  console.log('chartHigh',chartHigh);
   };
 
 chartGen = function(smpColName, model_APIClass, output) {
@@ -2445,7 +2456,7 @@ hexToModel1 = function(data, legendKey,formatLegendCast,view) {
                         objPush["legendKey"] = cName;
                         ReadArray.push(objPush);
                       } else if (legendKey=="formatLegend"){
-					  if (i==0) console.log("objPush for Legend",JSON.stringify(objPush));
+					  if (i==0) console.log("objPush for Legend",JSON.stringify(objPush),'model_keyObj',model_keyObj);
                           objPush["legendKey"] = formatLegend[model_keyObj](objPush);
   						ReadArray.push(objPush);
                       }
@@ -2542,6 +2553,7 @@ zeroOrOne_OperableClass = {
   
                 initialized[propertyName].data.push(model_DataConvertClass[modelType][1](t, unit, index));
 				initialized[propertyName]['yAxisFull']=_.first(_.pluck(t,"yAxis"));
+				console.log('before Tooltip in [1],initialized[propertyName]:',initialized[propertyName],'2nd',modelType+'.'+yAxis);
   				initialized[propertyName]=toolTipInserter(initialized[propertyName],modelType+'.'+yAxis);		
             });
 			
@@ -2870,6 +2882,7 @@ return toSeriesArray;
   valuePrefix:formatToolTip[propertyName]['valuePrefix'](cToggleType)}
   };
   for (var propertyName in formatToolTip) {
+  console.log('modelType in formatToolTip',modelType);
   if (propertyName==modelType && view.typeinfo.cToggleKey=='default') {
   var newObj=finalObj;
   newObj['tooltip']=formatToolTip[propertyName];
