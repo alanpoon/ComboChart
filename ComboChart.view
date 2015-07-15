@@ -1738,6 +1738,10 @@ model_DataConvertClass = {
 		} else if (view.typeinfo.dataSumForPercent=='default') {
 		//no dataLabel;
 		model_APIClass['plotOptions']['series']['dataLabels']['enabled']=false;
+		  model_APIClass['yAxis']['labels']={formatter:function() {
+                var pcnt = this.value;
+                return Highcharts.numberFormat(pcnt,0,',') + '%';
+            }};
 		} else {
 	 //dataSum: is the sum of existing records
 	 dataSum=_.reduce(colToSeriesArr[0].data,function(memo, num){ return memo + num; }, 0);  
