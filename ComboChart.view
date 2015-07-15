@@ -1706,8 +1706,7 @@ model_DataConvertClass = {
     0: function(t,unit,index) {
 	model_APIClass={};
 	var filteredSize=_.size(t);
-	var hx=(filteredSize < 10)?410:(filteredSize < 15) ?700: (filteredSize < 20)?880 :(filteredSize < 30) ? 960: (filteredSize < 40) ?1200:(filteredSize < 50) ?1400:(filteredSize < 60) ?1600:
-			(filteredSize< 70)?1800:(filteredSize< 80)?2000:(filteredSize< 90)?2200:(filteredSize< 100)?2400:2800;
+	var hx=(filteredSize < 10)?410: (filteredSize-10)*22.375+410;
 	model_APIClass['chart']={};
 	model_APIClass['chart']['height']=hx;
       var colToSeriesArr, gCount, subModel;
@@ -1733,9 +1732,16 @@ model_DataConvertClass = {
       colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
 	  console.log('colToSeriesArr',colToSeriesArr);
 	  if (typeof viewHolder=='undefined' && typeof elx.PullRequest!='function') { view.typeinfo.dataSumForPercent=null;}
-	  if(typeof view.typeinfo.dataSumForPercent !='undefined') { dataSum=view.typeinfo.dataSumForPercent;} else {
-	 dataSum=_.reduce(colToSeriesArr[0].data,function(memo, num){ return memo + num; }, 0); } 
-	
+	  if(typeof view.typeinfo.dataSumForPercent !='undefined'&&view.typeinfo.dataSumForPercent!='default') { 
+	  dataSum=view.typeinfo.dataSumForPercent;
+	  
+		} else if (view.typeinfo.dataSumForPercent=='default') {
+		//no dataLabel;
+		model_APIClass['plotOptions']['series']['dataLabels']['enabled']=false;
+		} else {
+	 //dataSum: is the sum of existing records
+	 dataSum=_.reduce(colToSeriesArr[0].data,function(memo, num){ return memo + num; }, 0);  
+	}
 	 console.log('firstDatasum',dataSum);
       return colToSeriesArr;
     }
@@ -1856,7 +1862,7 @@ model_APIClass.yAxis['stackLabels']= {
       sum+=series[i].yData[this.x];
     }
   if (sum < 0 && this.isNegative || sum >= 0 && !this.isNegative) {
-  sum="$"+d3.format(",")(d3.round(sum,2));
+  sum="$"+d3.format(",")(d3.round(sum,0));
   return sum;}
   
   }}};
@@ -2003,7 +2009,7 @@ model_APIClass.yAxis['stackLabels']= {
 						.rollup(function(d) {
 						var name=(groupBy)?d[0][groupByColName]: d[0][xAxisColName];
 						var outputData=_.map(d,function(j){
-						return [j[xColName],j[yColName],j[sizeColName],j[sizeActualColName],j[xAxisColName]];
+						return [j[xColName],d3.round(j[yColName],2),j[sizeColName],j[sizeActualColName],j[xAxisColName]];
 						});
 						colToSeriesArr.push({name:name,type:'bubble',data:outputData,yAxisFull:t[0].yAxis});
 						}).entries(data1);
