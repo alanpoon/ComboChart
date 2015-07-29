@@ -134,6 +134,8 @@
       "legendKey":"ColumnName",
       "cToggleKey":"default",
            "toolTipKey":"default",
+      "toolTipMapKey":"default",
+      "toolTipMapper":"default",
       "legendEscortLines":"Gross Profit",
       "typeAntiType":"",
       "formatToolTipCast":"formatToolTip={'columnInducedGroupby.L1':{valueDecimals:2,valuePrefix:'$',valueSuffix:' USD'}}",
@@ -893,6 +895,35 @@
                      "readonly":false
                   }
                ]
+            },
+            {
+               "jsonClass":"Row",
+               "cols":[
+                  {
+                     "jsonClass":"Label",
+                     "id":"typeinfo-toolTipMapKey-label",
+                     "type":"label",
+                     "text":"Use ToolTip Mapper"
+                  },
+                  {
+                     "jsonClass":"Select",
+                     "id":"typeinfo-toolTipMapKey",
+                     "type":"select",
+                     "value":"${typeinfo.toolTipMapKey}",
+                     "options":[
+                        {
+                           "jsonClass":"Option",
+                           "text":"default",
+                           "value":"default"
+                        },
+                        {
+                           "jsonClass":"Option",
+                           "text":"Use Mapper",
+                           "value":"toolTipMap"
+                        }
+                     ]
+                  }
+               ]
             }
          ]
       },
@@ -1211,7 +1242,9 @@ var formatSeriesInsertCast=view.typeinfo.formatSeriesInsertCast;
   var formatValueOperationCast=view.typeinfo.formatValueOperationCast;
   var valueOperationKey =view.typeinfo.valueOperationKey;
   var valueOpArr=(view.typeinfo.formatValueOperationArg).split(",");
-  
+  var toolTipMapKey=view.typeinfo.toolTipMapKey;
+  console.log('toolTipMapKey',toolTipMapKey);
+  var toolTipMapper =view.typeinfo.toolTipMapper;
 var f=view.typeinfo.data.fields;
 
 	var addDataGroupFn,dataGroupClasses,addPeriodOptions,addSubPeriodOptions,dataGroupAvailClass;
@@ -1226,7 +1259,7 @@ var f=view.typeinfo.data.fields;
   var safeRead; var getWordsBetweenCurlies; var sortByFixedGroupbyClass;
   var interpolateMonthFixed,interpolateGroupby,fixedGroupbyClass;
   var autoDetectCategory,formatXTicksAndOrdering,formatColumnNameCast;
-  var reArrangeToSeries,toolTipInserter,complementaryColor;
+  var reArrangeToSeries,toolTipInserter,setToolTipMapToSeries,complementaryColor;
   var set_yAxisFnBySeries;
   var valueOperating,operation,operationProcesser;
   var detected;
@@ -1451,6 +1484,7 @@ return extendedArr;
 	scatter:['scatter'],
   columnStackGroup:['column'],
   columnStack:['column'],
+  columnStackNoLabel:['column'],
    areaStackPercent:['area'],
    areaRange:[,,,,'arearange'],
    areaAvgLine:[,,,,'spline'],
@@ -1873,6 +1907,35 @@ model_APIClass.yAxis['stackLabels']= {
   
   return colToSeriesArr;
   }
+  }, columnStackNoLabel:{
+  0:function(t,unit,index) {
+
+      var colToSeriesArr, gCount, subModel;
+      subModel = "column";
+	  var modelType=_.first(_.pluck(t,'model'))+"."+_.first(_.pluck(t,'yAxis'));
+      gCount = Get_groupCountFn(t);
+      colToSeriesArr = _.flatten(Set_GroupFn1(t, gCount, subModel,modelType,index));
+   
+   model_APIClass['plotOptions']={};
+  model_APIClass.plotOptions['column']={};
+  model_APIClass.plotOptions.column['stacking']='normal';
+  model_APIClass['tooltip']={
+                     formatter: function() {
+                      return '&lt;b&gt;'+ this.x +'&lt;/b&gt;&lt;br/&gt;'+
+                        this.point.mappedTooltip +': '+ this.y +'&lt;br/&gt;'+
+                          '&lt;br&gt;';
+                } 
+            };
+  model_APIClass['yAxis']={};
+  // colToSeriesArr=toolTipInserter(colToSeriesArr,modelType);
+  model_APIClass.yAxis={stackLabels:{
+   style: {
+                    color: 'black'
+                },
+                enabled: false}};
+  
+  return colToSeriesArr;
+  }
   }, areaStackPercent:{
     0:function(t,unit,index) {
       var colToSeriesArr, gCount, subModel;
@@ -2069,7 +2132,7 @@ model_APIClass.yAxis['stackLabels']= {
 			else toSeriesArray.push(output[propertyName]);
 		  }
 			  toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType,seriesInsertKey);
-				
+				toSeriesArray=setToolTipMapToSeries(toSeriesArray,toolTipMapKey,toolTipMapper);
 			//Set YAxis
 				var toYaxisArray=[];
 		  var yAxisArray=(view.typeinfo.yAxisArray).split(",");
@@ -2880,6 +2943,27 @@ return formatSeriesInsert.indexOf(a.name)-formatSeriesInsert.indexOf(b.name);
 
 }
 return toSeriesArray;
+};
+
+setToolTipMapToSeries = function(toSeriesArray,toolTipMapKey,toolTipMapper){
+	console.log('www..setT',toolTipMapKey,JSON.stringify(toolTipMapper));
+	if(toolTipMapKey =='toolTipMap'){
+		var output=[];
+		_.each(toSeriesArray,function(d,k){
+		//if the series' name matches, its data changes to {'y':_,'mappedTooltip':_}
+		
+				var obj=_.clone(d);
+				obj['data']=_.map(d.data,function(m,i){
+				var n=parseInt(i)+1;
+				console.log('n',n,' d.name:',d.name);
+				return {y:m,mappedTooltip:(typeof toolTipMapper[n]!='undefined')?toolTipMapper[n][d.name]:'map Not Found'};
+				}); output.push(obj);
+		
+			
+		});
+		console.log('output tooltipmapper',output);
+return output;
+	}else return toSeriesArray;
 };
   toolTipInserter = function(finalObj,modelType){
   if (toolTipKey==='formatToolTip') {
