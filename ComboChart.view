@@ -2132,7 +2132,7 @@ model_APIClass.yAxis['stackLabels']= {
 			else toSeriesArray.push(output[propertyName]);
 		  }
 			  toSeriesArray=reArrangeToSeries(toSeriesArray,containsModelType,seriesInsertKey);
-				toSeriesArray=setToolTipMapToSeries(toSeriesArray,toolTipMapKey,toolTipMapper);
+				toSeriesArray=setToolTipMapToSeries(toSeriesArray,toCategoryArray,toolTipMapKey,toolTipMapper);
 			//Set YAxis
 				var toYaxisArray=[];
 		  var yAxisArray=(view.typeinfo.yAxisArray).split(",");
@@ -2945,7 +2945,7 @@ return formatSeriesInsert.indexOf(a.name)-formatSeriesInsert.indexOf(b.name);
 return toSeriesArray;
 };
 
-setToolTipMapToSeries = function(toSeriesArray,toolTipMapKey,toolTipMapper){
+setToolTipMapToSeries = function(toSeriesArray,toCategoryArray,toolTipMapKey,toolTipMapper){
 	console.log('www..setT',toolTipMapKey,JSON.stringify(toolTipMapper));
 	if(toolTipMapKey =='toolTipMap'){
 		var output=[];
@@ -2954,8 +2954,8 @@ setToolTipMapToSeries = function(toSeriesArray,toolTipMapKey,toolTipMapper){
 		
 				var obj=_.clone(d);
 				obj['data']=_.map(d.data,function(m,i){
-				var n=parseInt(i)+1;
-				console.log('n',n,' d.name:',d.name);
+				var n=toCategoryArray[i];
+				console.log('n,kk',n);
 				return {y:m,mappedTooltip:(typeof toolTipMapper[n]!='undefined')?toolTipMapper[n][d.name]:'map Not Found'};
 				}); output.push(obj);
 		
