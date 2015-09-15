@@ -2879,13 +2879,24 @@ var objPushCount=0;
   //sortedData is sorted according to the ordering
   if( typeof orderedData[0].ordering!=='undefined') {
     var sortedData=[];
+	var keyCount=0;
+	var mainSortKey;
   var sortNest = d3.nest().key(function(d) {return d.columnName;}).rollup(function(d) {
-  var orderedByColName=d.sort(function(a,b) {
-  return a.ordering-b.ordering;
-  }); 
-  _.each(orderedByColName,function(d){
-  sortedData.push(d);
-  });
+	  if(keyCount==0){
+	  var orderedByColName=d.sort(function(a,b) {
+	  return a.ordering-b.ordering;
+	  }); 
+	  mainSortKey=_.pluck(d,'category');
+	  } else{
+	  var orderedByColName=d.sort(function(a,b) {
+	  return mainSortKey.indexOf(a.category)-mainSortKey.indexOf(b.category);
+	  }); 
+	  }
+	  _.each(orderedByColName,function(d){
+	  sortedData.push(d);
+	  keyCount++;
+	  });
+	  
   return;
   }).entries(orderedData);
   return sortedData;
